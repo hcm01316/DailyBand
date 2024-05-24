@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SQL 맵퍼 파일은 xml이기 때문에 제일 먼저 xml 선언이 옵니다. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bnd.dailyband.mybatis.mapper.MemberMapper">
+
+<select id="isId" resultType="member">
+ 			select*from MBR_INFO where MBR_ID = #{mbrId}
+ 	</select>
+
+
+<insert id="insert">
+ 			INSERT INTO MBR_INFO (MBR_ID, MBR_EML_ADDR, MBR_NCNM, MBR_PWD, MBR_TY)
+ 			VALUES (#{MBR_ID}, #{MBR_EML_ADDR}, #{MBR_NCNM}, #{MBR_PWD}, 'ROLE_MEMBER')
+</insert>
+
+</mapper>

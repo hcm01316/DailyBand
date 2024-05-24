@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<script
+	src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+.col-sm-8 {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+#nick {
+	font-size: 25px;
+	font-weight: bold;
+	color: #736CF7;
+}
+
+#main {
+	background-color: #736CF7;
+}
+
+#UpdateForm {
+	background-color: #736CF7;
+}
+</style>
+
+<script>
+	$(function() {
+		$("#main").click(function() {
+			location.href = "main.net"
+		})
+	})
+
+	$(function() {
+		$("#UpdateForm").click(function() {
+			location.href = "memberUpdate.net?state=join"
+		})
+	})
+</script>
+</head>
+<body>
+    <div class="modal-dialog modal-dialog-centered"
+        style="height: 700px; width: 800px; max-width: none;">
+        <div style="height: 700px; width: 800px;" class="modal-content">
+
+            <!-- login modal body -->
+            <div class="modal-body"
+                style="height: 700px; width: 800px; padding: 0px;">
+                <div class="row">
+
+                    <div class="col-sm-4" style="padding: 0px;">
+                        <img src="image/login_drum.jpg" height="700px" width="276.66px" th:src="@{/image/login_drum.jpg}">
+                    </div>
+
+                    <div class="col-sm-8"
+                        style="width: 266.66px; height: 700px; padding-right: 70px; padding-left: 70px; padding-top: 140px; padding-bottom: 70px;">
+                        <!-- 회원가입 Headline -->
+
+                        <div th:if="${not #strings.isEmpty(join_id)}">
+                            <button type="button" id="nick" class="btn logout" th:text="${join_name} + '님'"></button>
+                        </div>
+
+                        <label class="headline" for="id"><img
+                            src="image/login_logo.jpg" height="40px" width="150px" th:src="@{/image/login_logo.jpg}">에
+                            가입이 완료되었습니다!</label>
+                        <form name="joinform" method="post" action="joinProcess.net">
+                            <br> 밴드원을 모집하기전에<br>
+                            <br> 프로필 정보를 입력해보세요!! <br>
+                            <br>
+                            <div class="clearfix">
+                                <button type="button" id="main" class="btn btn-primary col-sm-5">메인으로</button>
+                                <button type="button" id="UpdateForm"
+                                    class="btn btn-primary col-sm-6">프로필 정보 입력하기</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- modal body 끝 -->
+        </div>
+    </div>
+    <!-- 로그인 모달 끌 -->
+</body>
+
+</html>
