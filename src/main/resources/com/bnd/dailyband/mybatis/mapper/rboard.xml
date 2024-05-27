@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SQL 맵퍼 파일은 xml이기 때문에 제일 먼저 xml 선언이 옵니다. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bnd.dailyband.mybatis.mapper.RboardMapper">
+
+	<select id="getCtgryList" resultType="Ctgry">
+		select CTGRY_NM,CTGRY_ID from BAND_CTGRY where CTGRY_TY = #{type};
+	</select>
+
+	<insert id="insertRboard">
+		insert into RCRIT_BBS (MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE)
+		VALUES (#{MBR_ID},#{RCRIT_REALM_ID},#{RCRIT_GENRE_ID},#{RCRIT_AREA_ID},#{BAND_TEAM_NM},#{BBS_CN},#{RCRIT_NOPE});
+	</insert>
+
+	<update id="setReadCountUpdate" >
+		update RCRIT_BBS
+		set BBS_READ_CNT = BBS_READ_CNT+1
+		WHERE BBS_SN=#{number}
+	</update>
+
+	<select id = "getDetail" resultType="rboard">
+		select MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE,BBS_READ_CNT,REG_DT
+		from RCRIT_BBS
+		where BBS_SN=#{rboard}
+	</select>
+</mapper>
+
