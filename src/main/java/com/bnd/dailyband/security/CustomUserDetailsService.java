@@ -1,13 +1,8 @@
 package com.bnd.dailyband.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,13 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 			
 		}
 
-			Collection<SimpleGrantedAuthority> roles = new ArrayList<SimpleGrantedAuthority>();
-			
-			roles.add(new SimpleGrantedAuthority(users.getMBR_TY()));
-			
-			UserDetails user = new User(username, users.getMBR_PWD(), roles);
-			
-	return user;
+	return users;
 	}
 
 
