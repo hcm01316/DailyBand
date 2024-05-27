@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-body" style='background-color: white'>
+            <div class="container-xl">
+                <div><h2>[[${rboarddata.BAND_TEAM_NM}]]</h2> <span>작성자 [[${rboarddata.MBR_ID}]] 조회수 [[${rboarddata.BBS_READ_CNT}]] [[${rboarddata.REG_DT}]]</span></div>
+                <hr style="margin: 0 auto">
+               [[${rboarddata.RCRIT_REALM_IDK}]] [[${rboarddata.RCRIT_GENRE_IDK}]] [[${rboarddata.RCRIT_AREA_IDK}]] [[${rboarddata.RCRIT_NOPE}]]명
+                <hr>
+                [[${rboarddata.BBS_CN}]]
+            </div>
+            <div>
+                <button class="btn">가입신청</button>
+                <button class="btn">수정</button>
+                <button class="btn">삭제</button>
+                <button class="btn">목록</button>
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+</body>
+</html>
