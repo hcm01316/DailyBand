@@ -17,16 +17,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bnd.dailyband.domain.Member;
-import com.bnd.dailyband.service.MemberService;
+import com.bnd.dailyband.service.member.MemberService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/member")
 public class MemberController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
-	
+
 	private MemberService memberService;
 	private PasswordEncoder passwordEncoder;
 
@@ -72,7 +72,7 @@ public class MemberController {
 	public String join(Model model) {
 		return "member/join";
 	}
-	
+
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
 	public String joinProcess(	Member member,
 								RedirectAttributes rattr,
@@ -82,7 +82,7 @@ public class MemberController {
 		logger.info(encPassword);
 		member.setMBR_PWD(encPassword);
 		int result = memberService.insert(member);
-	
+
 		if (result == 1) {
 			rattr.addFlashAttribute("result", "joinSuccess");
 			return "redirect:login";
@@ -106,6 +106,4 @@ public class MemberController {
 	}
 
 
-	
-	
 }
