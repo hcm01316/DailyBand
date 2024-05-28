@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이디 / 비밀번호 찾기</title>
+    <style>
+        .content {
+            display: none;
+        }
+    </style>
+    <script>
+        function showContent(id) {
+            document.getElementById('findId').style.display = 'none';
+            document.getElementById('findPassword').style.display = 'none';
+            document.getElementById(id).style.display = 'block';
+        }
+        //페이지 로드시 아이디 찾기로 나타내도록
+        window.onload = function() {
+            showContent('findId');
+        };
+    </script>
+</head>
+<body>
+<h1>아이디 / 비밀번호 찾기</h1>
+<button onclick="showContent('findId')">아이디 찾기</button>
+<button onclick="showContent('findPassword')">비밀번호 찾기</button>
+
+<div id="findId" class="content">
+    <h2>아이디 찾기</h2>
+    <form action="/find_id" method="post">
+        <input type="email" id="email" name="email" placeholder="메일 주소 입력">
+        <button type="submit">인증번호 전송</button><br><br>
+        <input type="email" id="check_id" name="check_id" placeholder="인증번호 입력">
+        <button type="submit">확인</button><br><br>
+
+        <button>아이디 찾기 let's go</button>
+    </form>
+</div>
+
+<div id="findPassword" class="content">
+    <h2>비밀번호 찾기</h2>
+    <form action="/find_password" method="post">
+        <input type="text" id="username" name="username" placeholder="메일 주소 입력">
+        <button type="submit">인증번호 전송</button><br><br>
+        <input type="text" id="check_pass" name="check_pass" placeholder="인증번호 입력">
+        <button type="submit">확인</button><br><br>
+
+        <button>비밀번호 찾기 let's go</button>
+    </form>
+</div>
+</body>
+</html>

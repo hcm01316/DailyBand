@@ -47,4 +47,6 @@ public class MemberServiceImpl implements MemberService{
 	public Member member_info(String id) {
 		return dao.isId(id);
 	}
+
+
 }

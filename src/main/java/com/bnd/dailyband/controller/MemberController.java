@@ -30,16 +30,10 @@ public class MemberController {
 	private MemberService memberService;
 	private PasswordEncoder passwordEncoder;
 
-
-
-
-
-
-
 	@Autowired
 	public MemberController(MemberService memberService,
 							PasswordEncoder passwordEncoder
-							) {
+	) {
 		this.memberService=memberService;
 		this.passwordEncoder=passwordEncoder;
 	}
@@ -47,37 +41,36 @@ public class MemberController {
 	//로그인 폼으로 이동
 	@RequestMapping(value ="/login", method = RequestMethod.GET)
 	public ModelAndView login(ModelAndView mv,
-							  @CookieValue(value="remember-me", required=false) Cookie readCookie,
+							  @CookieValue(value="saveid", required=false) Cookie readCookie,
 							  HttpSession session,
 							  Principal userPrincipal
 	) {
 		if(readCookie != null) {
 			// principal.getName() : 로그인한 아이디 값을 알 수 있어요
-			logger.info("저장된 아이디 :" + userPrincipal.getName());
-			mv.setViewName("redirect:/board/list");
+			mv.addObject("saveid", readCookie.getValue());
+		}
 
-		}else {
-			mv.setViewName("member/login");
-
+		if(session.getAttribute("loginfail") != null) {
 			// 세션에 저장된 값ㅇ르 한 번만 실행될 수 있도록 model에 저장
 			mv.addObject("loginfail", session.getAttribute("loginfail"));
 
 			session.removeAttribute("loginfail"); // 세션의 값은 제거합니다.
 		}
+		mv.setViewName("member/login");
 		return mv;
 	}
 
 	//회원가입 촘으로 이동
-	@RequestMapping("/join")
+	@RequestMapping(value = "/join", method = RequestMethod.GET)
 	public String join(Model model) {
 		return "member/join";
 	}
 
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
 	public String joinProcess(	Member member,
-								RedirectAttributes rattr,
-								Model model,
-								HttpServletRequest request) {
+								  RedirectAttributes rattr,
+								  Model model,
+								  HttpServletRequest request) {
 		String encPassword = passwordEncoder.encode(member.getMBR_PWD());
 		logger.info(encPassword);
 		member.setMBR_PWD(encPassword);
@@ -92,6 +85,7 @@ public class MemberController {
 			return "error/error";
 		}
 	}
+
 	//로그아웃
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public String logout(HttpSession session) {
@@ -105,5 +99,11 @@ public class MemberController {
 		return "member/join2";
 	}
 
+
+	//아이디와 비밀번호 찾기
+	@RequestMapping("/forgot")
+	public String forgot(Model model) {
+		return "member/forgot";
+	}
 
 }
