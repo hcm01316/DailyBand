@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            밴드 관리
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            <hr>
+            <div class="container-xl">
+                <div class="table-responsive">
+                    <table class="table table-vcenter">
+                        <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>나이</th>
+                            <th>성별</th>
+                            <th>구분</th>
+                            <th>선호 지역</th>
+                            <th>선호 장르</th>
+                            <th>활동 분야</th>
+                            <th>비고</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <h1>밴드 가입 현황</h1>
+                        <tr th:each="item, iterStat : ${bandlist}">
+                            <td>
+                                <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
+                                    <img th:src="@{/image/profile.png}" class="rounded-circle" width="30px">
+                                </th:block>
+                                <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
+                                    <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                                </th:block>
+                                [[${item.MBR_NCNM}]]
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_AGE} != null">
+                                    [[${item.MBR_AGE}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_AGE} == null">
+                                    [[${item.MBR_AGE}]]
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_GENDER} != null">
+                                    [[${item.MBR_GENDER}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_GENDER} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_PRPT_STTUS} == 1">
+                                    밴드원
+                                </th:block>
+                                <th:block th:if="${item.MBR_PRPT_STTUS} == 2">
+                                    리더
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_PREFER_AREA} != null">
+                                    [[${item.MBR_PREFER_AREAK}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_PREFER_AREA} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_PREFER_GENRE} != null">
+                                    [[${item.MBR_PREFER_GENREK}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_PREFER_GENRE} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_ACT_REALM} != null">
+                                    [[${item.MBR_ACT_REALMK}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_ACT_REALM} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td>
+                                <th:block th:if="${id} == ${item.MBR_ID} and ${item.MBR_PRPT_STTUS} == 2">
+                                    <a href="#">해체</a>
+                                </th:block>
+                                <th:block th:if="${id} == ${item.MBR_ID} and ${item.MBR_PRPT_STTUS} == 1">
+                                    <a href="#">탈퇴</a>
+                                </th:block>
+                                <th:block th:if="${item.MBR_PRPT_STTUS} == 1 and ${leaderck} == 2">
+                                    <a href="#">강퇴</a>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                </div>
+                <th:block th:if="${leaderck} == 2">
+                <h1>가입 대기 현황</h1>
+                <div class="table-responsive">
+                    <table class="table table-vcenter">
+                        <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>나이</th>
+                            <th>성별</th>
+                            <th>선호 지역</th>
+                            <th>선호 장르</th>
+                            <th>활동 분야</th>
+                            <th>비고</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item, iterStat : ${bandlist}">
+                            <td>
+                                <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
+                                    <img th:src="@{/image/profile.png}" class="rounded-circle" width="30px">
+                                </th:block>
+                                <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
+                                    <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                                </th:block>
+                                [[${item.MBR_NCNM}]]
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_AGE} != null">
+                                    [[${item.MBR_AGE}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_AGE} == null">
+                                    [[${item.MBR_AGE}]]
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_GENDER} != null">
+                                    [[${item.MBR_GENDER}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_GENDER} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_PREFER_AREA} != null">
+                                    [[${item.MBR_PREFER_AREAK}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_PREFER_AREA} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_PREFER_GENRE} != null">
+                                    [[${item.MBR_PREFER_GENREK}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_PREFER_GENRE} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td class="text-secondary">
+                                <th:block th:if="${item.MBR_ACT_REALM} != null">
+                                    [[${item.MBR_ACT_REALMK}]]
+                                </th:block>
+                                <th:block th:if="${item.MBR_ACT_REALM} == null">
+                                    선택 안함
+                                </th:block>
+                            </td>
+                            <td>
+                                <a th:href="@{/rboard/accept(id=${item.MBR_ID})}">수락</a> | <a th:href="@{/rboard/reject(id=${item.MBR_ID})}">거절</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </th:block>
+
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+</body>
+</html>
