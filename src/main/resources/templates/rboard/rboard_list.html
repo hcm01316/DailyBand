@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <style>
+        #container {
+            width: 1000px;
+            margin: 20px auto;
+        }
+        .ck-editor__editable[role="textbox"] {
+            /* Editing area */
+            min-height: 200px;
+        }
+        .ck-content .image {
+            /* Block images */
+            max-width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+    <title>밴드원 모집 게시글</title>
+    <script>
+        function checkOnlyOne(checkbox, groupName) {
+            var checkboxes = document.getElementsByName(groupName);
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            밴드원 모집 리스트
+                        </h2>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class = "container">
+                <th:block th:with="var = '0'">
+                    <th:block th:with="var = '2'">
+                        <th:block th:with="num=${listcount - (page - 1) * limit}">
+                            <table>
+                            <div class="col-md-5" th:each="item,iterStat : ${rboardlist}">
+                                <div class="card">
+                                    <div class="card-header">
+                                <div>
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
+                                                <img th:src="@{/image/rboard.png}" class="rounded-circle" width="30px">
+                                            </th:block>
+                                            <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
+                                                <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                                            </th:block>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card-title">[[${item.MBR_NCNM}]]</div>
+                                        <div class="card-subtitle">
+                                            [[${item.REG_DT}]] [[${item.RCRIT_GENRE_IDK}]] [[${item.RCRIT_AREA_IDK}]] [[${item.RCRIT_REALM_IDK}]]
+                                            <th:block th:if="${item.RCRIT_STTUS_CD} == 1">
+                                               모집중
+                                            </th:block>
+                                            <th:block th:if="${item.RCRIT_STTUS_CD} == 0">
+                                                모집완료
+                                            </th:block>
+                                            [[${item.RCRIT_NOPE}]]명
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <a href="#" class="btn">
+                                    가입신청
+                                </a>
+                            </div>
+                                </div>
+                                    <div class="card-body p-0">
+                                        <img th:src="@{/image/rboard.png}"width="600" height="200"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </table>
+                        </th:block>
+                    </th:block>
+                </th:block>
+            </div>
+        </div>
+
+
+            <div class="container-xl">
+
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+</body>
+</html>
+</body>
+
+</html>

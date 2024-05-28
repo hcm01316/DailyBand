@@ -1,8 +1,9 @@
 package com.bnd.dailyband.domain;
 
+import static org.thymeleaf.util.StringUtils.substring;
+
 public class Rboard {
     private int BBS_SN;
-    private String BBS_TY_ID;
     private String MBR_ID;
     private String RCRIT_REALM_ID;
     private String RCRIT_GENRE_ID;
@@ -11,10 +12,24 @@ public class Rboard {
     private String BBS_CN;
     private int RCRIT_STTUS_CD;
     private int RCRIT_NOPE;
-    private int BBS_READ_CNT;
     private String REG_DT;
     private String MDF_DT;
     private String BBS_IMG;
+    private String BBS_READ_CNT;
+
+    public void setBBS_READ_CNT(String BBS_READ_CNT) {
+        this.BBS_READ_CNT = BBS_READ_CNT;
+    }
+
+    public String getMBR_PROFL_PHOTO() {
+        return MBR_PROFL_PHOTO;
+    }
+
+    public void setMBR_PROFL_PHOTO(String MBR_PROFL_PHOTO) {
+        this.MBR_PROFL_PHOTO = MBR_PROFL_PHOTO;
+    }
+
+    private String MBR_PROFL_PHOTO;
 
     public int getBBS_SN() {
         return BBS_SN;
@@ -24,13 +39,6 @@ public class Rboard {
         this.BBS_SN = BBS_SN;
     }
 
-    public String getBBS_TY_ID() {
-        return BBS_TY_ID;
-    }
-
-    public void setBBS_TY_ID(String BBS_TY_ID) {
-        this.BBS_TY_ID = BBS_TY_ID;
-    }
 
     public String getMBR_ID() {
         return MBR_ID;
@@ -88,20 +96,22 @@ public class Rboard {
         else if (genre.equals("G07"))
             genre = "일렉트로닉";
         else if (genre.equals("G08"))
-            genre = "락·메탈";
+            genre = "락";
         else if (genre.equals("G09"))
-            genre = "R&B";
+            genre = "메탈";
         else if (genre.equals("G10"))
-            genre = "재즈";
+            genre = "R&B";
         else if (genre.equals("G11"))
-            genre = "클래식";
+            genre = "재즈";
         else if (genre.equals("G12"))
-            genre = "뮤지컬";
+            genre = "클래식";
         else if (genre.equals("G13"))
-            genre = "국악";
+            genre = "뮤지컬";
         else if (genre.equals("G14"))
-            genre = "J-POP";
+            genre = "국악";
         else if (genre.equals("G15"))
+            genre = "J-POP";
+        else if (genre.equals("G16"))
             genre = "월드뮤직";
         return genre;
     }
@@ -189,13 +199,6 @@ public class Rboard {
         this.RCRIT_NOPE = RCRIT_NOPE;
     }
 
-    public int getBBS_READ_CNT() {
-        return BBS_READ_CNT;
-    }
-
-    public void setBBS_READ_CNT(int BBS_READ_CNT) {
-        this.BBS_READ_CNT = BBS_READ_CNT;
-    }
 
     public String getREG_DT() {
         return REG_DT;
