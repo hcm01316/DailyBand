@@ -64,13 +64,13 @@ public class SecurityConfig {
 		 	http.logout((lo) -> lo.logoutSuccessUrl("/main")
 		 						  .logoutUrl("/member/logout")
 		 						  .invalidateHttpSession(true)
-		 						  .deleteCookies("remember-me", "JSESSION_ID"));
+		 						  .deleteCookies("saveid", "JSESSION_ID"));
 		 
 
-		 	http.rememberMe((me) -> me.rememberMeParameter("remember-me")
-		 							  .userDetailsService(customUserDetailsService)
-		 							  .tokenValiditySeconds(2419200)
-		 							  .tokenRepository(tokenRepository()));
+//		 	http.rememberMe((me) -> me.rememberMeParameter("remember-me")
+//		 							  .userDetailsService(customUserDetailsService)
+//		 							  .tokenValiditySeconds(2419200)
+//		 							  .tokenRepository(tokenRepository()));
 		 	
 		 	http.exceptionHandling((ex)-> ex.accessDeniedHandler(customAccessDeniedHandler));
 
