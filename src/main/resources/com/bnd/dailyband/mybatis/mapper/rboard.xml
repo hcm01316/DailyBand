@@ -4,6 +4,32 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.RboardMapper">
 
+	<select id="getListCount" resultType="int">
+ 		select COUNT(*) from RCRIT_BBS;
+	</select>
+	<select id="getRboardList" resultType="Rlist">
+		SELECT * FROM (
+		SELECT *,
+		(@row_number:=@row_number + 1) AS rnum
+		FROM (
+		SELECT RCRIT_BBS.BBS_SN,
+		BAND_TEAM_NM,
+		RCRIT_GENRE_ID,
+		RCRIT_AREA_ID,
+		RCRIT_REALM_ID,
+		MBR_NCNM,
+		MBR_PROFL_PHOTO,
+		RCRIT_STTUS_CD,
+		RCRIT_NOPE,
+		RCRIT_BBS.REG_DT,
+		BBS_READ_CNT
+		FROM RCRIT_BBS
+		LEFT OUTER JOIN MBR_INFO ON RCRIT_BBS.MBR_ID = MBR_INFO.MBR_ID
+		ORDER BY BBS_SN DESC
+		) AS j, (SELECT @row_number:=0) AS temp
+		) AS result
+		WHERE rnum &gt;= #{start} and rnum &lt;= #{end}
+	</select>
 	<select id="getCtgryList" resultType="Ctgry">
 		select CTGRY_NM,CTGRY_ID from BAND_CTGRY where CTGRY_TY = #{type};
 	</select>
@@ -24,5 +50,26 @@
 		from RCRIT_BBS
 		where BBS_SN=#{rboard}
 	</select>
+
+	<select id="bandck" resultType="Rboard">
+		select BBS_SN from BAND_PRPT_INFO where MBR_PRPT_STTUS IN (1,2) and MBR_ID = #{id};
+	</select>
+
+	<select id="leaderck" resultType="int">
+		select MBR_PRPT_STTUS from BAND_PRPT_INFO where MBR_PRPT_STTUS IN (1,2) and MBR_ID = #{id};
+	</select>
+
+	<select id="getbandList" resultType="Mgmt">
+	SELECT BAND_PRPT_INFO.MBR_ID,MBR_NCNM,MBR_AGE,MBR_GENDER,MBR_PREFER_AREA, MBR_ACT_REALM,MBR_PREFER_GENRE, MBR_PROFL_PHOTO,MBR_PRPT_STTUS
+	FROM BAND_PRPT_INFO
+	LEFT JOIN MBR_INFO ON MBR_INFO.MBR_ID = BAND_PRPT_INFO.MBR_ID
+	WHERE BBS_SN = 3 AND MBR_PRPT_STTUS IN (1, 2)
+	ORDER BY MBR_PRPT_STTUS DESC;
+	</select>
+
+	<update id="bandaccept">
+	update BAND_PRPT_INFO
+	set MBR_PRPT_STTUS = 1 WHERE MBR_ID = #{id};
+	</update>
 </mapper>
 
