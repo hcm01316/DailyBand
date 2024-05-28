@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -99,6 +100,34 @@ public class MemberController {
 		return "member/join2";
 	}
 
+	@RequestMapping("/myprofile")
+	public ModelAndView myProfile(
+			HttpServletRequest request,
+			ModelAndView mv) {
+		Principal principal = request.getUserPrincipal();
+		Member m = memberService.member_info(principal.getName());
+		//logger.info("회원 principal.getName = " + principal.getName());
+		mv.setViewName("member/my_profile");
+		mv.addObject("memberinfo", m);
+		return mv;
+	}
+
+	@RequestMapping("/info")
+	public ModelAndView mbrInfo(@RequestParam("id") String id,
+			HttpServletRequest request, ModelAndView mv) {
+		Member m = memberService.member_info(id);
+
+		logger.info("회원 아이디 : " + id);
+		if(m != null) {
+			mv.setViewName("member/member_info");
+			mv.addObject("memberinfo", m);
+		} else {
+			mv.addObject("url", request.getRequestURL());
+			mv.addObject("message", "해당 정보가 없습니다.");
+			mv.setViewName("error/error");
+		}
+		return mv;
+	}
 
 	//아이디와 비밀번호 찾기
 	@RequestMapping("/forgot")
