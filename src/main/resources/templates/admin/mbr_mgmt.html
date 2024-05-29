@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자-회원관리</title>
+  <link href="https://cdn.datatables.net/v/bs4/dt-2.0.3/datatables.min.css" rel="stylesheet">
+  <script src="https://cdn.datatables.net/v/bs4/dt-2.0.3/datatables.min.js"></script>
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              회원 관리
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+      <div class="container-xl">
+        <!-- Content here -->
+        <table id="table" class="table table-bordered">
+          <thead>
+          <tr>
+            <th>아이디</th>
+            <th>이메일</th>
+            <th>닉네임</th>
+            <th>성별</th>
+            <th>나이</th>
+            <th>회원상태</th>
+            <th>가입일시</th>
+            <th>관리</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="m : ${memberlist}">
+            <td><a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m.MBR_ID}]]</a></td>
+            <td>[[${m.MBR_EML_ADDR}]]</td>
+            <td>[[${m.MBR_NCNM}]]</td>
+            <td>[[${m.MBR_GENDER}]]</td>
+            <td>[[${m.MBR_AGE}]]</td>
+            <td th:if="${m.MBR_STTUS == 0}">활성화</td>
+            <td th:if="${m.MBR_STTUS == 1}">비활성화</td>
+            <td>[[${m.REG_DT}]]</td>
+            <td>
+              <a th:href="@{mbrStatusAc(mbr_id=${m.MBR_ID})}" id="mbrStatusAc">
+                <span class="badge bg-success">정상</span>
+              </a>
+              <a th:href="@{mbrStatusIn(mbr_id=${m.MBR_ID})}">
+                <span class="badge bg-danger">정지</span>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    $('#table').DataTable();
+  });
+</script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.Ctgry;
+import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Mgmt;
 import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.domain.Rlist;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +38,14 @@ public class RboardController {
 		this.rboardService = rboardService;
 	}
 
+
+	@ModelAttribute
+	public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+		if (member != null) {
+			model.addAttribute("profilePhoto", member.getProfilePhoto());
+			model.addAttribute("username", member.getUsername());
+		}
+	}
 
 	@GetMapping("/detail")
 	public ModelAndView Detail(
