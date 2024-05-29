@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <style>
+        #container {
+            width: 1000px;
+            margin: 20px auto;
+        }
+        .ck-editor__editable[role="textbox"] {
+            /* Editing area */
+            min-height: 200px;
+        }
+        .ck-content .image {
+            /* Block images */
+            max-width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+    <title>밴드원 모집 게시글</title>
+    <script>
+        function checkOnlyOne(checkbox, groupName) {
+            var checkboxes = document.getElementsByName(groupName);
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            밴드원 모집 게시글 수정
+                        </h2>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class = "container">
+                <form th:action="@{/rboard/add}" method="post" name =rboardform>
+                    <input type ="hidden" name ="MBR_ID" th:value="${#authentication.principal.username}">
+                    <div class="mb-3">
+                        <label class="form-label">팀명</label>
+                        <input type="text" class="form-control" name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." th:value="${rboarddata.BAND_TEAM_NM}"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">내용</label>
+                        <input type="text" class="form-control" name="BBS_CN" placeholder="내용을 입력하세요." th:value="${rboarddata.BBS_CN}"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">분야</label>
+                        <div class="form-selectgroup form-selectgroup-pills">
+                            <label class="form-selectgroup-item" th:each="item, iterStat : ${Realemlist}">
+                                <input type="checkbox" name="realem" th:value="${item.CTGRY_ID}" class="form-selectgroup-input"/>
+                                <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">장르</label>
+                        <div class="form-selectgroup form-selectgroup-pills">
+                            <label class="form-selectgroup-item" th:each="item, iterStat : ${Genrelist}">
+                                <input type="checkbox" name="RCRIT_GENRE_ID" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_GENRE_ID')" />
+                                <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">지역</label>
+                        <div class="form-selectgroup form-selectgroup-pills">
+                            <label class="form-selectgroup-item" th:each="item, iterStat : ${Arealist}">
+                                <input type="checkbox" name="RCRIT_AREA_ID" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_AREA_ID')" />
+                                <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">인원수</label>
+                        <div class="form-selectgroup form-selectgroup-pills">
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="1" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')" checked />
+                                <span class="form-selectgroup-label">1명</span>
+                            </label>
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="2" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
+                                <span class="form-selectgroup-label">2명</span>
+                            </label>
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="3" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
+                                <span class="form-selectgroup-label">3명</span>
+                            </label>
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="4" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
+                                <span class="form-selectgroup-label">4명</span>
+                            </label>
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="5" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
+                                <span class="form-selectgroup-label">5명</span>
+                            </label>
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="6" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
+                                <span class="form-selectgroup-label">6명</span>
+                            </label>
+                            <label class="form-selectgroup-item">
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="7" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
+                                <span class="form-selectgroup-label">7명</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div id="editor">
+                            <p>This is some sample content.</p>
+                        </div>
+                        <script>
+                            ClassicEditor
+                                .create( document.querySelector( '#editor' ) )
+                                .catch( error => {
+                                    console.error( error );
+                                } );
+                        </script>
+                    </div>
+                    <input type="submit" class="btn" value="글쓰기"/>
+                    <a th:href="@{/rboard/list}" onclick="return confirm('정말 취소 하겠습니까?')" class="btn">
+                        취소
+                    </a>
+                </form>
+
+            </div>
+            <div class="container-xl">
+
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+<script th:inline="javascript">
+
+    const gstr = [[${rboarddata.RCRIT_REALM_ID}]];
+    const garr = gstr.split(",");
+
+    for (let i = 0; i < garr.length; i++) {
+        $("input[value='" + garr[i] + "']").prop("checked", true);
+    }
+    $("input[value='" + [[${rboarddata.RCRIT_NOPE}]]  + "']").prop("checked", true);
+    $("input[value='" + [[${rboarddata.RCRIT_GENRE_ID}]]  + "']").prop("checked", true);
+    $("input[value='" + [[${rboarddata.RCRIT_AREA_ID}]]  + "']").prop("checked", true);
+</script>
+</body>
+</html>
