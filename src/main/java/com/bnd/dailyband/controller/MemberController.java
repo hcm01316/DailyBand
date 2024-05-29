@@ -7,6 +7,7 @@ import java.security.Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +35,14 @@ public class MemberController {
 	) {
 		this.memberService=memberService;
 		this.passwordEncoder=passwordEncoder;
+	}
+
+	@ModelAttribute
+	public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+		if (member != null) {
+			model.addAttribute("profilePhoto", member.getProfilePhoto());
+			model.addAttribute("username", member.getUsername());
+		}
 	}
 
 	//로그인 폼으로 이동

@@ -48,6 +48,10 @@ public class Member implements UserDetails {
 		return MBR_ID;
 	}
 
+	public String getProfilePhoto() {
+		return MBR_PROFL_PHOTO;
+	}
+
 	//계정이 만료되지 않았는지를 리턴합니다. (true:만료되지 않음)
 	@Override
 	public boolean isAccountNonExpired() {

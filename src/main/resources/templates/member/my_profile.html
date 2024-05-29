@@ -29,15 +29,14 @@
                   <th:block th:each="m : ${memberinfo}">
                     <div class="col">
                       <!-- Photo -->
-                      <th:block th:if="${m.MBR_PROFL_PHOTO != null}">
                         <img th:src="@{${m.MBR_PROFL_PHOTO}}" class="rounded-circle"
                              alt="mbrProfile" width="150" style="margin: 20px;">
-                      </th:block>
-                      <th:block th:if="${m.MBR_PROFL_PHOTO == null}">
-                        <img th:src="@{/image/profile.png}" alt="mbrProfile" class="rounded-circle"
-                             style="margin: 20px;"
-                             width="150">
-                      </th:block>
+
+<!--                      <th:block th:if="${m.MBR_PROFL_PHOTO == null}">-->
+<!--                        <img th:src="@{/image/profile.png}" alt="mbrProfile" class="rounded-circle"-->
+<!--                             style="margin: 20px;"-->
+<!--                             width="150">-->
+<!--                      </th:block>-->
                     </div>
 
                     <div class="mt-3">

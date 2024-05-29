@@ -13,6 +13,7 @@
 	<mappers>
 		<mapper resource="com/bnd/dailyband/mybatis/mapper/member.xml"/>
 		<mapper resource="com/bnd/dailyband/mybatis/mapper/rboard.xml"/>
+		<mapper resource="com/bnd/dailyband/mybatis/mapper/admin.xml"/>
 	</mappers>
 
 
