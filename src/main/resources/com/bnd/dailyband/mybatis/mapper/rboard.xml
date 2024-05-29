@@ -7,6 +7,7 @@
 	<select id="getListCount" resultType="int">
  		select COUNT(*) from RCRIT_BBS;
 	</select>
+
 	<select id="getRboardList" resultType="Rlist">
 		SELECT * FROM (
 		SELECT *,
@@ -30,6 +31,7 @@
 		) AS result
 		WHERE rnum &gt;= #{start} and rnum &lt;= #{end}
 	</select>
+
 	<select id="getCtgryList" resultType="Ctgry">
 		select CTGRY_NM,CTGRY_ID from BAND_CTGRY where CTGRY_TY = #{type};
 	</select>
@@ -46,7 +48,7 @@
 	</update>
 
 	<select id = "getDetail" resultType="rboard">
-		select MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE,BBS_READ_CNT,REG_DT
+		select BBS_SN,MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE,BBS_READ_CNT,REG_DT
 		from RCRIT_BBS
 		where BBS_SN=#{rboard}
 	</select>
@@ -59,17 +61,62 @@
 		select MBR_PRPT_STTUS from BAND_PRPT_INFO where MBR_PRPT_STTUS IN (1,2) and MBR_ID = #{id};
 	</select>
 
-	<select id="getbandList" resultType="Mgmt">
-	SELECT BAND_PRPT_INFO.MBR_ID,MBR_NCNM,MBR_AGE,MBR_GENDER,MBR_PREFER_AREA, MBR_ACT_REALM,MBR_PREFER_GENRE, MBR_PROFL_PHOTO,MBR_PRPT_STTUS
-	FROM BAND_PRPT_INFO
-	LEFT JOIN MBR_INFO ON MBR_INFO.MBR_ID = BAND_PRPT_INFO.MBR_ID
-	WHERE BBS_SN = 3 AND MBR_PRPT_STTUS IN (1, 2)
-	ORDER BY MBR_PRPT_STTUS DESC;
+	<select id="getbandList" resultType="Bandhr">
+		SELECT BAND_PRPT_INFO.MBR_ID,MBR_NCNM,MBR_AGE,MBR_GENDER,MBR_PREFER_AREA, MBR_ACT_REALM,MBR_PREFER_GENRE, MBR_PROFL_PHOTO,MBR_PRPT_STTUS,BBS_SN
+		FROM BAND_PRPT_INFO
+		LEFT JOIN MBR_INFO ON MBR_INFO.MBR_ID = BAND_PRPT_INFO.MBR_ID
+		WHERE BBS_SN = #{bandck} AND MBR_PRPT_STTUS IN (1, 2)
+		ORDER BY MBR_PRPT_STTUS DESC;
 	</select>
 
 	<update id="bandaccept">
-	update BAND_PRPT_INFO
-	set MBR_PRPT_STTUS = 1 WHERE MBR_ID = #{id};
+		update BAND_PRPT_INFO
+		set MBR_PRPT_STTUS = 1 WHERE MBR_ID = #{id} and BBS_SN = #{num};
 	</update>
+
+	<select id="isjoin" resultType="int">
+		select count(*) from BAND_PRPT_INFO where MBR_ID = #{id};
+	</select>
+
+	<insert id="join">
+		insert into BAND_PRPT_INFO (MBR_ID,BBS_SN,MBR_PRPT_STTUS)
+		values (#{id},#{num},0);
+	</insert>
+
+	<delete id="joinwatingdel">
+	  	delete from  BAND_PRPT_INFO
+	  	where MBR_ID = #{id} and MBR_PRPT_STTUS = 0;
+	</delete>
+
+	<select id="getjoinlist" resultType="Bandhr">
+		SELECT BAND_PRPT_INFO.MBR_ID,MBR_NCNM,MBR_AGE,MBR_GENDER,MBR_PREFER_AREA, MBR_ACT_REALM,MBR_PREFER_GENRE, MBR_PROFL_PHOTO,MBR_PRPT_STTUS,BBS_SN
+		FROM BAND_PRPT_INFO
+				 LEFT JOIN MBR_INFO ON MBR_INFO.MBR_ID = BAND_PRPT_INFO.MBR_ID
+		WHERE BBS_SN = #{bandck} AND MBR_PRPT_STTUS = 0;
+	</select>
+
+	<select id="myband" resultType="int">
+		select BBS_SN from BAND_PRPT_INFO where MBR_PRPT_STTUS IN (1, 2) and MBR_ID = #{id};
+	</select>
+
+	<delete id="resign">
+		delete from BAND_PRPT_INFO
+		where MBR_ID = #{id} and BBS_SN = #{num};
+	</delete>
+
+	<delete id="refuse">
+		delete from BAND_PRPT_INFO
+		where MBR_ID = #{id} and BBS_SN = #{num};
+	</delete>
+
+	<delete id="breakup">
+		delete from RCRIT_BBS
+		where BBS_SN = #{num};
+	</delete>
+
+	<insert id="insertBand">
+		insert BAND_PRPT_INFO (BBS_SN,MBR_ID,MBR_PRPT_STTUS)
+		values (#{num},#{id},2);
+	</insert>
 </mapper>
 

@@ -1,16 +1,8 @@
 package com.bnd.dailyband.domain;
 
-public class Mgmt {
+public class Bandhr {
+    private String BBS_SN;
     private String MBR_ID;
-
-    public String getMBR_ID() {
-        return MBR_ID;
-    }
-
-    public void setMBR_ID(String MBR_ID) {
-        this.MBR_ID = MBR_ID;
-    }
-
     private String MBR_NCNM;
     private int MBR_AGE;
     private String MBR_GENDER;
@@ -19,6 +11,22 @@ public class Mgmt {
     private String MBR_PREFER_GENRE;
     private String MBR_PROFL_PHOTO;
     private int MBR_PRPT_STTUS;
+
+    public String getBBS_SN() {
+        return BBS_SN;
+    }
+
+    public void setBBS_SN(String BBS_SN) {
+        this.BBS_SN = BBS_SN;
+    }
+
+    public String getMBR_ID() {
+        return MBR_ID;
+    }
+
+    public void setMBR_ID(String MBR_ID) {
+        this.MBR_ID = MBR_ID;
+    }
 
     public String getMBR_NCNM() {
         return MBR_NCNM;

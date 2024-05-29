@@ -4,8 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
 </head>
 <body>
+<div th:if="${message != null}">
+    <script th:inline="javascript">
+        var isMessage = true;
+        if (isMessage) {
+            alert([[${message}]]);
+            isMessage = false;
+        }
+    </script>
+</div>
+
 <div class="page">
     <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
     <th:block th:replace="~{dailyband/header :: headerFragment}"/>
@@ -30,10 +41,18 @@
                 [[${rboarddata.BBS_CN}]]
             </div>
             <div>
-                <button class="btn">가입신청</button>
-                <button class="btn">수정</button>
-                <button class="btn">삭제</button>
-                <button class="btn">목록</button>
+                 <a th:href="@{/rboard/join(num=${rboarddata.BBS_SN})}" class="btn" id="rjoin">
+                     가입신청
+                 </a>
+                 <a th:href="@{/rboard/modify(num=${rboarddata.BBS_SN})}" class="btn">
+                     수정
+                 </a>
+                 <a th:href="@{/rboard/delete(num=${rboarddata.BBS_SN})}" class="btn">
+                     삭제
+                 </a>
+                 <a th:href="@{/rboard/list}" class="btn">
+                    목록
+                 </a>
             </div>
         </div>
         <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
