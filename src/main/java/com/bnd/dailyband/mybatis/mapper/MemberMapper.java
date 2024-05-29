@@ -9,5 +9,8 @@ public interface MemberMapper {
 	public int insert(Member m);
 
 	public Member isId(String id);
-	
+
+	public Member isName(String name);
+
+
 }

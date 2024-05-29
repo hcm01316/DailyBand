@@ -11,77 +11,259 @@
             width: 49%;
             background-color: #736CF7;
         }
+
         #reset {
             width: 49%;
             background-color: #736CF7;
         }
+
         .headline {
             font-weight: bold;
             font-size: 25px;
         }
+
         #email_1 {
             display: inline-block;
         }
+
         #email_button {
             float: right;
             background-color: #736CF7;
         }
+
         #email_2 {
             display: inline-block;
         }
+
         #email_auth {
             float: right;
             background-color: #736CF7;
         }
-        .myModal{
+
+        .myModal {
             display: none;
         }
 
     </style>
 </head>
 <script th:inline="javascript">
-    $(function() {
+    //모달창 고정하기
+    $(function () {
         $('#myModal').modal('show')
 
     });
-
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('#myModal').on('hidden.bs.modal', function () {
             $('#myModal').modal('show');
         });
     });
+
+    //회원가입에 필요한 중복체크들
+    $(function () {
+        let checkid = false;
+        let checkemail = false;
+        let checkname = false;
+        let checkpassword = false;
+
+        $("input[name=id]").on('keyup', function () {
+            const pattern = /^\w{5,12}$/;
+            const id = $(this).val();
+            if (!pattern.test(id)) {
+                $("#id_message").css('color', 'red').html("영문자 숫자 _로 5~12자 가능합니다.");
+                checkid = false;
+                return;
+            }
+
+            $.ajax({
+                url: "idcheck",
+                data: {"id": id},
+                success: function (resp) {
+                    if (resp == '-1') {
+                        $("#id_message").css('color', 'green').html("사용 가능한 아이디 입니다");
+                        checkid = true;
+                    } else {
+                        $("#id_message").css('color', 'blue').html("사용중인 아이디 입니다");
+                        checkid = false;
+                    }
+                }
+            });//ajac end
+        });//id keyup end
+
+        $("input[name=name]").on('keyup', function () {
+            const name = $(this).val();
+            if (name.trim() == "") {
+                checkname = false;
+                $("#name_message").html("");
+                return
+            }
+            $.ajax({
+                url: "namecheck",
+                data: {"name": name},
+                success: function (resp) {
+                    if (resp == '-1') {
+                        $("#name_message").css('color', 'green').html("사용 가능한 닉네임 입니다");
+                        checkname = true;
+                    } else {
+                        $("#name_message").css('color', 'blue').html("사용중인 닉네임 입니다");
+                        checkname = false;
+                    }
+                }
+            });
+        });
+        // });
+        // $(document).ready(function (){
+        $("input[name=password2]").on('keyup', function () {
+            var p1 = $("#password1");
+            var p2 = $("#password2");
+            if (p1.val() == "") {
+                alert("비밀번호를 입력하세요.")
+                $("#password_message").text("")
+                p1.focus()
+                p2.text("")
+                checkpassword = false;
+                return;
+            }
+            if (p2.val() == "") {
+                $("#password_message").text("비밀번호를 한번 더 입력해주세요").css('color', '#736CF7');
+                return;
+            }
+
+            if (p1.val() != p2.val()) {
+                $("#password_message").text("비밀번호가 일치하지 않습니다").css('color', 'red');
+                checkpassword = true;
+            } else {
+                $("#password_message").text("비밀번호가 일치합니다").css('color', 'green');
+
+                checkpassword = false;
+            }
+        });
+
+        $("input[name=email]").on('keyup', function () {
+            const pattern = /^\w+@\w+[.][A-Za-z0-9]{3}$/;
+            const email_value = $(this).val();
+
+            if (!pattern.test(email_value)) {
+                $("#email_message").css('color', 'red').html("이메일형식이 맞지 않습니다.");
+                checkemail = false;
+            } else {
+                $("#email_message").css('color', 'green').html("이메일형식이 맞습니다.");
+                checkemail = true;
+
+                $.ajax({
+                    url: "emailcheck",
+                    data: {"email": email_value},
+                    success: function (resp) {
+                        if (resp == '-1') {
+                            $("#email_message").css('color', 'green').html("사용 가능한 이메일 입니다");
+                            $("#email_button").prop("disabled", false);
+                            checkemail = true;
+                        } else {
+                            $("#email_message").css('color', 'blue').html("사용중인 이메일 입니다");
+                            checkemail = false;
+                        }
+                    }
+                });
+            }
+        });
+
+        $('form').submit(function () {
+            if (!checkid) {
+                alert("사용가능한 id로 입력하세요.");
+                $("input[name=id]").val('').focus();
+                $("#id_message").text('');
+                return false;
+            }
+
+            if (!checkemail) {
+                alert("email 형식을 확인하세요");
+                $("input[name=email]").focus();
+                return false;
+            }
+        });
+
+
+        //email 인증
+        let code = "";
+        $("#email_button").on('click', function () {
+            if (!checkemail) {
+                alert("다른 email을 입력하세요");
+                $("input[name=email]").focus();
+                return false;
+            }
+
+            $("#email_message").css('color', 'red').html("메일 전송중입니다...");
+            $.ajax({
+                url: "email",
+                data: {"receiver": $("input[name=email]").val()},
+                success: function (resp) {
+                    code = resp;
+                    console.log(code)
+                    $("#email_message").css('color', 'green').html("코드를 입력하세요");
+                    $(".check_email_form").show();
+                }
+            });
+        });
+
+        $("#email_auth").on('click', function () {
+            const input_code = $("input[name=code]").val()
+            if (!input_code) {
+                alert("code를 입력하세요");
+                $("input[name=code]").focus();
+                return false;
+            }
+            if (code == input_code) {
+                alert("인증되었습니다.");
+                $("#email_message").html("");
+                $(".check_email_form").hide();
+                $("#email_button").prop("disabled", true)
+                $("input[name=email]").prop("readonly", true)
+            } else {
+                $("#email_check").text("인증번호가 일치하지 않습니다.").css('color', 'red')
+            }
+        });
+    });
+
+
 </script>
 
 <body>
 <div class="modal animate" id="myModal" style="background-color: white">
     <div class="modal-dialog modal-dialong-centered"
-        style="height: 700px; width: 800px; max-width: none;">
-        <div style="height: 700px; width: 800px;"class="modal-content">
+         style="height: 700px; width: 800px; max-width: none;">
+        <div style="height: 700px; width: 800px;" class="modal-content">
             <div style="height: 700px; width: 800px; padding: 0px;">
                 <div class="row">
                     <div class="col-sm-4" style="padding: 0px;">
                         <img height="700px" width="276.66px" th:src="@{/image/join_piano.jpg}">
                     </div>
-                    <div class="col-sm-8" style="width: 266.66px; height: 700px; padding-right: 70px; padding-left: 70px; padding-top: 70px; padding-bottom: 70px;">
+                    <div class="col-sm-8"
+                         style="width: 266.66px; height: 700px; padding-right: 70px; padding-left: 70px; padding-top: 70px; padding-bottom: 70px;">
                         <label class="headline"><img th:src="@{/image/login_logo.jpg}" height="50px" width="200px">회원가입</label>
                         <form name="joinform" method="post" th:action="@{/join}">
 
                             <!-- 이메일 -->
-                            <input type="text" name="email" placeholder="이메일을 입력해주세요" maxlength="30" class="form-control col-sm-8" id="email_1" required>
-                            <button type="button" id="email_button" class="btn btn-primary check_email col-sm-4" disabled>이메일 인증</button>
+                            <input type="text" name="email" placeholder="이메일을 입력해주세요" maxlength="30"
+                                   class="form-control col-sm-8" id="email_1" required>
+                            <button type="button" id="email_button" class="btn btn-primary check_email col-sm-4"
+                                    disabled>이메일 인증
+                            </button>
                             <br><span id="email_message"></span><br><br>
 
                             <!-- 아이디 -->
-                            <input type="text" name="username" placeholder="아이디를 입력해주세요" maxlength="12" class="form-control col-sm-12" required>
+                            <input type="text" name="id" placeholder="아이디를 입력해주세요" maxlength="12"
+                                   class="form-control col-sm-12" required>
                             <span id="id_message"></span><br><br>
 
                             <!-- 이름 -->
-                            <input type="text" name="name" placeholder="이름을 입력해주세요" maxlength="5" class="form-control col-sm-12" required>
+                            <input type="text" name="name" placeholder="이름을 입력해주세요" maxlength="5"
+                                   class="form-control col-sm-12" required>
                             <span id="name_message"></span><br><br>
 
                             <!-- 비밀번호 -->
-                            <input type="password" name="password" placeholder="비밀번호를 입력해주세요" class="form-control col-sm-12" required><br><br>
-                            <input type="password" name="passwordConfirm" placeholder="비밀번호를 한번 더 입력해주세요" class="form-control col-sm-12" required>
+                            <input type="password" id="password1" name="password1" placeholder="비밀번호를 입력해주세요"
+                                   class="form-control col-sm-12" required><br><br>
+                            <input type="password" id="password2" name="password2" placeholder="비밀번호를 한번 더 입력해주세요"
+                                   class="form-control col-sm-12" required>
                             <span id="password_message"></span><br><br>
 
                             <div class="clearfix">
@@ -95,7 +277,6 @@
         </div>
     </div>
 </div>
-    <!-- 로그인 모달 끌 -->
-</div>
+<!-- 로그인 모달 끌 -->
 </body>
 </html>
