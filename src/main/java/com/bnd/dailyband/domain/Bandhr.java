@@ -1,6 +1,6 @@
 package com.bnd.dailyband.domain;
 
-public class Mgmt {
+public class Bandhr {
     private String MBR_ID;
 
     public String getMBR_ID() {

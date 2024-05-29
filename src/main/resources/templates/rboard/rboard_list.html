@@ -2,7 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
     <style>
         #container {
             width: 1000px;
@@ -52,42 +51,42 @@
                     <th:block th:with="var = '2'">
                         <th:block th:with="num=${listcount - (page - 1) * limit}">
                             <table>
-                            <div class="col-md-5" th:each="item,iterStat : ${rboardlist}">
-                                <div class="card">
-                                    <div class="card-header">
-                                <div>
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
-                                                <img th:src="@{/image/rboard.png}" class="rounded-circle" width="30px">
-                                            </th:block>
-                                            <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
-                                                <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
-                                            </th:block>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card-title">[[${item.MBR_NCNM}]]</div>
-                                        <div class="card-subtitle">
-                                            [[${item.REG_DT}]] [[${item.RCRIT_GENRE_IDK}]] [[${item.RCRIT_AREA_IDK}]] [[${item.RCRIT_REALM_IDK}]]
-                                            <th:block th:if="${item.RCRIT_STTUS_CD} == 1">
-                                               모집중
-                                            </th:block>
-                                            <th:block th:if="${item.RCRIT_STTUS_CD} == 0">
-                                                모집완료
-                                            </th:block>
-                                            [[${item.RCRIT_NOPE}]]명
+                                <div class="col-md-5" th:each="item,iterStat : ${rboardlist}">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <div>
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
+                                                            <img th:src="@{/image/rboard.png}" class="rounded-circle" width="30px">
+                                                        </th:block>
+                                                        <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
+                                                            <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                                                        </th:block>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="card-title">[[${item.MBR_NCNM}]]</div>
+                                                        <div class="card-subtitle">
+                                                            [[${item.REG_DT}]] [[${item.RCRIT_GENRE_IDK}]] [[${item.RCRIT_AREA_IDK}]] [[${item.RCRIT_REALM_IDK}]]
+                                                            <th:block th:if="${item.RCRIT_STTUS_CD} == 1">
+                                                                모집중
+                                                            </th:block>
+                                                            <th:block th:if="${item.RCRIT_STTUS_CD} == 0">
+                                                                모집완료
+                                                            </th:block>
+                                                            [[${item.RCRIT_NOPE}]]명
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-actions">
+                                                <a th:href="@{/rboard/detail(num=${item.BBS_SN})}" class="btn">
+                                                    가입신청
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-actions">
-                                <a href="#" class="btn">
-                                    가입신청
-                                </a>
-                            </div>
-                                </div>
-                                    <div class="card-body p-0">
-                                        <img th:src="@{/image/rboard.png}"width="600" height="200"/>
+                                        <div class="card-body p-0">
+                                            <img th:src="@{/image/rboard.png}"width="600" height="200"/>
                                         </div>
                                     </div>
                                 </div>
@@ -96,15 +95,39 @@
                     </th:block>
                 </th:block>
             </div>
-        </div>
-
-
-            <div class="container-xl">
-
+            <a th:href="@{/rboard/write}" class="btn">
+                글쓰기
+            </a>
+            <div>
+                <ul class="pagination ">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                            <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+
+
+        <div class="container-xl">
+
+        </div>
     </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+</div>
 </div>
 </body>
 </html>
