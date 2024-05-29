@@ -9,4 +9,9 @@ public interface MemberService {
 	public int insert(Member m);
 
 	public Member member_info(String id);
+
+	public int isId(String id);
+
+	public int isName(String name);
+
 }

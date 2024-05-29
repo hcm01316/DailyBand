@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -61,22 +58,41 @@ public class MemberController {
 		return mv;
 	}
 
-	//회원가입 촘으로 이동
+	//회원가입 폼으로 이동
 	@RequestMapping(value = "/join", method = RequestMethod.GET)
 	public String join(Model model) {
 		return "member/join";
 	}
 
+	//회원가입폼에서 아이디 검사
+	@ResponseBody
+	@RequestMapping(value = "/idcheck", method = RequestMethod.GET)
+	public int idcheck(@RequestParam("id") String id){
+		return memberService.isId(id);
+	}
+
+	//회원가입폼에서 닉네임 검사
+	@ResponseBody
+	@RequestMapping(value = "/namecheck", method = RequestMethod.GET)
+	public int idname(@RequestParam("name") String name){
+		return memberService.isName(name);
+	}
+
+	//회원가입 처리
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
 	public String joinProcess(	Member member,
 								  RedirectAttributes rattr,
 								  Model model,
 								  HttpServletRequest request) {
+
+		//비밀번호 암호화
 		String encPassword = passwordEncoder.encode(member.getMBR_PWD());
 		logger.info(encPassword);
 		member.setMBR_PWD(encPassword);
+
 		int result = memberService.insert(member);
 
+		// 내용 삽입이 된 경우
 		if (result == 1) {
 			rattr.addFlashAttribute("result", "joinSuccess");
 			return "redirect:login";

@@ -1,11 +1,10 @@
 package com.bnd.dailyband.service.member;
 
+import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.mybatis.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.bnd.dailyband.domain.Member;
-import com.bnd.dailyband.mybatis.mapper.MemberMapper;
 
 @Service
 public class MemberServiceImpl implements MemberService{
@@ -47,6 +46,19 @@ public class MemberServiceImpl implements MemberService{
 	public Member member_info(String id) {
 		return dao.isId(id);
 	}
+
+	@Override
+	public int isId(String id) {
+		Member rmember = dao.isId(id);
+		return (rmember==null) ? -1 : 1;
+	}
+
+	@Override
+	public int isName(String name) {
+		Member rmember = dao.isName(name);
+		return (rmember==null) ? -1 : 1;
+	}
+
 
 
 }
