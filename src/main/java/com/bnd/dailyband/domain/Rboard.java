@@ -15,16 +15,11 @@ public class Rboard {
     private String REG_DT;
     private String MDF_DT;
     private String BBS_IMG;
-    private int BBS_READ_CNT;
+    private String BBS_READ_CNT;
 
-    public int getBBS_READ_CNT() {
-        return BBS_READ_CNT;
-    }
-
-    public void setBBS_READ_CNT(int BBS_READ_CNT) {
+    public void setBBS_READ_CNT(String BBS_READ_CNT) {
         this.BBS_READ_CNT = BBS_READ_CNT;
     }
-    
 
     public String getMBR_PROFL_PHOTO() {
         return MBR_PROFL_PHOTO;

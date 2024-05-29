@@ -36,9 +36,7 @@ dependencies {
     implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '3.0.3'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
-    implementation 'org.springframework.cloud:spring-cloud-aws-context:1.2.1.RELEASE'
-    implementation 'org.springframework.cloud:spring-cloud-aws-autoconfigure:1.2.1.RELEASE'
+
 
 
 

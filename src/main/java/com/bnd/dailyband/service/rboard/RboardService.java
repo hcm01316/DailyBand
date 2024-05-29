@@ -1,7 +1,7 @@
 package com.bnd.dailyband.service.rboard;
 
 import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.domain.Bandhr;
+import com.bnd.dailyband.domain.Mgmt;
 import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.domain.Rlist;
 
@@ -28,37 +28,14 @@ public interface RboardService {
     public Rboard getDetail(int num);
 
     // 가입 밴드 조회
-    public List<Bandhr>getbandList(int bbs_sn);
+    public List<Mgmt>getbandList(int bbs_sn);
 
-    // 밴드 가입 여부 확인1
+    // 밴드 가입 여부 확인
     public int bandck(String id);
 
     // 리더 여부 확인
     public int leaderck(String id);
 
     // 밴드 가입 수락
-    public int bandaccept(String id,int num);
-
-    // 밴드 가입 여부 확인2
-    public int isjoin(String id);
-
-    // 밴드 가입 신청
-    public void join(String id, int num);
-
-    // 가입 수락시 다른 가입 대기중 삭제
-    public void joinwatingdel(String id);
-
-    public List<Bandhr>getjoinlist(int bbs_sn);
-    // 자신이 속한 밴드 확인
-    public int myband (String id);
-
-    // 밴드 강퇴
-    public int resign(String id, int num);
-
-    // 밴드 거절
-    public int refuse(String id, int num);
-
-    public int breakup(int num);
-
-    public int insertBand(String id, int num);
+    public void bandaccept(String id);
 }

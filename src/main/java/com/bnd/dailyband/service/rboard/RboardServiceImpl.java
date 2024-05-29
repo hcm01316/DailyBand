@@ -1,7 +1,7 @@
 package com.bnd.dailyband.service.rboard;
 
 import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.domain.Bandhr;
+import com.bnd.dailyband.domain.Mgmt;
 import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.domain.Rlist;
 import com.bnd.dailyband.mybatis.mapper.RboardMapper;
@@ -39,7 +39,6 @@ public class RboardServiceImpl implements RboardService {
 
     @Override
     public ArrayList<Ctgry> getCtgryList(int type) {
-
         return dao.getCtgryList(type);
     }
 
@@ -59,7 +58,7 @@ public class RboardServiceImpl implements RboardService {
     }
 
     @Override
-    public List<Bandhr> getbandList(int bbs_sn) {
+    public List<Mgmt> getbandList(int bbs_sn) {
         return dao.getbandList(bbs_sn);
     }
 
@@ -80,54 +79,8 @@ public class RboardServiceImpl implements RboardService {
     }
 
     @Override
-    public int bandaccept(String id,int num) {
-        return dao.bandaccept(id,num);
+    public void bandaccept(String id) {
+        dao.bandaccept(id);
     }
-
-    @Override
-    public int isjoin(String id) {
-        return dao.isjoin(id);
-    }
-
-    @Override
-    public void join(String id, int num) {
-        dao.join(id,num);
-    }
-
-    @Override
-    public void joinwatingdel(String id) {
-        dao.joinwatingdel(id);
-    }
-
-    @Override
-    public List<Bandhr> getjoinlist(int bbs_sn) {
-        return dao.getjoinlist(bbs_sn);
-    }
-
-    @Override
-    public int myband(String id) {
-        return dao.myband(id);
-    }
-
-    @Override
-    public int resign(String id, int num) {
-        return dao.resign(id,num);
-    }
-
-    @Override
-    public int refuse(String id, int num) {
-        return dao.refuse(id,num);
-    }
-
-    @Override
-    public int breakup(int num) {
-        return dao.breakup(num);
-    }
-
-    @Override
-    public int insertBand(String id, int num) {
-        return dao.insertBand(id,num);
-    }
-
 }
 

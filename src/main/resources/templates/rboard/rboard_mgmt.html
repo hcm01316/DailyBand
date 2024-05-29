@@ -6,15 +6,6 @@
     <title>Title</title>
 </head>
 <body>
-<div th:if="${message != null}">
-    <script th:inline="javascript">
-        var isMessage = true;
-        if (isMessage) {
-            alert([[${message}]]);
-            isMessage = false;
-        }
-    </script>
-</div>
 <div class="page">
     <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
     <th:block th:replace="~{dailyband/header :: headerFragment}"/>
@@ -32,34 +23,6 @@
         </div>
         <div class="page-body">
             <hr>
-            <th:block th:if = "${isband} == 0">
-                <div class="empty">
-                    <div class="empty-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <circle cx="12" cy="12" r="9" />
-                            <line x1="9" y1="10" x2="9.01" y2="10" />
-                            <line x1="15" y1="10" x2="15.01" y2="10" />
-                            <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
-                        </svg>
-                    </div>
-                    <p class="empty-title">가입한 밴드가 없습니다.</p>
-                    <p class="empty-subtitle text-secondary">
-                        밴드원 모집에서 새로운 밴드를 만들거나 가입하세요.
-                    </p>
-                    <div class="empty-action">
-                        <a th:href="@{/rboard/list}" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <circle cx="10" cy="10" r="7" />
-                                <line x1="21" y1="21" x2="15" y2="15" />
-                            </svg>
-                            밴드가입 및 생성
-                        </a>
-                    </div>
-                </div>
-            </th:block>
-            <th:block th:if = "${isband} != 0">
             <div class="container-xl">
                 <div class="table-responsive">
                     <table class="table table-vcenter">
@@ -137,14 +100,13 @@
                             </td>
                             <td>
                                 <th:block th:if="${id} == ${item.MBR_ID} and ${item.MBR_PRPT_STTUS} == 2">
-                                    <a th:href="@{/rboard/breakup(num=${item.BBS_SN})}" onclick="return confirm('정말 해체 하시겠습니까?')">해체</a>
+                                    <a href="#">해체</a>
                                 </th:block>
                                 <th:block th:if="${id} == ${item.MBR_ID} and ${item.MBR_PRPT_STTUS} == 1">
                                     <a href="#">탈퇴</a>
-                                    <a th:href="@{/rboard/refuse(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 강퇴하시겠습니까?')">강퇴</a>
                                 </th:block>
                                 <th:block th:if="${item.MBR_PRPT_STTUS} == 1 and ${leaderck} == 2">
-                                    <a th:href="@{/rboard/resign(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 강퇴 하시겠습니까?')">강퇴</a>
+                                    <a href="#">강퇴</a>
                                 </th:block>
                             </td>
                         </tr>
@@ -168,7 +130,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="item, iterStat : ${joinlist}">
+                        <tr th:each="item, iterStat : ${bandlist}">
                             <td>
                                 <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
                                     <img th:src="@{/image/profile.png}" class="rounded-circle" width="30px">
@@ -219,16 +181,15 @@
                                 </th:block>
                             </td>
                             <td>
-                                <a th:href="@{/rboard/accept(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 수락 하시겠습니까?')">수락</a>
-                                | <a th:href="@{/rboard/refuse(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 거절 하시겠습니까?')">거절</a>
+                                <a th:href="@{/rboard/accept(id=${item.MBR_ID})}">수락</a> | <a th:href="@{/rboard/reject(id=${item.MBR_ID})}">거절</a>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
                 </th:block>
+
             </div>
-            </th:block>
         </div>
         <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
     </div>
