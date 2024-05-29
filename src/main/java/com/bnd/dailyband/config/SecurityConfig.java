@@ -1,6 +1,9 @@
 package com.bnd.dailyband.config;
-import javax.sql.DataSource;
 
+import com.bnd.dailyband.security.CustomAccessDeniedHandler;
+import com.bnd.dailyband.security.CustomUserDetailsService;
+import com.bnd.dailyband.security.LoginFailHandler;
+import com.bnd.dailyband.security.LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import com.bnd.dailyband.security.CustomAccessDeniedHandler;
-import com.bnd.dailyband.security.CustomUserDetailsService;
-import com.bnd.dailyband.security.LoginFailHandler;
-import com.bnd.dailyband.security.LoginSuccessHandler;
+import javax.sql.DataSource;
 
 
 @EnableWebSecurity
@@ -79,7 +79,7 @@ public class SecurityConfig {
 	}
 
 
-
+	// 비밀번호를 인코딩해주는 메서드와 데이터 베이스에 저장된 비밀번호와 일치하는지를 알려주는 메서드를 가진 클래스
 	@Bean
 	public BCryptPasswordEncoder encodePassword() {
 		return new BCryptPasswordEncoder();

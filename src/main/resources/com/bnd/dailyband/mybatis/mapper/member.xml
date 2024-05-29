@@ -5,8 +5,20 @@
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.MemberMapper">
 
 <select id="isId" resultType="member">
- 			select*from MBR_INFO where MBR_ID = #{mbrId}
- 	</select>
+ 			select MBR_ID from MBR_INFO where MBR_ID = #{MBR_ID}
+</select>
+
+<select id="isName" resultType="member">
+ 			select MBR_NCNM from MBR_INFO where MBR_NCNM = #{MBR_NCNM}
+</select>
+
+<select id="isEmail" resultType="member">
+ 			select MBR_EML_ADDR from MBR_INFO where MBR_EML_ADDR = #{MBR_EML_ADDR}
+</select>
+
+
+
+
 
 
 <insert id="insert">
