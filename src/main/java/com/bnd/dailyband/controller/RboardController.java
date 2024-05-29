@@ -1,23 +1,18 @@
 package com.bnd.dailyband.controller;
 
-import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.domain.Member;
-import com.bnd.dailyband.domain.Mgmt;
-import com.bnd.dailyband.domain.Rboard;
-import com.bnd.dailyband.domain.Rlist;
+import com.bnd.dailyband.domain.*;
 import com.bnd.dailyband.service.rboard.RboardService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -38,7 +33,6 @@ public class RboardController {
 		this.rboardService = rboardService;
 	}
 
-
 	@ModelAttribute
 	public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
 		if (member != null) {
@@ -46,6 +40,7 @@ public class RboardController {
 			model.addAttribute("username", member.getUsername());
 		}
 	}
+
 
 	@GetMapping("/detail")
 	public ModelAndView Detail(
@@ -75,16 +70,12 @@ public class RboardController {
 		}
 		else {
 			logger.info("상세보기 성공");
-			mv.setViewName("rboard_view");
+			mv.setViewName("rboard/rboard_view");
 			mv.addObject("rboarddata", rboard);
 		}
 		return mv;
 	}
 
-	@RequestMapping("/list")
-	public String rboardlist(Model model) {
-		return "rboardList";
-	}
 
 	@RequestMapping("/write")
 	public ModelAndView rboardwrite(ModelAndView mv) {
@@ -95,11 +86,11 @@ public class RboardController {
 		mv.addObject("Arealist", Arealist);
 		mv.addObject("Genrelist", Genrelist);
 		mv.addObject("Realemlist", Realemlist);
-		mv.setViewName("rboard_write");
+		mv.setViewName("rboard/rboard_write");
 		return mv;
 	}
 
-	@PostMapping("/add")
+	@RequestMapping("/add")
 	public String add(Rboard rboard, HttpServletRequest request)
 	{
 		String realm[] = request.getParameterValues("realem");
@@ -110,8 +101,13 @@ public class RboardController {
 				trealm += ","+realm[i];
 			}
 		}
-        rboard.setRCRIT_REALM_ID(trealm);
-		rboardService.insertRboard(rboard); // 저장 메서드 호출
+
+		int num = rboard.getBBS_SN();
+		String id = rboard.getMBR_ID();
+
+		rboard.setRCRIT_REALM_ID(trealm);
+		rboardService.insertRboard(rboard);
+		rboardService.insertBand(id,num);// 저장 메서드 호출
 		logger.info(rboard.toString()); // selectKey로 정의한 BOARD_NUM 값 확인해 봅시다.
 		return "redirect:write";
 	}
@@ -122,36 +118,31 @@ public class RboardController {
 
 		String id = userPrincipal.getName();
 		mv.addObject("id", id);
+
 		int bandck = rboardService.bandck(id);
 		mv.addObject("bandck", bandck);
 		mv.addObject("current","bandHR");
 
+		if (bandck == -1) {
+			mv.addObject("isband", 0);
+		}
 		if (bandck != -1)
 		{
 			int leaderck = rboardService.leaderck(id);
 			mv.addObject("leaderck",leaderck);
-			List<Mgmt> bandlist = new ArrayList<Mgmt>();
-			bandlist = rboardService.getbandList(bandck);
+			List<Bandhr> bandlist = new ArrayList<Bandhr>();
+			int myband = rboardService.myband(id);
+			bandlist = rboardService.getbandList(myband);
 			mv.addObject("bandlist", bandlist);
+			List<Bandhr> joinlist = new ArrayList<Bandhr>();
+			joinlist = rboardService.getjoinlist(myband);
+			mv.addObject("joinlist", joinlist);
 			logger.info(bandlist.toString());
 		}
-
-
-		//List<Rboard> joinlist = new ArrayList<Rboard>();
-		//List<Rboard> bandlist = new ArrayList<Rboard>();
-		//rboardService
 		mv.setViewName("rboard/rboard_mgmt");
 		return mv;
 	}
 
-	@RequestMapping ("/accept")
-	public ModelAndView accept(ModelAndView mv, HttpServletRequest request, String id) {
-
-		rboardService.bandaccept(id);
-		mv.setViewName("rboard/rboard_mgmt");
-
-		return mv;
-	}
 
 	@RequestMapping(value= "/list", method=RequestMethod.GET)
 	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv) {
@@ -180,7 +171,132 @@ public class RboardController {
 		mv.addObject("listcount", listcount);
 		mv.addObject("rboardlist", rboardlist);
 		mv.addObject("limit", limit);
+		mv.addObject("current", "rBoard");
 		return mv;
 	}
+
+	@RequestMapping ("/join")
+	public ModelAndView join(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal, RedirectAttributes redirect) {
+
+		String id = userPrincipal.getName();
+		int isjoin = rboardService.isjoin(id);
+
+		if (isjoin == 0) {
+			rboardService.join(id,num);
+			redirect.addFlashAttribute("message", "가입 신청이 성공적으로 완료되었습니다.");
+		}
+
+		if (isjoin >= 1) {
+			redirect.addFlashAttribute("message", "이미 신청을 했거나 밴드에 참여중 입니다.");
+		}
+		mv.addObject("num", num);
+		mv.setViewName("redirect:detail");
+		return mv;
+	}
+
+	@RequestMapping ("/resign")
+	public ModelAndView resign(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+
+		int resign = rboardService.resign(id,num);
+
+		if (resign == 0) {
+			redirect.addFlashAttribute("message", "강퇴에 실패 했습니다.");
+		}
+
+		if (resign == 1) {
+			redirect.addFlashAttribute("message", "성공적으로 강퇴 하였습니다.");
+		}
+		mv.setViewName("redirect:bandHR");
+		return mv;
+	}
+
+	@RequestMapping ("/accept")
+	public ModelAndView accept(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+
+		int accept = rboardService.bandaccept(id,num);
+
+		if (accept == 0) {
+			redirect.addFlashAttribute("message", "수락에 실패했습니다.");
+		}
+
+		if (accept == 1) {
+			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
+		}
+		mv.setViewName("redirect:bandHR");
+		return mv;
+	}
+
+	@RequestMapping ("/refuse")
+	public ModelAndView refuse(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+
+
+
+		int refuse = rboardService.refuse(id,num);
+
+		if (refuse == 0) {
+			redirect.addFlashAttribute("message", "거절에 실패했습니다.");
+		}
+
+		if (refuse == 1) {
+			redirect.addFlashAttribute("message", "성공적으로 거절 하였습니다.");
+		}
+		mv.setViewName("redirect:bandHR");
+		return mv;
+	}
+
+	@RequestMapping ("/breakup")
+	public ModelAndView breakup(ModelAndView mv, HttpServletRequest request,RedirectAttributes redirect,Principal userPrincipal) {
+
+		String id = userPrincipal.getName();
+
+		int myband = rboardService.myband(id);
+		int breakup = rboardService.breakup(myband);
+
+		if (breakup == 0) {
+			redirect.addFlashAttribute("message", "해체에 실패했습니다.");
+		}
+
+		if (breakup == 1) {
+			redirect.addFlashAttribute("message", "성공적으로 해체 하였습니다.");
+		}
+		mv.setViewName("redirect:bandHR");
+		return mv;
+	}
+
+	@RequestMapping ("/modify")
+	public ModelAndView breakup(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal) {
+
+		Rboard rboard = rboardService.getDetail(num);
+		String id = userPrincipal.getName();
+
+		ArrayList<Ctgry> Arealist = rboardService.getCtgryList(0);
+		ArrayList<Ctgry> Genrelist = rboardService.getCtgryList(1);
+		ArrayList<Ctgry> Realemlist = rboardService.getCtgryList(2);
+		mv.addObject("Arealist", Arealist);
+		mv.addObject("Genrelist", Genrelist);
+		mv.addObject("Realemlist", Realemlist);
+		mv.addObject("writer",id);
+		mv.addObject("rboarddata", rboard);
+		mv.setViewName("rboard/rboard_modify");
+		return mv;
+	}
+
+	@RequestMapping ("/delete")
+	public ModelAndView delete(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect) {
+
+		int delete = rboardService.breakup(num);
+
+		if (delete == 0) {
+			redirect.addFlashAttribute("message", "해체에 실패했습니다.");
+		}
+
+		if (delete == 1) {
+			redirect.addFlashAttribute("message", "성공적으로 해체 하였습니다.");
+		}
+		mv.setViewName("redirect:bandHR");
+		return mv;
+	}
+
+
 
 }
