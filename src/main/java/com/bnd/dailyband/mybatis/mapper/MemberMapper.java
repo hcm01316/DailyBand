@@ -12,5 +12,4 @@ public interface MemberMapper {
 
 	public Member isName(String name);
 
-
 }

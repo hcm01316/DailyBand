@@ -65,7 +65,7 @@
         let checkname = false;
         let checkpassword = false;
 
-        $("input[name=id]").on('keyup', function () {
+        $("input[name=MBR_ID]").on('keyup', function () {
             const pattern = /^\w{5,12}$/;
             const id = $(this).val();
             if (!pattern.test(id)) {
@@ -89,7 +89,7 @@
             });//ajac end
         });//id keyup end
 
-        $("input[name=name]").on('keyup', function () {
+        $("input[name=MBR_NCNM]").on('keyup', function () {
             const name = $(this).val();
             if (name.trim() == "") {
                 checkname = false;
@@ -112,7 +112,7 @@
         });
         // });
         // $(document).ready(function (){
-        $("input[name=password2]").on('keyup', function () {
+        $("input[id=password2]").on('keyup', function () {
             var p1 = $("#password1");
             var p2 = $("#password2");
             if (p1.val() == "") {
@@ -138,7 +138,7 @@
             }
         });
 
-        $("input[name=email]").on('keyup', function () {
+        $("input[name=MBR_EML_ADDR]").on('keyup', function () {
             const pattern = /^\w+@\w+[.][A-Za-z0-9]{3}$/;
             const email_value = $(this).val();
 
@@ -187,7 +187,7 @@
         $("#email_button").on('click', function () {
             if (!checkemail) {
                 alert("다른 email을 입력하세요");
-                $("input[name=email]").focus();
+                $("input[name=MBR_EML_ADDR]").focus();
                 return false;
             }
 
@@ -239,30 +239,41 @@
                     <div class="col-sm-8"
                          style="width: 266.66px; height: 700px; padding-right: 70px; padding-left: 70px; padding-top: 70px; padding-bottom: 70px;">
                         <label class="headline"><img th:src="@{/image/login_logo.jpg}" height="50px" width="200px">회원가입</label>
-                        <form name="joinform" method="post" th:action="@{/join}">
+                        <form name="joinform" method="Post" th:action="@{/member/joinProcess}">
 
                             <!-- 이메일 -->
-                            <input type="text" name="email" placeholder="이메일을 입력해주세요" maxlength="30"
+                            <input type="text" name="MBR_EML_ADDR" placeholder="이메일을 입력해주세요" maxlength="30"
                                    class="form-control col-sm-8" id="email_1" required>
                             <button type="button" id="email_button" class="btn btn-primary check_email col-sm-4"
                                     disabled>이메일 인증
                             </button>
                             <br><span id="email_message"></span><br><br>
 
+                            <!-- 인증번호 -->
+                            <div class="check_email_form" th:if="${display == 'none'}">
+                                <input type="text" name="code" placeholder="인증번호를 입력해주세요"
+                                       maxlength="30" class="form-control col-sm-8" id="email_2"
+                                       required>
+                                <button type="button" id="email_auth"
+                                        class="btn btn-primary check_email col-sm-4">인 증 하 기</button>
+                                <br><span id="email_check"></span><br><br>
+                            </div>
+
+
                             <!-- 아이디 -->
-                            <input type="text" name="id" placeholder="아이디를 입력해주세요" maxlength="12"
+                            <input type="text" name="MBR_ID" placeholder="아이디를 입력해주세요" maxlength="12"
                                    class="form-control col-sm-12" required>
                             <span id="id_message"></span><br><br>
 
                             <!-- 이름 -->
-                            <input type="text" name="name" placeholder="이름을 입력해주세요" maxlength="5"
+                            <input type="text" name="MBR_NCNM" placeholder="이름을 입력해주세요" maxlength="5"
                                    class="form-control col-sm-12" required>
                             <span id="name_message"></span><br><br>
 
                             <!-- 비밀번호 -->
-                            <input type="password" id="password1" name="password1" placeholder="비밀번호를 입력해주세요"
+                            <input type="password" id="password1" name="MBR_PWD" placeholder="비밀번호를 입력해주세요"
                                    class="form-control col-sm-12" required><br><br>
-                            <input type="password" id="password2" name="password2" placeholder="비밀번호를 한번 더 입력해주세요"
+                            <input type="password" id="password2" name="Check_MBR_PWD" placeholder="비밀번호를 한번 더 입력해주세요"
                                    class="form-control col-sm-12" required>
                             <span id="password_message"></span><br><br>
 

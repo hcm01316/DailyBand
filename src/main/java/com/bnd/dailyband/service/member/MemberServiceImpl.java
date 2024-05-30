@@ -29,7 +29,7 @@ public class MemberServiceImpl implements MemberService{
 			//rawPassword : 사용자가 입력한 패스워드
 			//encodePassword : DB에 저장된 패스워드
 
-			if(passwordEncoder.matches(password, rmember.getMBR_PWD())) {
+			if(passwordEncoder.matches(password, rmember.getPassword())) {
 				result = 1;	//아이디와 비밀번호가 일치하는 경우
 			} else
 				result = 0; //아이디는 존재하지만 비밀번호가 일치하지 않는 경우
