@@ -125,8 +125,38 @@ public class RboardServiceImpl implements RboardService {
     }
 
     @Override
-    public int insertBand(String id, int num) {
-        return dao.insertBand(id,num);
+    public void insertBand(String id, int num) {
+        dao.insertBand(id, num);
+    }
+
+    @Override
+    public int getaddnum() {
+        return dao.getaddnum();
+    }
+
+    @Override
+    public int leave(String id, int num) {
+        return dao.leave(id,num);
+    }
+
+    @Override
+    public int bandacceptcnt(int num) {
+        return dao.bandacceptcnt(num);
+    }
+
+    @Override
+    public int getrenope(int num) {
+        return dao.getrenope(num);
+    }
+
+    @Override
+    public void teamstclose(int num) {
+        dao.teamstclose(num);
+    }
+
+    @Override
+    public void teamstopen(int num) {
+        dao.teamstopen(num);
     }
 
 }

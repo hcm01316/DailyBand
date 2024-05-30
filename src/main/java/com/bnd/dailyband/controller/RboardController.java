@@ -47,20 +47,14 @@ public class RboardController {
 			int num, ModelAndView mv,
 			HttpServletRequest request, @RequestHeader(value ="referer", required= false)String beforeURL) {
 
-		/*
-		 * 1. String beforeURL = request.getHeader("referer"); 의미로
-		 * 	어느 주소에서 detail로 이동했는지 header의 정보 중에서 "referer"를 통해 알 수 있습니다.
-		 * 2. 수정 후 이곳으로 이동하는 경우 조회수는 증가하지 않도록 합니다.
-		 * 3. myhome4/board/list에서 제목을 클릭한 경우 조회수가 증가하도록 합니다.
-		 *
-		 *
-		 */
 		logger.info("regerer:" + beforeURL);
 		if(beforeURL!=null && beforeURL.endsWith("list")) {
 			rboardService.setReadCountUpdate(num);
 		}
 
 		Rboard rboard = rboardService.getDetail(num);
+
+		int cnt = rboardService.bandacceptcnt(num);
 		// board= null; //error 페이지 이동 확인 하고자 임의로 저장합니다.
 		if (rboard == null) {
 			logger.info("상세보기 실패");
@@ -71,7 +65,9 @@ public class RboardController {
 		else {
 			logger.info("상세보기 성공");
 			mv.setViewName("rboard/rboard_view");
+			mv.addObject("current","rBoard");
 			mv.addObject("rboarddata", rboard);
+			mv.addObject("cnt", cnt);
 		}
 		return mv;
 	}
@@ -86,6 +82,7 @@ public class RboardController {
 		mv.addObject("Arealist", Arealist);
 		mv.addObject("Genrelist", Genrelist);
 		mv.addObject("Realemlist", Realemlist);
+		mv.addObject("current","rBoard");
 		mv.setViewName("rboard/rboard_write");
 		return mv;
 	}
@@ -102,14 +99,16 @@ public class RboardController {
 			}
 		}
 
-		int num = rboard.getBBS_SN();
 		String id = rboard.getMBR_ID();
 
 		rboard.setRCRIT_REALM_ID(trealm);
 		rboardService.insertRboard(rboard);
-		rboardService.insertBand(id,num);// 저장 메서드 호출
+
+		int num = rboardService.getaddnum();
+		rboardService.insertBand(id,num);
+
 		logger.info(rboard.toString()); // selectKey로 정의한 BOARD_NUM 값 확인해 봅시다.
-		return "redirect:write";
+		return "redirect:list";
 	}
 
 
@@ -145,9 +144,10 @@ public class RboardController {
 
 
 	@RequestMapping(value= "/list", method=RequestMethod.GET)
-	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv) {
+	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv,Principal userPrincipal) {
 
-		int limit = 10; // 한 화면에 출력할 로우 갯수
+		String id = userPrincipal.getName();
+		int limit = 4; // 한 화면에 출력할 로우 갯수
 
 		int listcount = rboardService.getListCount(); // 총 리스트 수를 받아옴
 
@@ -162,6 +162,13 @@ public class RboardController {
 			endpage = maxpage;
 
 		List<Rlist> rboardlist = rboardService.getRboardList(page, limit); // 리스트를 받아옴
+		int bandck = rboardService.bandck(id);
+		if (bandck == -1) {
+			mv.addObject("isband", 0);
+		}
+		else  {
+			mv.addObject("isband", 1);
+		}
 
 		mv.setViewName("rboard/rboard_list");
 		mv.addObject("page",page);
@@ -199,6 +206,13 @@ public class RboardController {
 
 		int resign = rboardService.resign(id,num);
 
+		int nope = rboardService.getrenope(num);
+
+		if (nope == 0)
+		{
+			rboardService.teamstopen(num);
+		}
+
 		if (resign == 0) {
 			redirect.addFlashAttribute("message", "강퇴에 실패 했습니다.");
 		}
@@ -221,6 +235,15 @@ public class RboardController {
 
 		if (accept == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
+			rboardService.joinwatingdel(id);
+
+			int cnt = rboardService.bandacceptcnt(num);
+			int nope = rboardService.getrenope(num);
+
+			if(cnt == nope)
+			{
+				rboardService.teamstclose(num);
+			}
 		}
 		mv.setViewName("redirect:bandHR");
 		return mv;
@@ -277,6 +300,7 @@ public class RboardController {
 		mv.addObject("Realemlist", Realemlist);
 		mv.addObject("writer",id);
 		mv.addObject("rboarddata", rboard);
+		mv.addObject("current","bandHR");
 		mv.setViewName("rboard/rboard_modify");
 		return mv;
 	}
@@ -287,13 +311,37 @@ public class RboardController {
 		int delete = rboardService.breakup(num);
 
 		if (delete == 0) {
-			redirect.addFlashAttribute("message", "해체에 실패했습니다.");
+			redirect.addFlashAttribute("message", "게시글 삭제에 실패 했습니다.");
 		}
 
 		if (delete == 1) {
-			redirect.addFlashAttribute("message", "성공적으로 해체 하였습니다.");
+			redirect.addFlashAttribute("message", "게시글 삭제에 성공 하였습니다.");
 		}
-		mv.setViewName("redirect:bandHR");
+		mv.setViewName("redirect:list");
+		return mv;
+	}
+
+	@RequestMapping ("/leave")
+	public ModelAndView leave(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,Principal userPrincipal) {
+
+		String id = userPrincipal.getName();
+		int leave = rboardService.leave(id,num);
+
+		int nope = rboardService.getrenope(num);
+
+		if (nope == 0)
+		{
+			rboardService.teamstopen(num);
+		}
+
+		if (leave == 0) {
+			redirect.addFlashAttribute("message", "성공적으로 탈퇴 했습니다.");
+		}
+
+		if (leave  == 1) {
+			redirect.addFlashAttribute("message", "탈퇴에 실패 했습니다.");
+		}
+		mv.setViewName("redirect:list");
 		return mv;
 	}
 
