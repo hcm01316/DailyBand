@@ -48,7 +48,7 @@
 	</update>
 
 	<select id = "getDetail" resultType="rboard">
-		select BBS_SN,MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE,BBS_READ_CNT,REG_DT
+		select BBS_SN,MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE,BBS_READ_CNT,REG_DT,RCRIT_STTUS_CD
 		from RCRIT_BBS
 		where BBS_SN=#{rboard}
 	</select>
@@ -109,6 +109,10 @@
 		where MBR_ID = #{id} and BBS_SN = #{num};
 	</delete>
 
+	<delete id="leave">
+		delete from BAND_PRPT_INFO
+		where MBR_ID = #{id} and BBS_SN = #{num};
+	</delete>
 	<delete id="breakup">
 		delete from RCRIT_BBS
 		where BBS_SN = #{num};
@@ -118,5 +122,34 @@
 		insert BAND_PRPT_INFO (BBS_SN,MBR_ID,MBR_PRPT_STTUS)
 		values (#{num},#{id},2);
 	</insert>
+
+	<select id="getaddnum" resultType="int">
+		select MAX(BBS_SN) from RCRIT_BBS;
+	</select>
+
+	<select id="bandacceptcnt" resultType="int">
+		select (
+				select count(*)
+				from RCRIT_BBS left outer join BAND_PRPT_INFO
+												  on BAND_PRPT_INFO.BBS_SN = RCRIT_BBS.BBS_SN
+				where RCRIT_BBS.BBS_SN = #{num}
+				and MBR_PRPT_STTUS = 1) as MPS_CNT
+		from RCRIT_BBS
+		where RCRIT_BBS.BBS_SN = #{num};
+	</select>
+
+	<select id="getrenope" resultType="int">
+		select RCRIT_NOPE from RCRIT_BBS where BBS_SN = #{num};
+	</select>
+
+	<update id="teamstclose">
+		update RCRIT_BBS
+		set RCRIT_STTUS_CD = 0 where BBS_SN = #{num};
+	</update>
+
+	<update id="teamstopen">
+		update RCRIT_BBS
+		set RCRIT_STTUS_CD = 1 where BBS_SN = #{num};
+	</update>
 </mapper>
 

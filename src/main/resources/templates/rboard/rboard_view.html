@@ -34,22 +34,34 @@
         </div>
         <div class="page-body" style='background-color: white'>
             <div class="container-xl">
-                <div><h2>[[${rboarddata.BAND_TEAM_NM}]]</h2> <span>작성자 [[${rboarddata.MBR_ID}]] 조회수 [[${rboarddata.BBS_READ_CNT}]] [[${rboarddata.REG_DT}]]</span></div>
+                <div><h2>[[${rboarddata.BAND_TEAM_NM}]]</h2> <span>작성자 [[${rboarddata.MBR_NCNM}]] 조회수 [[${rboarddata.BBS_READ_CNT}]] [[${rboarddata.REG_DT}]]</span></div>
                 <hr style="margin: 0 auto">
-                [[${rboarddata.RCRIT_REALM_IDK}]] [[${rboarddata.RCRIT_GENRE_IDK}]] [[${rboarddata.RCRIT_AREA_IDK}]] [[${rboarddata.RCRIT_NOPE}]]명
+                [[${rboarddata.RCRIT_REALM_IDK}]] [[${rboarddata.RCRIT_GENRE_IDK}]] [[${rboarddata.RCRIT_AREA_IDK}]] [[${cnt}]] / [[${rboarddata.RCRIT_NOPE}]]
+                <th:block th:if="${rboarddata.RCRIT_STTUS_CD} == 0">
+                    모집완료
+                </th:block>
+                <th:block th:if="${rboarddata.RCRIT_STTUS_CD} == 1">
+                    모집중
+                </th:block>
                 <hr>
                 [[${rboarddata.BBS_CN}]]
             </div>
             <div>
-                <a th:href="@{/rboard/join(num=${rboarddata.BBS_SN})}" class="btn" id="rjoin">
-                    가입신청
-                </a>
-                <a th:href="@{/rboard/modify(num=${rboarddata.BBS_SN})}" class="btn">
-                    수정
-                </a>
-                <a th:href="@{/rboard/delete(num=${rboarddata.BBS_SN})}" class="btn">
-                    삭제
-                </a>
+                <th:block th:if="${rboarddata.RCRIT_STTUS_CD} == 1">
+                    <a th:href="@{/rboard/join(num=${rboarddata.BBS_SN})}" class="btn" id="rjoin">
+                        가입신청
+                    </a>
+                </th:block>
+                <th:block th:if="${rboarddata.MBR_ID} == ${#authentication.principal.username}">
+                    <a th:href="@{/rboard/modify(num=${rboarddata.BBS_SN})}" class="btn">
+                        수정
+                    </a>
+                    <a th:href="@{/rboard/delete(num=${rboarddata.BBS_SN})}" class="btn" onclick="return confirm('정말 삭제 하시겠습니까?')">
+                        삭제
+                    </a>
+                </th:block>
+
+
                 <a th:href="@{/rboard/list}" class="btn">
                     목록
                 </a>

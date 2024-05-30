@@ -58,7 +58,24 @@ public interface RboardService {
     // 밴드 거절
     public int refuse(String id, int num);
 
+    // 밴드 해체
     public int breakup(int num);
 
-    public int insertBand(String id, int num);
+    // 게시글 작성시 밴드 참여정보에도 리더 추가
+    public void insertBand(String id, int num);
+
+    // 방금 작성한 게시글 번호 불러오기
+    public int getaddnum();
+
+    // 밴드 탈퇴
+    public int leave(String id, int num);
+
+    // 현재 모집한 인원수
+    public int bandacceptcnt(int num);
+    // 모집 인원수
+    public int getrenope(int num);
+
+    public void teamstclose(int num);
+
+    public void teamstopen(int num);
 }

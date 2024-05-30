@@ -72,11 +72,26 @@ public interface RboardMapper  {
 
     // 밴드원 거절
     public int refuse(String id, int num);
+
     // 밴드 해체
     public int breakup(int num);
 
     // 게시글 작성시 밴드모집 테이블에도 추가
-    public int insertBand(String id, int num);
+    public void insertBand(String id, int num);
 
-    // 밴드 게시글 불
+    // 방금 작성한 게시글 번호
+    public int getaddnum();
+
+    // 밴드 탈퇴
+    public int leave(String id, int num);
+
+    // 현재 모집한 인원수
+    public int bandacceptcnt(int num);
+
+    public int getrenope(int num);
+
+    // 모집중 > 모집완료 변경
+    public void teamstclose(int num);
+
+    public void teamstopen(int num);
 }
