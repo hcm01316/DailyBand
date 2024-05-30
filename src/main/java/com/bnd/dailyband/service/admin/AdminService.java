@@ -5,8 +5,15 @@ import java.util.List;
 
 public interface AdminService {
 
+  List<Member> getMemberList();
 
-  int getSearchListCount(int index, String searchWord);
+  void memberTY(String id);
 
-  List<Member> getSearchList(int index, String searchWord, int page, int limit);
+  void managerTY(String id);
+
+  void adminTY(String id);
+
+  void memberStatusAc(String id);
+
+  void memberStatusIn(String id);
 }
