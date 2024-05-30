@@ -4,43 +4,27 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.AdminMapper">
 
-  <select id="getSearchListCount" resultType="int">
-    select count(*)
-    from MBR_INFO
-    where MBR_ID != 'admin'
-    <if test="search_field != null">
-      and
-      <choose>
-        <when test="search_field == 'id'">MBR_ID</when>
-        <when test="search_field == 'name'">MBR_NCNM</when>
-        <when test="search_field == 'age'">MBR_AGE</when>
-        <when test="search_field == 'gender'">MBR_GENDER</when>
-      </choose>
-      like #{search_word}
-    </if>
+  <select id="getMemberList" resultType="member">
+    select * from MBR_INFO where MBR_ID != 'admin';
   </select>
 
-  <select id="getSearchList" resultType="member">
-    WITH ranked_members AS (
-    SELECT
-    *,
-    ROW_NUMBER() OVER (ORDER BY MBR_ID) AS rnum
-    FROM MBR_INFO
-    WHERE MBR_ID != 'admin'
-    <if test="search_field != null">
-      AND
-      <choose>
-        <when test="search_field == 'id'">MBR_ID</when>
-        <when test="search_field == 'name'">MBR_NCNM</when>
-        <when test="search_field == 'age'">MBR_AGE</when>
-        <when test="search_field == 'gender'">MBR_GENDER</when>
-      </choose>
-      LIKE #{searchWord}
-    </if>
-    )
-    SELECT *
-    FROM ranked_members
-    WHERE rnum BETWEEN #{start} AND #{end};
+  <select id="memberTY">
+    update MBR_INFO set MBR_TY = 'ROLE_MEMBER' where MBR_ID = #{id}
   </select>
 
+  <select id="managerTY">
+    update MBR_INFO set MBR_TY = 'ROLE_MANAGER' where MBR_ID = #{id}
+  </select>
+
+  <select id="adminTY">
+    update MBR_INFO set MBR_TY = 'ROLE_ADMIN' where MBR_ID = #{id}
+  </select>
+
+  <select id="memberStatusAc">
+    update MBR_INFO set MBR_STTUS = 0 where MBR_ID = #{id}
+  </select>
+
+  <select id="memberStatusIn">
+    update MBR_INFO set MBR_STTUS = 1 where MBR_ID = #{id}
+  </select>
 </mapper>

@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <title>관리자-회원관리</title>
-  <link href="https://cdn.datatables.net/v/bs4/dt-2.0.3/datatables.min.css" rel="stylesheet">
-  <script src="https://cdn.datatables.net/v/bs4/dt-2.0.3/datatables.min.js"></script>
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+
+  </script>
 </head>
 <body>
 <div class="page">
@@ -27,49 +34,105 @@
     <div class="page-body">
       <div class="container-xl">
         <!-- Content here -->
-        <table id="table" class="table table-bordered">
-          <thead>
-          <tr>
-            <th>아이디</th>
-            <th>이메일</th>
-            <th>닉네임</th>
-            <th>성별</th>
-            <th>나이</th>
-            <th>회원상태</th>
-            <th>가입일시</th>
-            <th>관리</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="m : ${memberlist}">
-            <td><a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m.MBR_ID}]]</a></td>
-            <td>[[${m.MBR_EML_ADDR}]]</td>
-            <td>[[${m.MBR_NCNM}]]</td>
-            <td>[[${m.MBR_GENDER}]]</td>
-            <td>[[${m.MBR_AGE}]]</td>
-            <td th:if="${m.MBR_STTUS == 0}">활성화</td>
-            <td th:if="${m.MBR_STTUS == 1}">비활성화</td>
-            <td>[[${m.REG_DT}]]</td>
-            <td>
-              <a th:href="@{mbrStatusAc(mbr_id=${m.MBR_ID})}" id="mbrStatusAc">
-                <span class="badge bg-success">정상</span>
-              </a>
-              <a th:href="@{mbrStatusIn(mbr_id=${m.MBR_ID})}">
-                <span class="badge bg-danger">정지</span>
-              </a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+        <div class="row row-cards">
+          <div class="col-12">
+            <div class="card">
+
+              <div class="card-header">
+                <h3 class="card-title">회원 정보 조회</h3>
+              </div>
+              <div class="card-body">
+                  <table id="mbr_table" class="table table-vcenter card-table table-bordered" style="width:100%">
+                    <thead>
+                    <tr>
+                      <th>아이디</th>
+                      <th>이메일</th>
+                      <th>닉네임</th>
+                      <th>성별</th>
+                      <th>나이</th>
+                      <th>회원권한</th>
+                      <th>회원상태</th>
+                      <th>가입일시</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="m : ${memberlist}">
+                      <td>
+                        <span class="avatar avatar-sm"
+                              th:style="|background-image: url('${m.MBR_PROFL_PHOTO}');| "></span>
+                        <a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m.MBR_ID}]]</a>
+                      </td>
+                      <td>[[${m.MBR_EML_ADDR}]]</td>
+                      <td>[[${m.MBR_NCNM}]]</td>
+                      <td>[[${m.MBR_GENDER}]]</td>
+                      <td th:if="${m.MBR_AGE != 0}">[[${m.MBR_AGE}]]세</td>
+                      <td th:if="${m.MBR_AGE == 0}"></td>
+                      <td class="text-end" sec:authorize="hasAnyRole('ROLE_ADMIN')">
+                        <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_MEMBER'}">회원</a>
+                        <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_MANAGER'}">매니저</a>
+                        <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_ADMIN'}">관리자</a>
+                        <div class="dropdown-menu">
+                          <a class="dropdown-item" th:href="@{changeRole(id=${m.MBR_ID}, role='ROLE_MEMBER')}">회원</a>
+                          <a class="dropdown-item" th:href="@{changeRole(id=${m.MBR_ID}, role='ROLE_MANAGER')}">매니저</a>
+                          <a class="dropdown-item" th:href="@{changeRole(id=${m.MBR_ID}, role='ROLE_ADMIN')}">관리자</a>
+                        </div>
+                      </td>
+                      <th:block sec:authorize="hasAnyRole('ROLE_MANAGER')">
+                        <td th:if="${m.MBR_TY == 'ROLE_MEMBER'}">회원</td>
+                        <td th:if="${m.MBR_TY == 'ROLE_MANAGER'}">매니저</td>
+                        <td th:if="${m.MBR_TY == 'ROLE_ADMIN'}">관리자</td>
+                      </th:block>
+                      <td class="text-end">
+                        <a href="#" class="btn dropdown-toggle btn-outline-success" data-bs-toggle="dropdown" th:if="${m.MBR_STTUS == 0}">활성화</a>
+                        <a href="#" class="btn dropdown-toggle btn-outline-danger" data-bs-toggle="dropdown" th:if="${m.MBR_STTUS == 1}">비활성화</a>
+                        <div class="dropdown-menu">
+                          <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, status=0)}">활성화</a>
+                          <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, status=1)}">비활성화</a>
+                        </div>
+                      </td>
+                      <td>[[${m.REG_DT}]]</td>
+                    </tr>
+                    </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
   </div>
 </div>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('#table').DataTable();
+  $('#mbr_table').DataTable({
+    responsive: true,
+    language: {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다",
+      "info": "_START_ - _END_ (총 _TOTAL_명)",
+      "infoEmpty": "0명",
+      "infoFiltered": "(전체 _MAX_ 명 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩 중...",
+      "processing": "처리 중...",
+      "search": "검색:",
+      "zeroRecords": "검색된 데이터가 없습니다",
+      "aria": {
+        "sortAscending": ": 오름차순 정렬",
+        "sortDescending": ": 내림차순 정렬"
+      }
+    },
+    lengthMenu: [7, 15, 25, 30, { label: '전체', value: -1 }]
+
+
   });
+
 </script>
 </body>
 </html>
