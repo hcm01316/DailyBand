@@ -1,9 +1,10 @@
 package com.bnd.dailyband.controller;
 
+import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.service.member.MemberService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.security.Principal;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bnd.dailyband.domain.Member;
-import com.bnd.dailyband.service.member.MemberService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/member")
@@ -76,23 +74,23 @@ public class MemberController {
 	//회원가입폼에서 아이디 검사
 	@ResponseBody
 	@RequestMapping(value = "/idcheck", method = RequestMethod.GET)
-	public int idcheck(@RequestParam("id") String id){
-		return memberService.isId(id);
+	public int idcheck(@RequestParam("id") String MBR_ID){
+		return memberService.isId(MBR_ID);
 	}
 
 	//회원가입폼에서 닉네임 검사
 	@ResponseBody
 	@RequestMapping(value = "/namecheck", method = RequestMethod.GET)
-	public int idname(@RequestParam("name") String name){
-		return memberService.isName(name);
+	public int idname(@RequestParam("name") String MBR_NCNM){
+		return memberService.isName(MBR_NCNM);
 	}
 
 	//회원가입 처리
 	@RequestMapping(value = "/joinProcess", method = RequestMethod.POST)
-	public String joinProcess(	Member member,
-								  RedirectAttributes rattr,
-								  Model model,
-								  HttpServletRequest request) {
+	public String joinProcess( Member member,
+							   RedirectAttributes rattr,
+							   Model model,
+							   HttpServletRequest request) {
 
 		//비밀번호 암호화
 		String encPassword = passwordEncoder.encode(member.getMBR_PWD());
@@ -104,7 +102,7 @@ public class MemberController {
 		// 내용 삽입이 된 경우
 		if (result == 1) {
 			rattr.addFlashAttribute("result", "joinSuccess");
-			return "redirect:login";
+			return "redirect:join2";
 		}else {
 			model.addAttribute("url", request.getRequestURL());
 			model.addAttribute("message", "회원 가입 실패");
@@ -120,8 +118,10 @@ public class MemberController {
 	}
 
 
-	@RequestMapping("/join2")
-	public String join2(Model model) {
+	//회원가입2
+	@RequestMapping(value = "/join2", method = RequestMethod.GET)
+	public String join2( Member member)
+	{
 		return "member/join2";
 	}
 
