@@ -1,10 +1,14 @@
 package com.bnd.dailyband.service.member;
 
+import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.mybatis.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @Service
 public class MemberServiceImpl implements MemberService{
@@ -59,6 +63,30 @@ public class MemberServiceImpl implements MemberService{
 		return (rmember==null) ? -1 : 1;
 	}
 
+	@Override
+	public Social mysocial(String id) {
+		return dao.mysocial(id);
+	}
+
+	@Override
+	public ArrayList<Ctgry> getCtgryList(int type) {
+		return dao.getCtgryList(type);
+	}
+
+	@Override
+	public int myinfo_modify(String id) {
+		return dao.myinfo_modify(id);
+	}
+
+	@Override
+	public int social_insert(Social social) {
+		return dao.social_insert(social);
+	}
+
+	@Override
+	public int social_update(Social social) {
+		return dao.social_update(social);
+	}
 
 
 }
