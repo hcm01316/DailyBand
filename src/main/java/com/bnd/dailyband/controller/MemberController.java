@@ -2,6 +2,8 @@ package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.domain.MailVO;
+import com.bnd.dailyband.task.SendMail;
 import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.service.member.MemberService;
 import jakarta.servlet.http.Cookie;
@@ -29,13 +31,15 @@ public class MemberController {
 
 	private MemberService memberService;
 	private PasswordEncoder passwordEncoder;
+	private SendMail sendMail;
 
 	@Autowired
 	public MemberController(MemberService memberService,
-							PasswordEncoder passwordEncoder
-	) {
+							PasswordEncoder passwordEncoder,
+							SendMail sendMail) {
 		this.memberService=memberService;
 		this.passwordEncoder=passwordEncoder;
+		this.sendMail = sendMail;
 	}
 
 	@ModelAttribute
@@ -67,7 +71,7 @@ public class MemberController {
 		mv.setViewName("member/login");
 		return mv;
 	}
-
+	//회원가입폼에서 중복검사하는것
 	//회원가입 폼으로 이동
 	@RequestMapping(value = "/join", method = RequestMethod.GET)
 	public String join(Model model) {
@@ -86,6 +90,21 @@ public class MemberController {
 	@RequestMapping(value = "/namecheck", method = RequestMethod.GET)
 	public int idname(@RequestParam("name") String MBR_NCNM){
 		return memberService.isName(MBR_NCNM);
+	}
+
+	//회원가입폼에서 이메일 검사
+	@ResponseBody
+	@RequestMapping(value = "/emailcheck", method = RequestMethod.GET)
+	public int emailcheck(@RequestParam("email") String MBR_EML_ADDR){
+		return memberService.isEmail(MBR_EML_ADDR);
+	}
+
+	//회원가입 폼에서 이메일전송
+	@ResponseBody
+	@RequestMapping(value = "/email", method = RequestMethod.GET)
+	public String email(MailVO vo){
+		sendMail.sendMail(vo);
+		return vo.getContent();
 	}
 
 	//회원가입 처리
@@ -120,7 +139,7 @@ public class MemberController {
 		return "redirect:login";
 	}
 
-
+	//회원가입의 결과 이동
 	//회원가입2
 	@RequestMapping(value = "/join2", method = RequestMethod.GET)
 	public String join2( Member member)
