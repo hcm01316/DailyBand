@@ -5,7 +5,9 @@ import java.util.List;
 
 public interface AdminService {
 
+  //회원 목록
   List<Member> getMemberList();
+
 
   void memberTY(String id);
 
@@ -16,4 +18,6 @@ public interface AdminService {
   void memberStatusAc(String id);
 
   void memberStatusIn(String id);
+
+  int getListCount();
 }

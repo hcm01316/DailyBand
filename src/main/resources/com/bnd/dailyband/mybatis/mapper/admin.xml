@@ -8,23 +8,27 @@
     select * from MBR_INFO where MBR_ID != 'admin';
   </select>
 
-  <select id="memberTY">
+  <update id="memberTY">
     update MBR_INFO set MBR_TY = 'ROLE_MEMBER' where MBR_ID = #{id}
-  </select>
+  </update>
 
-  <select id="managerTY">
+  <update id="managerTY">
     update MBR_INFO set MBR_TY = 'ROLE_MANAGER' where MBR_ID = #{id}
-  </select>
+  </update>
 
-  <select id="adminTY">
+  <update id="adminTY">
     update MBR_INFO set MBR_TY = 'ROLE_ADMIN' where MBR_ID = #{id}
-  </select>
+  </update>
 
-  <select id="memberStatusAc">
+  <update id="memberStatusAc">
     update MBR_INFO set MBR_STTUS = 0 where MBR_ID = #{id}
-  </select>
+  </update>
 
-  <select id="memberStatusIn">
+  <update id="memberStatusIn">
     update MBR_INFO set MBR_STTUS = 1 where MBR_ID = #{id}
+  </update>
+
+  <select id="getListCount">
+    select count(*) from MBR_INFO;
   </select>
 </mapper>

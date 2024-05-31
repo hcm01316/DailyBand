@@ -9,10 +9,6 @@
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-
-  </script>
-</head>
 <body>
 <div class="page">
   <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
@@ -58,9 +54,16 @@
                     <tbody>
                     <tr th:each="m : ${memberlist}">
                       <td>
+                        <th:block th:if="${m.MBR_ID != username}">
                         <span class="avatar avatar-sm"
                               th:style="|background-image: url('${m.MBR_PROFL_PHOTO}');| "></span>
                         <a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m.MBR_ID}]]</a>
+                        </th:block>
+                        <th:block th:if="${m.MBR_ID == username}">
+                        <span class="avatar avatar-sm"
+                              th:style="|background-image: url('${m.MBR_PROFL_PHOTO}');| "></span>
+                          <a th:href="@{../member/myprofile}">[[${m.MBR_ID}]]</a>
+                        </th:block>
                       </td>
                       <td>[[${m.MBR_EML_ADDR}]]</td>
                       <td>[[${m.MBR_NCNM}]]</td>
