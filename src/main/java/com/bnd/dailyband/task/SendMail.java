@@ -1,27 +1,24 @@
-package com.naver.myhome4.task;
+package com.bnd.dailyband.task;
 
-import java.io.File;
+import com.bnd.dailyband.domain.MailVO;
+import jakarta.mail.internet.MimeMessage;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Component;
-import com.naver.myhome4.domain.MailVO;
-import jakarta.mail.internet.MimeMessage;
 
 @Component
 public class SendMail {
-
-	@Value("${my.sendfile}")
-	private String sendfile;
 	
 	private JavaMailSenderImpl mailSender;
-	
-	
+
+	@Value("${jasypt.encryptor.password}")
+	private String PASSWORD;
 	@Autowired
 	public SendMail(JavaMailSenderImpl mailSender) {
 		this.mailSender=mailSender;
@@ -31,6 +28,8 @@ public class SendMail {
 	
 	public void sendMail(MailVO vo) {
 
+		String changefrom = jasyptDecryt(vo.getFrom());
+		vo.setFrom(changefrom);
 		MimeMessagePreparator mp = new MimeMessagePreparator() {
 			
 			@Override
@@ -39,7 +38,7 @@ public class SendMail {
 				MimeMessageHelper helper
 					= new MimeMessageHelper(mimeMessage, true, "UTF-8");
 				helper.setFrom(vo.getFrom());
-				helper.setTo(vo.getTo());
+				helper.setTo(vo.getReceiver());
 				helper.setSubject(vo.getSubject());
 				
 				//1. 문자로만 전송하는 경우
@@ -50,6 +49,12 @@ public class SendMail {
 		};
 		mailSender.send(mp); //메일 전송합니다.
 		logger.info("메일 전송했습니다.");
+	}
+	private String jasyptDecryt(String input){
+		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		encryptor.setAlgorithm("PBEWithMD5AndDES");
+		encryptor.setPassword(PASSWORD);
+		return encryptor.decrypt(input);
 	}
 
 }

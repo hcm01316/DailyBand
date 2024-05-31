@@ -25,4 +25,7 @@ public interface MemberMapper {
 	public int social_insert(Social social);
 
 	public int social_update(Social social);
+
+	public Member isEmail(String email);
+
 }

@@ -88,5 +88,10 @@ public class MemberServiceImpl implements MemberService{
 		return dao.social_update(social);
 	}
 
+	@Override
+	public int isEmail(String email){
+		Member rmember = dao.isEmail(email);
+		return (rmember==null) ? -1 : 1;
+	}
 
 }

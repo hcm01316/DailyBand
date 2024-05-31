@@ -1,53 +1,141 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아이디 / 비밀번호 찾기</title>
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css">
     <style>
-        .content {
-            display: none;
+        @import url('https://rsms.me/inter/inter.css');
+
+        :root {
+            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+        }
+
+        body {
+            font-feature-settings: "cv03", "cv04", "cv11";
         }
     </style>
     <script>
-        function showContent(id) {
-            document.getElementById('findId').style.display = 'none';
-            document.getElementById('findPassword').style.display = 'none';
-            document.getElementById(id).style.display = 'block';
-        }
         //페이지 로드시 아이디 찾기로 나타내도록
         window.onload = function() {
             showContent('findId');
         };
+
+
+
+        //이메일 인증 번호 받기
+        let code = "email";
+        $("#find_email").on('click', function () {
+            //이메일 전송
+            $("#email_message").css('color', 'red').html("메일 전송중입니다...");
+            $.ajax({
+                url: "email",
+                data: {"receiver": $("input[name=MBR_EML_ADDR]").val()},
+                success: function (resp) {
+                    code = resp;
+                    console.log(code)
+                    $("#email_message").css('color', 'green').html("코드를 입력하세요");
+                }
+            });
+        });
+
+        //이메일 코드 인증
+        $("#check_email").on('click', function () {
+            const input_code = $("input[name=code]").val()
+            if (!input_code) {
+                alert("code를 입력하세요");
+                $("input[name=code]").focus();
+                return false;
+            }
+            if (code == input_code) {
+
+            } else {
+                $("#email_check").text("인증번호가 일치하지 않습니다.").css('color', 'red')
+            }
+        });
     </script>
 </head>
 <body>
-<h1>아이디 / 비밀번호 찾기</h1>
-<button onclick="showContent('findId')">아이디 찾기</button>
-<button onclick="showContent('findPassword')">비밀번호 찾기</button>
+<script src="./dist/js/demo-theme.min.js?1684106062"></script>
 
-<div id="findId" class="content">
-    <h2>아이디 찾기</h2>
-    <form action="/find_id" method="post">
-        <input type="email" id="email" name="email" placeholder="메일 주소 입력">
-        <button type="submit">인증번호 전송</button><br><br>
-        <input type="email" id="check_id" name="check_id" placeholder="인증번호 입력">
-        <button type="submit">확인</button><br><br>
+<div class="page">
+    <!-- Navbar -->
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
 
-        <button>아이디 찾기 let's go</button>
-    </form>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Page body -->
+
+<div class="page-body">
+<div class="container-xl">
+    <div class="row row-cards" style="display: flex; justify-content: center">
+        <div class="col-sm-4" style="padding: 0px; width: 276.66px;">
+            <img th:src="@{/image/login_drum.jpg}" height="700px"
+                 width="276.66px">
+        </div>
+
+    <div class="col-md-6" style="padding: 0px;">
+    <div class="card" style="height: 700px;">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs nav-fill" data-bs-toggle="tabs">
+                <li class="nav-item">
+                    <a href="#tabs-home-5" class="nav-link active" data-bs-toggle="tab">아아디 찾기</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tabs-profile-5" class="nav-link" data-bs-toggle="tab">비밀번호 찾기</a>
+                </li>
+
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane active show" id="tabs-home-5">
+                    <form action="/find_id" method="post">
+                        <input type="email" id="email" name="email" placeholder="메일 주소 입력">
+                        <button type="button" id="find_email">인증번호 전송</button><br><br>
+                        <input type="email" id="check_id" name="check_id" placeholder="인증번호 입력">
+                        <button type="button" id="check_email">확인</button><br><br>
+
+                        <button>아이디 찾기 let's go</button>
+                    </form>
+                </div>
+                <div class="tab-pane" id="tabs-profile-5">
+                    <form action="/find_password" method="post">
+                        <input type="text" id="username" name="username" placeholder="메일 주소 입력">
+                        <button type="button" id="find_email">인증번호 전송</button><br><br>
+                        <input type="text" id="check_pass" name="check_pass" placeholder="인증번호 입력">
+                        <button type="button">확인</button><br><br>
+
+                        <button>비밀번호 찾기 let's go</button>
+                    </form>
+                </div>
+                <div class="tab-pane" id="tabs-activity-5">
+                    <h4>Activity tab</h4>
+                    <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div id="findPassword" class="content">
-    <h2>비밀번호 찾기</h2>
-    <form action="/find_password" method="post">
-        <input type="text" id="username" name="username" placeholder="메일 주소 입력">
-        <button type="submit">인증번호 전송</button><br><br>
-        <input type="text" id="check_pass" name="check_pass" placeholder="인증번호 입력">
-        <button type="submit">확인</button><br><br>
-
-        <button>비밀번호 찾기 let's go</button>
-    </form>
+    </div>
+</div>
+    <script src="./dist/js/tabler.min.js?1684106062" defer></script>
+    <script src="./dist/js/demo.min.js?1684106062" defer></script>
+</div>
+    </div>
 </div>
 </body>
 </html>
