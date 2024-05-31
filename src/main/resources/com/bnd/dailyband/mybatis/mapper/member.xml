@@ -22,4 +22,29 @@
  			VALUES (#{MBR_ID}, #{MBR_EML_ADDR}, #{MBR_NCNM}, #{MBR_PWD}, 'ROLE_MEMBER')
 </insert>
 
+<update id="myinfo_modify">
+	update MBR_INFO
+	set MBR_NCNM = #{MBR_NCNM}, MBR_AGE = #{MBR_AGE}, MBR_GENDER = #{MBR_GENDER},MBR_PREFER_AREA = #{MBR_PREFER_AREA}, MBR_ACT_REALM = #{MBR_ACT_REALM},
+		MBR_PREFER_GENRE = #{MBR_PREFER_GENRE}, MBR_INTRO = #{MBR_INTRO}, MDF_DT = now()
+	where MBR_ID = #{MBR_ID}
+</update>
+
+<select id="mysocial" resultType="Social">
+	select * from SOCIAL_LINK_INFO where MBR_ID = #{MBR_ID}
+</select>
+
+<select id="getCtgryList" resultType="Ctgry">
+		select CTGRY_NM,CTGRY_ID from BAND_CTGRY where CTGRY_TY = #{type}
+</select>
+
+	<insert id="social_insert">
+		INSERT INTO SOCIAL_LINK_INFO (MBR_ID,YT_ADDR,INSTA_ADDR,SC_ADDR,SPOTI_ADDR)
+		VALUES (#{MBR_ID}, #{YT_ADDR}, #{INSTA_ADDR}, #{SC_ADDR}, #{SPOTI_ADDR})
+	</insert>
+
+	<update id="social_update">
+		UPDATE 	SOCIAL_LINK_INFO
+		SET YT_ADDR=#{YT_ADDR}, INSTA_ADDR =#{INSTA_ADDR}, SC_ADDR=#{SC_ADDR},SPOTI_ADDR=#{SPOTI_ADDR}
+		WHERE MBR_ID = #{MBR_ID}
+	</update>
 </mapper>

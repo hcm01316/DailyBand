@@ -1,6 +1,8 @@
 package com.bnd.dailyband.controller;
 
+import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.service.member.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/member")
@@ -160,4 +163,55 @@ public class MemberController {
 		return "member/forgot";
 	}
 
+	@RequestMapping("/update")
+	public ModelAndView infoModify(Principal userPrincipal,
+								HttpServletRequest request, ModelAndView mv) {
+		String id = userPrincipal.getName();
+		Member m = memberService.member_info(id);
+
+		Social mysocial = memberService.mysocial(id);
+
+			mv.addObject("mysocial", mysocial);
+
+
+		ArrayList<Ctgry> Arealist = memberService.getCtgryList(0);
+		ArrayList<Ctgry> Genrelist = memberService.getCtgryList(1);
+		ArrayList<Ctgry> Realemlist = memberService.getCtgryList(2);
+		mv.addObject("Arealist", Arealist);
+		mv.addObject("Genrelist", Genrelist);
+		mv.addObject("Realemlist", Realemlist);
+
+		logger.info("회원 아이디 : " + id);
+		if(m != null) {
+			mv.setViewName("member/info_modify");
+			mv.addObject("memberinfo", m);
+			mv.addObject("mysocial", mysocial);
+			logger.info("멤버 정보 : " + m.getMBR_PROFL_PHOTO());
+		} else {
+			mv.addObject("url", request.getRequestURL());
+			mv.addObject("message", "해당 정보가 없습니다.");
+			mv.setViewName("error/error");
+		}
+		return mv;
+	}
+
+	@RequestMapping("/updateaction")
+	public ModelAndView Modifyaction(Principal userPrincipal,
+								   HttpServletRequest request, ModelAndView mv,RedirectAttributes redirect) {
+		String id = userPrincipal.getName();
+		int modify = memberService.myinfo_modify(id);
+		Social social = new Social();
+
+
+		if (social != null) {
+			//Social social = memberService.mysocial(id);
+			redirect.addFlashAttribute("message", "정보수정이 성공적으로 완료되었습니다.");
+		}
+
+		else {
+			redirect.addFlashAttribute("message", "정보수정이 실패했습니다.");
+		}
+		mv.setViewName("redirect:update");
+		return mv;
+	}
 }

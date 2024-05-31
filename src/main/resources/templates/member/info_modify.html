@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 프로필 정보</title>
+</head>
+<style>
+  .textarea {
+    width: 500px; /* 너비 설정 */
+    height: 150px; /* 높이 설정 */
+    resize: none; /* 리사이즈 불가능하게 설정 */
+  }
+</style>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              정보 수정
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="card">
+          <div class="row g-0">
+            <div class="card-body">
+              <form th:action="@{/member/updateaction}" method="post" name =rboardform>
+              <h2 class="mb-4">My Account</h2>
+              <h3 class="card-title">프로필 사진</h3>
+              <div class="row align-items-center">
+                <div class="col-auto">
+                  <img class="avatar avatar-xl" th:src="${memberinfo.MBR_PROFL_PHOTO}" alt="Avatar Image">
+                </div>
+                <div class="col-auto"><a href="#" class="btn">
+                  사진 변경
+                </a></div>
+                <div class="col-auto"><a href="#" class="btn btn-ghost-danger">
+                  사진 삭제
+                </a></div>
+              </div>
+              <div>
+                <div class="form-label">닉네임</div>
+                <div class="row g-2">
+                  <div class="col-auto">
+                    <input type="text" class="form-control w-auto" th:value="${memberinfo.MBR_NCNM}">
+                  </div>
+                  <div class="col-auto"><a href="#" class="btn">
+                    중복 검사
+                  </a></div>
+                </div>
+              </div>
+              <div>
+                <h3 class="card-title mt-4">비밀번호</h3>
+                <div>
+                  <a href="#" class="btn">
+                    Set new password
+                  </a>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-label">성별</div>
+                <div>
+                  <label class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio"
+                           name="MBR_GENDER" th:value="'남'">
+                    <span class="form-check-label">남자</span>
+                  </label>
+                  <label class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio"
+                           name="MBR_GENDER" th:value="'여'">
+                    <span class="form-check-label">여자</span>
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">선호 지역</label>
+                <div class="form-selectgroup form-selectgroup-pills">
+                  <label class="form-selectgroup-item" th:each="item, iterStat : ${Arealist}">
+                    <input type="checkbox" name="MBR_PREFER_AREA" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="limitCheckboxes(this, 'MBR_PREFER_AREA', 2)"/>
+                    <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">선호 장르</label>
+                <div class="form-selectgroup form-selectgroup-pills">
+                  <label class="form-selectgroup-item" th:each="item, iterStat : ${Genrelist}">
+                    <input type="checkbox" name="MBR_PREFER_GENRE" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="limitCheckboxes(this, 'MBR_PREFER_GENRE', 3)" />
+                    <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">활동 분야</label>
+                <div class="form-selectgroup form-selectgroup-pills">
+                  <label class="form-selectgroup-item" th:each="item, iterStat : ${Realemlist}">
+                    <input type="checkbox" name="MBR_ACT_REALM" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="limitCheckboxes(this, 'MBR_ACT_REALM', 3)"/>
+                    <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                  </label>
+                </div>
+              </div>
+                <div class="mb-3">
+                  <label class="form-label">자기소개</label>
+                  <div>
+                    <textarea class="textarea" name="example-textarea" placeholder="Textarea placeholder">[[${memberinfo.MBR_INTRO}]]</textarea>
+                  </div>
+                </div>
+              <div class="mb-3">
+                <label class="form-label">소셜 링크</label>
+                <div class="row g-6">
+                  <div class="col-md">
+                    <div class="form-label">
+                      <img th:src="@{/image/youtube_icon.png}" alt="youtube" width="20px" class="social_icon">
+                    </div>
+                    <input type="text" class="form-control" name="YT_ADDR" th:value="${mysocial != null} ? ${mysocial.YT_ADDR}">
+                  </div>
+                  <div class="col-md">
+                    <div class="form-label">
+                      <img th:src="@{/image/instagram_icon.png}" alt="instagram" width="20px" class="social_icon">
+                    </div>
+                    <input type="text" class="form-control" name ="INSTA_ADDR">
+                  </div>
+                </div>
+                <div class="row g-6">
+                  <div class="col-md">
+                    <div class="form-label">
+                      <img th:src="@{/image/soundcloud_icon.png}" alt="soundcloud" width="20px" class="social_icon">
+                    </div>
+                    <input type="text" class="form-control" name = "SC_ADDR">
+                  </div>
+                    <div class="col-md">
+                      <div class="form-label">
+                          <img th:src="@{/image/spotify_icon.png}" alt="spotify" width="20px" class="social_icon">
+                        </div>
+                      <input type="text" class="form-control" name = "SPOTI_ADDR">
+                    </div>
+                </div>
+              </div>
+              </form>
+            </div>
+            <div class="card-footer bg-transparent mt-auto">
+              <div class="btn-list justify-content-end">
+                <input type="submit" class="btn" value="수정"/>
+                <button type=reset class="btn" onClick="history.go(-1)">취소</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<script th:inline="javascript">
+
+  const astr = [[${memberinfo.MBR_PREFER_AREA}]];
+
+  if (astr != null) {
+    const aarr = astr.split(",");
+
+    for (let i = 0; i < aarr.length; i++) {
+      $("input[value='" + aarr[i] + "']").prop("checked", true);
+    }
+  }
+
+  const rstr = [[${memberinfo.MBR_ACT_REALM}]];
+
+  if(rstr != null) {
+    const rarr = rstr.split(",");
+
+    for (let i = 0; i < rarr.length; i++) {
+      $("input[value='" + rarr[i] + "']").prop("checked", true);
+    }
+  }
+
+  const gstr = [[${memberinfo.MBR_PREFER_GENRE}]];
+
+  if(gstr != null) {
+
+  const garr = gstr.split(",");
+
+  for (let i = 0; i < garr.length; i++) {
+    $("input[value='" + garr[i] + "']").prop("checked", true);
+  }
+  }
+
+  $("input[value='" + [[${memberinfo.MBR_GENDER}]]  + "']").prop("checked", true);
+
+  function limitCheckboxes(checkbox, groupName, limit) {
+    var checkboxes = document.getElementsByName(groupName);
+    var checkedCount = Array.from(checkboxes).filter(item => item.checked).length;
+
+    if (checkedCount > limit) {
+      checkbox.checked = false;
+      alert("최대 " + limit + "개까지만 선택할 수 있습니다.");
+    }
+  }
+</script>
+</body>
+</html>

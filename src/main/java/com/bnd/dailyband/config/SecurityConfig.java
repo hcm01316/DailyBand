@@ -44,10 +44,10 @@ public class SecurityConfig {
 
 		http.authorizeHttpRequests(
 				(au)-> au
-							.requestMatchers( "/member/list", "/member/info", "/member/delete")
+							.requestMatchers( "/member/list", "/member/delete")
 											.hasAuthority("ROLE_ADMIN")
 							.requestMatchers( "/member/update")
-											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER")
+											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER", "ROLE_MANAGER")
 							.requestMatchers( "/board/**", "/comment/**")
 											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER")
 											.requestMatchers( "/**").permitAll()
