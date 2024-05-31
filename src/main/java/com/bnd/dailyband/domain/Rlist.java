@@ -242,5 +242,11 @@ public class Rlist {
         this.BBS_IMG = BBS_IMG;
     }
 
-
+    public String getFormattedRegDt() {
+        if (REG_DT != null && REG_DT.length() >= 10) {
+            return REG_DT.substring(0, 10); // 0번째 인덱스부터 10번째 인덱스까지 자름
+        } else {
+            return REG_DT; // 만약 REG_DT가 null이거나 길이가 10보다 작다면 그대로 반환
+        }
+    }
 }

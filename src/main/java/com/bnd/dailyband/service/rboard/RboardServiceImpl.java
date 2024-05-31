@@ -159,5 +159,10 @@ public class RboardServiceImpl implements RboardService {
         dao.teamstopen(num);
     }
 
+    @Override
+    public int updateRboard(Rboard rboard) {
+        return dao.updateRboard(rboard);
+    }
+
 }
 

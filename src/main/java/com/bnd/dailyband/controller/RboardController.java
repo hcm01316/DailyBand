@@ -345,6 +345,24 @@ public class RboardController {
 		return mv;
 	}
 
+	@RequestMapping("/modifyaction")
+	public String modifyaction(Rboard rboard, HttpServletRequest request)
+	{
+		String realm[] = request.getParameterValues("realem");
+		String trealm = "";
+		if (realm.length != 0) {
+			trealm += realm[0];
+			for (int i = 1; i < realm.length; i++) {
+				trealm += ","+realm[i];
+			}
+		}
+
+		rboard.setRCRIT_REALM_ID(trealm);
+		rboardService.updateRboard(rboard);
+
+		logger.info(rboard.toString()); // selectKey로 정의한 BOARD_NUM 값 확인해 봅시다.
+		return "redirect:list";
+	}
 
 
 }
