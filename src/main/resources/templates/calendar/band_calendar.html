@@ -50,100 +50,6 @@
         }
     </style>
     <title>밴드 일정</title>
-    <script>
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.querySelector('#calendar');
-            const mySchStart = document.querySelector("#schStart");
-            const mySchStartTime = document.querySelector("#schStartTime");
-            const mySchEnd = document.querySelector("#schEnd");
-            const mySchEndTime = document.querySelector("#schEndTime");
-            const mySchTitle = document.querySelector("#schTitle");
-            const mySchAllday = document.querySelector("#allDay");
-            const mySchBColor = document.querySelector("#schBColor");
-            const mySchFColor = document.querySelector("#schFColor");
-            const YrModal = document.querySelector("#yrModal");
-
-            const calendarOption = {
-                height: '700px',
-                expandRows: true,
-                headerToolbar: {
-                    left: 'prevYear,prev,next,nextYear today',
-                    center: 'title',
-                    right: 'dayGridMonth,dayGridWeek,timeGridDay'
-                },
-                initialView: 'dayGridMonth',
-                locale: 'kr',
-                selectable: true,
-                selectMirror: true,
-                navLinks: true,
-                editable: true,
-                dayMaxEventRows: true,
-                nowIndicator: true,
-                eventSources: ['./commonEvents.json', './KYREvents.json', './SYREvents.json']
-            }
-
-            const calendar = new FullCalendar.Calendar(calendarEl, calendarOption);
-            calendar.render();
-
-            calendar.on("select", info => {
-                mySchStart.value = info.startStr;
-                let endDate = new Date(info.endStr); // 종료일을 선택한 날짜로 설정
-                endDate.setDate(endDate.getDate() - 1); // 하루를 빼서 시작일과 종료일을 동일하게 설정
-                mySchEnd.value = endDate.toISOString().split('T')[0];
-                YrModal.style.display = "flex";
-            });
-
-            calendar.on('eventClick', function (info) {
-                if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
-                    info.event.remove();
-                }
-            });
-
-            function fCalAdd() {
-                if (!mySchTitle.value) {
-                    alert("제목을 입력하세요.");
-                    mySchTitle.focus();
-                    return;
-                }
-
-                let bColor = mySchBColor.value;
-                let fColor = mySchFColor.value;
-                if (fColor == bColor) {
-                    bColor = "black";
-                    fColor = "yellow";
-                }
-
-                let event = {
-                    title: mySchTitle.value,
-                    allDay: mySchAllday.checked,
-                    backgroundColor: bColor,
-                    textColor: fColor
-                };
-
-                if (mySchAllday.checked) {
-                    // 하루 종일 이벤트
-                    event.start = mySchStart.value;
-                    event.end = mySchEnd.value;
-                } else {
-                    // 시간이 지정된 이벤트
-                    event.start = mySchStart.value + 'T' + mySchStartTime.value;
-                    event.end = mySchEnd.value + 'T' + mySchEndTime.value;
-                }
-
-                calendar.addEvent(event);
-                fMClose();
-            }
-
-            function fMClose() {
-                YrModal.style.display = "none";
-            }
-
-            window.fCalAdd = fCalAdd;
-            window.fMClose = fMClose;
-        });
-
-    </script>
 </head>
 <body>
 <div class="page">
@@ -196,6 +102,146 @@
         <th:block th:include="dailyband/footer :: footerFragment"></th:block>
     </div>
 </div>
+<script th:inline="javascript">
+    let token = $("meta[name='_csrf']").attr("content");
+    let header = $("meta[name='_csrf_header']").attr("content");
 
+    const bbsSn = [[${bbsSn}]]
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.querySelector('#calendar');
+        const mySchStart = document.querySelector("#schStart");
+        const mySchStartTime = document.querySelector("#schStartTime");
+        const mySchEnd = document.querySelector("#schEnd");
+        const mySchEndTime = document.querySelector("#schEndTime");
+        const mySchTitle = document.querySelector("#schTitle");
+        const mySchAllday = document.querySelector("#allDay");
+        const mySchBColor = document.querySelector("#schBColor");
+        const mySchFColor = document.querySelector("#schFColor");
+        const YrModal = document.querySelector("#yrModal");
+
+        const calendarOption = {
+            height: '700px',
+            expandRows: true,
+            headerToolbar: {
+                left: 'prevYear,prev,next,nextYear today',
+                center: 'title',
+                right: 'dayGridMonth,dayGridWeek,timeGridDay'
+            },
+            initialView: 'dayGridMonth',
+            locale: 'kr',
+            selectable: true,
+            selectMirror: true,
+            navLinks: true,
+            editable: true,
+            dayMaxEventRows: true,
+            nowIndicator: true,
+            events:[[${allData}]]
+        }
+
+        const calendar = new FullCalendar.Calendar(calendarEl, calendarOption);
+        calendar.render();
+
+        calendar.on("select", info => {
+            mySchStart.value = info.startStr;
+            let endDate = new Date(info.endStr); // 종료일을 선택한 날짜로 설정
+            endDate.setDate(endDate.getDate() - 1); // 하루를 빼서 시작일과 종료일을 동일하게 설정
+            mySchEnd.value = endDate.toISOString().split('T')[0];
+            YrModal.style.display = "flex";
+        });
+
+        calendar.on('eventClick', function (info) {
+            if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
+                deleteCalendar(info.event.id);
+            }
+        });
+
+        function deleteCalendar(calendarId) {
+            $.ajax({
+                url: "/calendar/delete/" + calendarId,
+                method: "DELETE",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+
+        }
+
+        function fCalAdd() {
+            if (!mySchTitle.value) {
+                alert("제목을 입력하세요.");
+                mySchTitle.focus();
+                return;
+            }
+
+            let bColor = mySchBColor.value;
+            let fColor = mySchFColor.value;
+            if (fColor == bColor) {
+                bColor = "#7C87FF";
+                fColor = "white";
+            }
+
+            let event = {
+                title: mySchTitle.value,
+                allDay: mySchAllday.checked,
+                backgroundColor: bColor,
+                textColor: fColor
+            };
+
+            if (mySchAllday.checked) {
+                // 하루 종일 이벤트
+                event.start = mySchStart.value;
+                event.end = mySchEnd.value;
+            } else {
+                // 시간이 지정된 이벤트
+                event.start = mySchStart.value + 'T' + mySchStartTime.value;
+                event.end = mySchEnd.value + 'T' + mySchEndTime.value;
+            }
+
+            calendar.addEvent(event);
+            console.log("bbsSn="+ bbsSn);
+            console.log(event.title);
+            console.log(event.start);
+            console.log(event.end);
+            console.log(mySchAllday.checked);
+            console.log(bColor);
+            console.log(fColor);
+            const sendData = {
+                bbs_sn: bbsSn,
+                title : event.title,
+                start : event.start,
+                end : event.end,
+                allDay : mySchAllday.checked,
+                color : bColor,
+                textColor: fColor
+            }
+            $.ajax({
+                url:"calendar/add",
+                data:sendData,
+                method:"post",
+                beforeSend : function(xhr)
+                {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+                    xhr.setRequestHeader(header, token);
+                },
+                cache : false,
+                success:function (response){
+                    console.log(response)
+                }
+            })
+            fMClose();
+        }
+
+        function fMClose() {
+            YrModal.style.display = "none";
+        }
+
+        window.fCalAdd = fCalAdd;
+        window.fMClose = fMClose;
+    });
+
+</script>
 </body>
 </html>
