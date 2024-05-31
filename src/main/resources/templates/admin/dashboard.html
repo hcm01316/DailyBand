@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>DashBoard</title>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              DashBoard
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="row row-cards">
+          <div class="col-md-6 col-xl-3">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                        <span class="bg text-white avatar" style="background-color: #7C87FF">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
+                               height="24" viewBox="0 0 24 24" stroke-width="2"
+                               stroke="currentColor" fill="none" stroke-linecap="round"
+                               stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"
+                                                             fill="none"/><path
+                              d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path
+                              d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+                        </span>
+                  </div>
+                  <div class="col">
+                    <div class="font-weight-medium">
+                      전체 [[${listcount}]]명
+                    </div>
+                    <div class="text-muted">
+                      일일 가입 12명
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                        <span class="bg-indigo text-white avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                               class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path
+                              stroke="none" d="M0 0h24v24H0z" fill="none"/><path
+                              d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path
+                              d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"/></svg>
+                        </span>
+                  </div>
+                  <div class="col">
+                    <div class="font-weight-medium">
+                      전제 방문 443
+                    </div>
+                    <div class="text-muted">
+                      일일 방문 122
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                        <span class="bg-red text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/user -->
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
+                               height="24" viewBox="0 0 24 24" stroke-width="2"
+                               stroke="currentColor" fill="none" stroke-linecap="round"
+                               stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"
+                                                             fill="none"/><path
+                              d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path
+                              d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+                        </span>
+                  </div>
+                  <div class="col">
+                    <div class="font-weight-medium">
+                      전체 신고 423건
+                    </div>
+                    <div class="text-muted">
+                      일일 신고 16건
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                        <span class="bg-yellow text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/message -->
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                               class="icon icon-tabler icons-tabler-outline icon-tabler-speakerphone"><path
+                              stroke="none" d="M0 0h24v24H0z" fill="none"/><path
+                              d="M18 8a3 3 0 0 1 0 6"/><path
+                              d="M10 8v11a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1v-5"/><path
+                              d="M12 8h0l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8"/></svg>
+                        </span>
+                  </div>
+                  <div class="col">
+                    <div class="font-weight-medium">
+                      132 Comments
+                    </div>
+                    <div class="text-muted">
+                      16 waitings
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-6">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">일별 회원가입 수</h4>
+              </div>
+              <div class="card-body">
+                <div id="redDtDayChart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">일별 방문자 수</h4>
+              </div>
+              <div class="card-body">
+                <div id="visitDayChart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+</body>
+</html>

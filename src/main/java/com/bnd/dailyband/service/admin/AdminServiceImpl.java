@@ -49,5 +49,10 @@ public class AdminServiceImpl implements AdminService{
     adao.memberStatusIn(id);
   }
 
+  @Override
+  public int getListCount() {
+    return adao.getListCount();
+  }
+
 
 }

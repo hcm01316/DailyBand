@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AdminMapper {
 
+  //회원 목록
   List<Member> getMemberList(Map<String, Object> map);
 
   void memberTY(String id);
@@ -19,4 +20,7 @@ public interface AdminMapper {
   void memberStatusAc(String id);
 
   void memberStatusIn(String id);
+
+  //회원 수
+  int getListCount();
 }

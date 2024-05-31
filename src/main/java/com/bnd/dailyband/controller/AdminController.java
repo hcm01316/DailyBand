@@ -5,6 +5,7 @@ import com.bnd.dailyband.service.admin.AdminService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
@@ -73,7 +75,7 @@ public class AdminController {
   }
 
   //회원 상태 변경
-  @RequestMapping("changeStatus")
+  @RequestMapping("/changeStatus")
   public String changeStatus(@RequestParam String id, @RequestParam int status) {
     //logger.info("회원 아이디: "+ id + "/ 선택한 회원 상태 : "+ status);
     switch (status) {
@@ -86,5 +88,18 @@ public class AdminController {
     return "redirect:/admin/mbrmgmt";
   }
 
+  @RequestMapping("/dashboard")
+  public ModelAndView dashboard (ModelAndView mv) {
+    mv.addObject("current", "admin");
+    mv.addObject("current_show", "admin");
+    mv.addObject("current_drop", "adminDashboard");
+
+    int mbrListCount = adminService.getListCount();
+
+
+    mv.setViewName("admin/dashboard");
+    mv.addObject("listcount", mbrListCount);
+    return mv;
+  }
 
 }
