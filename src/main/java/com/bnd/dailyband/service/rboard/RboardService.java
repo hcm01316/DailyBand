@@ -78,4 +78,7 @@ public interface RboardService {
     public void teamstclose(int num);
 
     public void teamstopen(int num);
+
+    public int updateRboard(Rboard rboard);
+
 }

@@ -2,21 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <style>
-        #container {
-            width: 1000px;
-            margin: 20px auto;
-        }
-        .ck-editor__editable[role="textbox"] {
-            /* Editing area */
-            min-height: 200px;
-        }
-        .ck-content .image {
-            /* Block images */
-            max-width: 80%;
-            margin: 20px auto;
-        }
-    </style>
     <title>밴드원 모집 게시글</title>
     <script>
         function checkOnlyOne(checkbox, groupName) {
@@ -46,12 +31,10 @@
         </div>
 
         <div class="page-body">
-            <div class = "container">
-                <th:block th:with="var = '0'">
-                    <th:block th:with="var = '2'">
+            <div class="container-xl">
+                <div class="row row-cards">
                         <th:block th:with="num=${listcount - (page - 1) * limit}">
-                            <table>
-                                <div class="col-md-5" th:each="item,iterStat : ${rboardlist}">
+                                <div class="col-md-4" th:each="item,iterStat : ${rboardlist}">
                                     <div class="card">
                                         <div class="card-header">
                                             <div>
@@ -65,9 +48,11 @@
                                                         </th:block>
                                                     </div>
                                                     <div class="col">
-                                                        <div class="card-title">[[${item.MBR_NCNM}]]</div>
+                                                        <div class="card-title">
+                                                            <a th:href="@{/member/info(id=${item.MBR_ID})}">[[${item.MBR_NCNM}]]</a>
+                                                             [[${item.BAND_TEAM_NM}]]</div>
                                                         <div class="card-subtitle">
-                                                            [[${item.REG_DT}]] [[${item.RCRIT_GENRE_IDK}]] [[${item.RCRIT_AREA_IDK}]] [[${item.RCRIT_REALM_IDK}]]
+                                                            [[${item.formattedRegDt}]] [[${item.RCRIT_GENRE_IDK}]] [[${item.RCRIT_AREA_IDK}]] [[${item.RCRIT_REALM_IDK}]]
                                                             <th:block th:if="${item.RCRIT_STTUS_CD} == 1">
                                                                 모집중
                                                             </th:block>
@@ -86,44 +71,44 @@
                                             </div>
                                         </div>
                                         <div class="card-body p-0">
-                                            <img th:src="@{/image/rboard.png}"width="600" height="200"/>
+                                            <img th:src="@{/image/rboard.png}"width="650" height="200"/>
                                         </div>
                                     </div>
                                 </div>
-                            </table>
                         </th:block>
-                    </th:block>
-                </th:block>
             </div>
-            <a th:href="@{/rboard/write}" class="btn">
-                글쓰기
-            </a>
-            <div>
-                <ul class="pagination ">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                            <!-- Download SVG icon from http://tabler-icons.io/i/chevron-left -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-6 6l6 6" /></svg>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">
-                            <!-- Download SVG icon from http://tabler-icons.io/i/chevron-right -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l6 6l-6 6" /></svg>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+            <th:block th:if="${isband} == 0">
+                <a th:href="@{/rboard/write}" class="btn">
+                    글쓰기
+                </a>
+            </th:block>
+                <div class="center-block ">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:if="${page <= 1}">
+                            <a class="page-link gray">이전&nbsp;</a>
+                        </li>
 
+                        <li class="page-item" th:if="${page > 1}">
+                            <a th:href="@{'list?page=' + ${page - 1}}" class="page-link">이전&nbsp;</a>
+                        </li>
 
-        <div class="container-xl">
+                        <li th:class="${a == page} ? 'page-item active' : 'page-item'"
+                            th:each="a :${#numbers.sequence(startpage, endpage)}">
+                            <a th:href="${a == page} ? '' : 'list?page=' + ${a}"
+                               class="page-link">
+                                <span th:text="${a}"></span>
+                            </a>
+                        </li>
 
+                        <li class="page-item" th:if="${page >= maxpage}">
+                            <a class="page-link gray">&nbsp;다음</a>
+                        </li>
+
+                        <li class="page-item" th:if="${page < maxpage}">
+                            <a th:href="@{'list?page=' + ${page + 1}}" class="page-link">&nbsp;다음</a>
+                        </li>
+                    </ul>
+                </div>
         </div>
     </div>
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>

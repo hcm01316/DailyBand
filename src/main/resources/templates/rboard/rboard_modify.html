@@ -47,8 +47,9 @@
         </div>
         <div class="page-body">
             <div class = "container">
-                <form th:action="@{/rboard/add}" method="post" name =rboardform>
+                <form th:action="@{/rboard/modifyaction}" method="post" name =rboardform>
                     <input type ="hidden" name ="MBR_ID" th:value="${#authentication.principal.username}">
+                    <input type ="hidden" name ="BBS_SN" th:value="${rboarddata.BBS_SN}">
                     <div class="mb-3">
                         <label class="form-label">팀명</label>
                         <input type="text" class="form-control" name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." th:value="${rboarddata.BAND_TEAM_NM}"/>
