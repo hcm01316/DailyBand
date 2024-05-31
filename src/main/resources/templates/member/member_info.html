@@ -22,26 +22,24 @@
         <div class="row g-2 align-items-center">
           <div class="col">
             <h2 class="page-title">
-              <th:block th:each="m : ${memberinfo}">
-                [[${m.MBR_NCNM}]]님의 프로필 정보
-              </th:block>
+              [[${memberinfo.MBR_NCNM}]]님의 프로필 정보
               <div class="list-inline list-inline-dots text-muted">
-              <div class="btn-list justify-content-center">
-                <div class="list-inline-item">
-                <a href="#" class="btn btn-indigo" aria-label="Button">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                       viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                       stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M8 9h8"/>
-                    <path d="M8 13h6"/>
-                    <path
-                        d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>
-                  </svg>
-                  채팅하기
-                </a>
+                <div class="btn-list justify-content-center">
+                  <div class="list-inline-item">
+                    <a href="#" class="btn btn-indigo" aria-label="Button">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                           viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                           stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M8 9h8"/>
+                        <path d="M8 13h6"/>
+                        <path
+                            d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>
+                      </svg>
+                      채팅하기
+                    </a>
+                  </div>
                 </div>
-              </div>
               </div>
             </h2>
           </div>
@@ -56,24 +54,14 @@
           <div class="col-md-12 mb-3">
             <div class="card">
               <div class=" flex-column align-items-center text-center">
-                <th:block th:each="m : ${memberinfo}">
-                  <div class="col">
-                    <!-- Photo -->
-                    <th:block th:if="${m.MBR_PROFL_PHOTO != null}">
-                      <img th:src="@{${m.MBR_PROFL_PHOTO}}" class="rounded-circle"
-                           alt="mbrProfile" width="150" style="margin: 20px;">
-                    </th:block>
-                    <th:block th:if="${m.MBR_PROFL_PHOTO == null}">
-                      <img th:src="@{/image/profile.png}" alt="mbrProfile" class="rounded-circle"
-                           style="margin: 20px;"
-                           width="150">
-                    </th:block>
-                  </div>
-
-                  <div class="mt-3">
-                    <h2>[[${m.MBR_NCNM}]]</h2>
-                  </div>
-                </th:block>
+                <div class="col">
+                  <!-- Photo -->
+                  <img th:src="@{${memberinfo.MBR_PROFL_PHOTO}}" class="rounded-circle"
+                       alt="mbrProfile" width="150" style="margin: 20px;">
+                </div>
+                <div class="mt-3">
+                  <h2>[[${memberinfo.MBR_NCNM}]]</h2>
+                </div>
               </div>
             </div>
           </div>
@@ -83,52 +71,53 @@
                 <h3 class="card-title">기본 정보</h3>
               </div>
               <div class="card-body">
-                <th:block th:each="m : ${memberinfo}">
-                  <div class="datagrid">
-                    <div class="datagrid-item">
-                      <div class="datagrid-title">나이</div>
-                      <div class="datagrid-content">[[${m.MBR_AGE}]]세</div>
+                <div class="datagrid">
+                  <div class="datagrid-item">
+                    <div class="datagrid-title">나이</div>
+                    <div class="datagrid-content">[[${memberinfo.MBR_AGE}]]세</div>
+                  </div>
+                  <div class="datagrid-item">
+                    <div class="datagrid-title">성별</div>
+                    <div class="datagrid-content">[[${memberinfo.MBR_GENDER}]]</div>
+                  </div>
+                  <div class="datagrid-item">
+                    <div class="datagrid-title">선호 지역</div>
+                    <div th:if="${memberinfo.MBR_PREFER_AREA != null}" class="datagrid-content">
+                      [[${memberinfo.AREA_IDK}]]
                     </div>
-                    <div class="datagrid-item">
-                      <div class="datagrid-title">성별</div>
-                      <div class="datagrid-content">[[${m.MBR_GENDER}]]</div>
-                    </div>
-                    <div class="datagrid-item">
-                      <div class="datagrid-title">선호 지역</div>
-                      <div th:if="${m.MBR_PREFER_AREA != null}" class="datagrid-content">
-                        [[${m.AREA_IDK}]]
-                      </div>
-                      <div th:if="${m.MBR_PREFER_AREA == null}" class="datagrid-content">-</div>
-                    </div>
-                    <div class="datagrid-item">
-                      <div class="datagrid-title">선호 장르</div>
-                      <div th:if="${m.MBR_PREFER_GENRE != null}" class="datagrid-content">
-                        [[${m.GENRE_IDK}]]
-                      </div>
-                      <div th:if="${m.MBR_PREFER_GENRE == null}" class="datagrid-content">-</div>
-                    </div>
-                    <div class="datagrid-item">
-                      <div class="datagrid-title">선호 분야</div>
-                      <div th:if="${m.MBR_ACT_REALM != null}" class="datagrid-content">
-                        [[${m.REALM_IDK}]]
-                      </div>
-                      <div th:if="${m.MBR_ACT_REALM == null}" class="datagrid-content">-</div>
-                    </div>
-                    <div class="datagrid-item">
-                      <div class="datagrid-title">소셜 링크</div>
-                      <div class="datagrid-content">
-                        <img th:src="@{/image/youtube_icon.png}" alt="youtube" width="20px"
-                             class="social_icon">
-                        <img th:src="@{/image/instagram_icon.png}" alt="instagram" width="20px"
-                             class="social_icon">
-                        <img th:src="@{/image/soundcloud_icon.png}" alt="soundcloud" width="20px"
-                             class="social_icon">
-                        <img th:src="@{/image/spotify_icon.png}" alt="spotify" width="20px"
-                             class="social_icon">
-                      </div>
+                    <div th:if="${memberinfo.MBR_PREFER_AREA == null}" class="datagrid-content">-
                     </div>
                   </div>
-                </th:block>
+                  <div class="datagrid-item">
+                    <div class="datagrid-title">선호 장르</div>
+                    <div th:if="${memberinfo.MBR_PREFER_GENRE != null}" class="datagrid-content">
+                      [[${memberinfo.GENRE_IDK}]]
+                    </div>
+                    <div th:if="${memberinfo.MBR_PREFER_GENRE == null}" class="datagrid-content">-
+                    </div>
+                  </div>
+                  <div class="datagrid-item">
+                    <div class="datagrid-title">선호 분야</div>
+                    <div th:if="${memberinfo.MBR_ACT_REALM != null}" class="datagrid-content">
+                      [[${memberinfo.REALM_IDK}]]
+                    </div>
+                    <div th:if="${memberinfo.MBR_ACT_REALM == null}" class="datagrid-content">-
+                    </div>
+                  </div>
+                  <div class="datagrid-item">
+                    <div class="datagrid-title">소셜 링크</div>
+                    <div class="datagrid-content">
+                      <img th:src="@{/image/youtube_icon.png}" alt="youtube" width="20px"
+                           class="social_icon">
+                      <img th:src="@{/image/instagram_icon.png}" alt="instagram" width="20px"
+                           class="social_icon">
+                      <img th:src="@{/image/soundcloud_icon.png}" alt="soundcloud" width="20px"
+                           class="social_icon">
+                      <img th:src="@{/image/spotify_icon.png}" alt="spotify" width="20px"
+                           class="social_icon">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <br>
@@ -139,12 +128,10 @@
                 <h3 class="card-title">자기소개</h3>
               </div>
               <div class="card-body">
-                <th:block th:each="m : ${memberinfo}">
-                  <div>
-                    <p>[[${m.MBR_INTRO}]]
-                    </p>
-                  </div>
-                </th:block>
+                <div>
+                  <p>[[${memberinfo.MBR_INTRO}]]
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -152,7 +139,6 @@
       </div>
     </div>
   </div>
-
 </div>
 </body>
 </html>
