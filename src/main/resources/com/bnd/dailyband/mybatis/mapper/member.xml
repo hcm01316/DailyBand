@@ -47,4 +47,13 @@
 		SET YT_ADDR=#{YT_ADDR}, INSTA_ADDR =#{INSTA_ADDR}, SC_ADDR=#{SC_ADDR},SPOTI_ADDR=#{SPOTI_ADDR}
 		WHERE MBR_ID = #{MBR_ID}
 	</update>
+
+	<update id="imageupdate">
+		update MBR_INFO
+		set MBR_PROFL_PHOTO = #{url}, MDF_DT = now() WHERE MBR_ID = #{id}
+	</update>
+
+	<select id="myallinfo" resultType="member">
+		select * from MBR_INFO  WHERE MBR_ID = #{id}
+	</select>
 </mapper>

@@ -6,6 +6,7 @@ import com.bnd.dailyband.domain.Social;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -16,16 +17,19 @@ public interface MemberMapper {
 
 	public Member isName(String name);
 
-	public int myinfo_modify(String id);
+	public int myinfo_modify(Map<String, Object> map);
 
 	public Social mysocial(String id);
 
 	public ArrayList<Ctgry> getCtgryList(int type);
 
-	public int social_insert(Social social);
+	public int social_insert(Map<String, Object> map);
 
-	public int social_update(Social social);
+	public int social_update(Map<String, Object> map);
 
 	public Member isEmail(String email);
 
+	public void imageupdate(String url, String id);
+
+	public Member myallinfo(String id);
 }
