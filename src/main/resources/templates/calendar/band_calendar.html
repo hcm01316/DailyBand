@@ -53,8 +53,8 @@
 </head>
 <body>
 <div class="page">
-    <th:block th:include="dailyband/navbar :: navbarFragment"></th:block>
-    <th:block th:include="dailyband/header :: headerFragment"></th:block>
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
     <div class="page-wrapper">
         <!-- Page header -->
         <div class="page-header d-print-none">
@@ -99,7 +99,7 @@
                 </div>
             </div>
         </div>
-        <th:block th:include="dailyband/footer :: footerFragment"></th:block>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
     </div>
 </div>
 <script th:inline="javascript">
@@ -150,25 +150,33 @@
             YrModal.style.display = "flex";
         });
 
-        calendar.on('eventClick', function (info) {
+        calendar.on('eventClick', function(info) {
             if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
-                deleteCalendar(info.event.id);
+                deleteCalendar(info.event.extendedProps.cal_id);
             }
         });
 
-        function deleteCalendar(calendarId) {
+        function deleteCalendar(cal_id) {
+            console.log("/delete/" + cal_id);
             $.ajax({
-                url: "/calendar/delete/" + calendarId,
-                method: "DELETE",
+                url: "delete/" + cal_id,
+                method: "POST",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader(header, token);
                 },
                 success: function(response) {
                     console.log(response);
+                    // 삭제된 일정을 바로 캘린더에서 제거
+                    calendar.getEvents().forEach(function(event) {
+                        if (event.extendedProps.cal_id === cal_id) {
+                            event.remove(); // 캘린더에서 해당 이벤트를 삭제
+                        }
+                    });
                 }
             });
-
         }
+
+
 
         function fCalAdd() {
             if (!mySchTitle.value) {
@@ -219,7 +227,7 @@
                 textColor: fColor
             }
             $.ajax({
-                url:"calendar/add",
+                url:"add",
                 data:sendData,
                 method:"post",
                 beforeSend : function(xhr)
