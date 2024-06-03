@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>밴드원 모집 관리</title>
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              밴드원 모집 관리
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+      <div class="container-xl">
+        <!-- Content here -->
+        <div class="row row-cards">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3>밴드원 모집 정보 조회</h3>
+              </div>
+              <div class="card-body">
+                <table id="mbr_table" class="table table-vcenter card-table table-bordered" style="width:100%">
+                  <thead>
+                  <tr>
+                    <th>지역</th>
+                    <th>장르</th>
+                    <th>분야</th>
+                    <th>밴드 팀명</th>
+                    <th>작성자</th>
+                    <th>모집인원</th>
+                    <th>모집현황</th>
+                    <th>작성일자</th>
+                    <th>참여목록</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="r : ${rBoardList}">
+                    <td>[[${r.RCRIT_AREA_ID}]]</td>
+                    <td>[[${r.RCRIT_GENRE_ID}]]</td>
+                    <td>[[${r.RCRIT_REALM_ID}]]</td>
+                    <td>[[${r.BAND_TEAM_NM}]]</td>
+                    <td>[[${r.MBR_ID}]]</td>
+                    <td>
+                     [[${r.PRPT_STTUS}]]/[[${r.RCRIT_NOPE}]]
+                    </td>
+                    <td th:if="${r.RCRIT_STTUS_CD == 1}">모집중</td>
+                    <td th:unless="${r.RCRIT_STTUS_CD == 1}">모집완료</td>
+                    <td th:text="${#strings.substring(r.REG_DT, 0, 11)}"></td>
+                    <td>참여목록</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+
+</body>
+</html>
