@@ -9,7 +9,18 @@
   <!-- SweetAlert2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
+<div th:if="${message}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: [[${status}]] === 'success' ? 'success' : 'error',
+      title: [[${status}]] === 'success' ? '성공' : '실패',
+      text: [[${message}]],
+      confirmButtonText: '확인'
+    });
+  </script>
+</div>
 <div class="page">
   <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
   <th:block th:replace="~{dailyband/header :: headerFragment}"/>
@@ -35,7 +46,7 @@
             <div class="card">
 
               <div class="card-header">
-                <h3 class="card-title">회원 정보 조회</h3>
+                <h3>회원 정보 조회</h3>
               </div>
               <div class="card-body">
                   <table id="mbr_table" class="table table-vcenter card-table table-bordered" style="width:100%">
@@ -89,8 +100,8 @@
                         <a href="#" class="btn dropdown-toggle btn-outline-success" data-bs-toggle="dropdown" th:if="${m.MBR_STTUS == 0}">활성화</a>
                         <a href="#" class="btn dropdown-toggle btn-outline-danger" data-bs-toggle="dropdown" th:if="${m.MBR_STTUS == 1}">비활성화</a>
                         <div class="dropdown-menu">
-                          <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, status=0)}">활성화</a>
-                          <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, status=1)}">비활성화</a>
+                          <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, newStatus=0)}">활성화</a>
+                          <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, newStatus=1)}">비활성화</a>
                         </div>
                       </td>
                       <td>[[${m.REG_DT}]]</td>
@@ -106,7 +117,6 @@
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
   </div>
 </div>
-
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
@@ -135,7 +145,6 @@
 
 
   });
-
 </script>
 </body>
 </html>

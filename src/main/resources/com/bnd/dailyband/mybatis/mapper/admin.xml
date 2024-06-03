@@ -4,31 +4,114 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.AdminMapper">
 
+  <!-- 회원 목록 -->
   <select id="getMemberList" resultType="member">
     select * from MBR_INFO where MBR_ID != 'admin';
   </select>
 
-  <update id="memberTY">
-    update MBR_INFO set MBR_TY = 'ROLE_MEMBER' where MBR_ID = #{id}
+  <!-- 회원 권한 변경 -->
+  <update id="changeType">
+    update MBR_INFO set MBR_TY = #{role} where MBR_ID = #{id}
   </update>
 
-  <update id="managerTY">
-    update MBR_INFO set MBR_TY = 'ROLE_MANAGER' where MBR_ID = #{id}
+  <!-- 회원 상태 변경 -->
+  <update id="changeStatus">
+    update MBR_INFO set MBR_STTUS = #{newStatus} where MBR_ID = #{id}
   </update>
 
-  <update id="adminTY">
-    update MBR_INFO set MBR_TY = 'ROLE_ADMIN' where MBR_ID = #{id}
-  </update>
-
-  <update id="memberStatusAc">
-    update MBR_INFO set MBR_STTUS = 0 where MBR_ID = #{id}
-  </update>
-
-  <update id="memberStatusIn">
-    update MBR_INFO set MBR_STTUS = 1 where MBR_ID = #{id}
-  </update>
-
-  <select id="getListCount">
+  <!-- 전체 회원 수 -->
+  <select id="getTotalMbrCount">
     select count(*) from MBR_INFO;
+  </select>
+
+  <!-- 일일 가입자 수-->
+  <select id="getTodayMbrCount">
+    select count(*) from MBR_INFO
+    where date_format(REG_DT, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d');
+  </select>
+
+  <!-- 방문정보 추가 -->
+  <insert id="insertVisit">
+    insert into VISIT_INFO (VISIT_DT)
+    VALUES (NOW())
+  </insert>
+
+  <!-- 전체 방문 수-->
+  <select id="getVisitCount" resultType="int">
+    select COUNT(*) from VISIT_INFO
+  </select>
+
+  <!-- 일일 방문 수-->
+  <select id="getTodayVisitCount" resultType="int">
+    SELECT COUNT(*) FROM VISIT_INFO WHERE DATE(VISIT_DT) = CURDATE()
+  </select>
+
+  <!-- 지역별 회원 선호 지역 -->
+  <select id="getPreferAreaCnt" resultType="map">
+    select bc.CTGRY_NM as name, count(m.MBR_PREFER_AREA) as count
+    from BAND_CTGRY bc
+           left join MBR_INFO m
+                     on instr(m.MBR_PREFER_AREA, bc.CTGRY_ID)
+    where bc.CTGRY_TY = 0
+    group by bc.CTGRY_NM
+    having count > 0
+    order by bc.CTGRY_NM
+  </select>
+
+  <!-- 장르별 회원 선호 장르 -->
+  <select id="getPreferGenreCnt" resultType="map">
+    select bc.CTGRY_NM as name, count(m.MBR_PREFER_GENRE) as count
+    from BAND_CTGRY bc
+           left join MBR_INFO m
+                     on instr(m.MBR_PREFER_GENRE, bc.CTGRY_ID)
+    where bc.CTGRY_TY = 1
+    group by bc.CTGRY_NM
+    having count > 0
+    order by bc.CTGRY_NM
+  </select>
+
+  <!-- 분야별 회원 활동 분야 -->
+  <select id="getActRealmCnt" resultType="map">
+    select bc.CTGRY_NM as name, count(m.MBR_ACT_REALM) as count
+    from BAND_CTGRY bc
+           left join MBR_INFO m
+                     on instr(m.MBR_ACT_REALM, bc.CTGRY_ID)
+    where bc.CTGRY_TY = 2
+    group by bc.CTGRY_NM
+    having count > 0
+    order by bc.CTGRY_NM
+  </select>
+
+  <!--게시판별 게시글 수 -->
+  <select id="getBbsCnt" resultType="map">
+    select bc.BBS_TY_NM as bbsNm, count(*) as cnt
+    from RCRIT_BBS rb
+           inner join BBS_CTGRY bc
+                      on rb.BBS_TY_ID = bc.BBS_TY_ID
+    group by bc.BBS_TY_NM;
+
+  </select>
+
+  <!-- 일별 가입자 수 -->
+  <select id="getDayRegCnt" resultType="map">
+    select DATE(REG_DT) as date, count(*) as cnt from MBR_INFO
+    group by DATE(REG_DT)
+    order by date;
+  </select>
+
+  <!-- 일별 방문 수-->
+  <select id="getDayVisitCnt" resultType="map">
+    select DATE(VISIT_DT) as date, count(*) as cnt from VISIT_INFO
+    group by DATE(VISIT_DT)
+    order by date;
+  </select>
+
+  <!-- 밴드원 모집 조회-->
+  <select id="getRboardList" resultType="map">
+    select rb.*, count(bpi.BBS_SN) as PRPT_STTUS
+    from RCRIT_BBS rb left outer join BAND_PRPT_INFO bpi
+                                      on rb.BBS_SN = bpi.BBS_SN
+                                        and bpi.MBR_PRPT_STTUS = 1
+    group by rb.BBS_SN;
   </select>
 </mapper>

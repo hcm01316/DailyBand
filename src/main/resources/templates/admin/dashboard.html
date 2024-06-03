@@ -41,10 +41,10 @@
                   </div>
                   <div class="col">
                     <div class="font-weight-medium">
-                      전체 [[${listcount}]]명
+                      전체 [[${TotalMbrCnt}]]명
                     </div>
                     <div class="text-muted">
-                      일일 가입 12명
+                      일일 가입 [[${TodayMbrCnt}]]명
                     </div>
                   </div>
                 </div>
@@ -68,10 +68,10 @@
                   </div>
                   <div class="col">
                     <div class="font-weight-medium">
-                      전제 방문 443
+                      전체 방문 [[${TotalVisitCnt}]]
                     </div>
                     <div class="text-muted">
-                      일일 방문 122
+                      일일 방문 [[${TodayVisitCnt}]]
                     </div>
                   </div>
                 </div>
@@ -83,34 +83,7 @@
               <div class="card-body">
                 <div class="row align-items-center">
                   <div class="col-auto">
-                        <span class="bg-red text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/user -->
-                          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
-                               height="24" viewBox="0 0 24 24" stroke-width="2"
-                               stroke="currentColor" fill="none" stroke-linecap="round"
-                               stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"
-                                                             fill="none"/><path
-                              d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path
-                              d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
-                        </span>
-                  </div>
-                  <div class="col">
-                    <div class="font-weight-medium">
-                      전체 신고 423건
-                    </div>
-                    <div class="text-muted">
-                      일일 신고 16건
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-xl-3">
-            <div class="card card-sm">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-auto">
-                        <span class="bg-yellow text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/message -->
+                        <span class="bg-red text-white avatar">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -123,10 +96,38 @@
                   </div>
                   <div class="col">
                     <div class="font-weight-medium">
-                      132 Comments
+                      전체 신고 -건
                     </div>
                     <div class="text-muted">
-                      16 waitings
+                      일일 신고 -건
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                        <span class="bg-yellow text-white avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                               viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                               class="icon icon-tabler icons-tabler-outline icon-tabler-speakerphone"><path
+                              stroke="none" d="M0 0h24v24H0z" fill="none"/><path
+                              d="M18 8a3 3 0 0 1 0 6"/><path
+                              d="M10 8v11a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1v-5"/><path
+                              d="M12 8h0l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8"/></svg>
+                        </span>
+                  </div>
+                  <div class="col">
+                    <div class="font-weight-medium">
+                      -
+                    </div>
+                    <div class="text-muted">
+                      -
                     </div>
                   </div>
                 </div>
@@ -136,20 +137,60 @@
           <div class="col-md-6 col-xl-6">
             <div class="card">
               <div class="card-header">
-                <h4 class="card-title">일별 회원가입 수</h4>
+                <h3>일별 회원가입 수</h3>
               </div>
               <div class="card-body">
                 <div id="redDtDayChart"></div>
               </div>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 col-xl-6">
             <div class="card">
               <div class="card-header">
-                <h4 class="card-title">일별 방문자 수</h4>
+                <h3>일별 방문자 수</h3>
               </div>
               <div class="card-body">
                 <div id="visitDayChart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-12">
+            <div class="card">
+              <div class="card-header">
+                <h3>게시판별 게시글 수</h3>
+              </div>
+              <div class="card-body">
+                <div id="bbsChart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card">
+              <div class="card-header">
+                <h3>회원 선호 지역</h3>
+              </div>
+              <div class="card-body">
+                <div id="preferAreaChart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card">
+              <div class="card-header">
+                <h3>회원 선호 장르</h3>
+              </div>
+              <div class="card-body">
+                <div id="preferGenreChart"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card">
+              <div class="card-header">
+                <h3>회원 활동 분야</h3>
+              </div>
+              <div class="card-body">
+                <div id="actRealmChart"></div>
               </div>
             </div>
           </div>
@@ -159,5 +200,252 @@
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
   </div>
 </div>
+<script th:inline="javascript">
+  // 일별 가입자 수
+  var dayRegCnt = /*[[${dayRegCnt}]]*/ {};
+
+  var rddOptions = {
+    chart: {
+      type: 'area',
+      height: 400
+    },
+    series: [{
+      name: 'Count',
+      data: dayRegCnt.map(function(item) {
+        return {x: item.date, y: item.cnt};
+      })
+    }],
+    xaxis: {
+      type: 'category',
+    },
+    yaxis: {
+      tickAmount: 5
+    },
+    colors: [
+      '#435ebe'
+    ],
+    dataLabels: {
+      enabled: false
+    },
+    legend: {
+      show: false
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        legend: {
+          show: false
+        }
+      }
+    }]
+  };
+
+  var rddChart = new ApexCharts(document.querySelector("#redDtDayChart"), rddOptions);
+  rddChart.render();
+
+  //일별 방문자 수
+  var dayVisitCnt = /*[[${dayVisitCnt}]]*/ {};
+
+  var vdOptions = {
+    chart: {
+      type: 'line',
+      height: 400
+    },
+    series: [{
+      name: 'Count',
+      data: dayVisitCnt.map(function(item) {
+        return {x: item.date, y: item.cnt};
+      })
+    }],
+    xaxis: {
+      type: 'category',
+    },
+    yaxis: {
+      tickAmount: 5
+    },
+    colors: [
+      '#7C87FF'
+    ],
+    dataLabels: {
+      enabled: false
+    },
+    legend: {
+      show: false
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        legend: {
+          show: false
+        }
+      }
+    }]
+  };
+
+  var vdchart = new ApexCharts(document.querySelector("#visitDayChart"), vdOptions);
+  vdchart.render();
+
+  //게시판별 게시글 수
+  var bbsCnt = /*[[${bbsCnt}]]*/ {};
+
+  var bbsoptions = {
+    chart: {
+      type: 'bar',
+      height: 400
+    },
+    series: [{
+      name: 'Count',
+      data: bbsCnt.map(function(item) {
+        return { x: item.bbsNm, y: item.cnt };
+      })
+    }],
+    xaxis: {
+      type: 'category',
+      tickAmount: 5
+    },
+    colors: ['#7C87FF'],
+    plotOptions: {
+      bar: {
+        horizontal: true
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    legend: {
+      show: false
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        legend: {
+          show: false
+        }
+      }
+    }]
+  };
+
+  var bbsChart = new ApexCharts(document.querySelector("#bbsChart"), bbsoptions);
+  bbsChart.render();
+
+  //지역별 회원 선호 지역
+  var mbrPreferAreaCnt = /*[[${mbrPreferAreaCnt}]]*/ {};
+
+  var preferAreaLabels = Object.keys(mbrPreferAreaCnt);
+  var preferAreaValues = Object.values(mbrPreferAreaCnt);
+
+  var options = {
+    series: preferAreaValues,
+    chart: {
+      width: '100%',
+      type: 'pie',
+    },
+    labels: preferAreaLabels,
+    theme: {
+      monochrome: {
+        enabled: true,
+        color: '#435ebe'
+      }
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          offset: -5
+        }
+      }
+    },
+    dataLabels: {
+      formatter(val, opts) {
+        const name = opts.w.globals.labels[opts.seriesIndex]
+        return [name, val.toFixed(1) + '%']
+      }
+    },
+    legend: {
+      show: false
+    }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#preferAreaChart"), options);
+  chart.render();
+
+  //장르별 회원 선호 장르
+  var mbrPreferGenreCnt = /*[[${mbrPreferGenreCnt}]]*/ {};
+
+  var preferGenreLabels = Object.keys(mbrPreferGenreCnt);
+  var preferGenreValues = Object.values(mbrPreferGenreCnt);
+
+  var pgOptions = {
+    series: preferGenreValues,
+    chart: {
+      width: '100%',
+      type: 'pie',
+    },
+    labels: preferGenreLabels,
+    theme: {
+      monochrome: {
+        enabled: true,
+        color: '#AC9FEA'
+      }
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          offset: -5
+        }
+      }
+    },
+    dataLabels: {
+      formatter(val, opts) {
+        const name = opts.w.globals.labels[opts.seriesIndex]
+        return [name, val.toFixed(1) + '%']
+      }
+    },
+    legend: {
+      show: false
+    }
+  };
+  var pgChart = new ApexCharts(document.querySelector("#preferGenreChart"), pgOptions);
+  pgChart.render();
+
+  //분야별 회원 활동 분야
+  var mbrActRealmCnt = /*[[${mbrActRealmCnt}]]*/ {};
+
+  var ActRealmLabels = Object.keys(mbrActRealmCnt);
+  var ActRealmValues = Object.values(mbrActRealmCnt);
+
+  var arOptions = {
+    series: ActRealmValues,
+    chart: {
+      width: '100%',
+      type: 'pie',
+    },
+    labels: ActRealmLabels,
+    theme: {
+      monochrome: {
+        enabled: true,
+        color: '#6f42c1'
+      }
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          offset: -5
+        }
+      }
+    },
+    dataLabels: {
+      formatter(val, opts) {
+        const name = opts.w.globals.labels[opts.seriesIndex]
+        return [name, val.toFixed(1) + '%']
+      }
+    },
+    legend: {
+      show: false
+    }
+  };
+
+  var arChart = new ApexCharts(document.querySelector("#actRealmChart"), arOptions);
+  arChart.render();
+</script>
 </body>
 </html>
