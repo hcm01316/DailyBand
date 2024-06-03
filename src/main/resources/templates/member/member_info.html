@@ -74,11 +74,13 @@
                 <div class="datagrid">
                   <div class="datagrid-item">
                     <div class="datagrid-title">나이</div>
-                    <div class="datagrid-content">[[${memberinfo.MBR_AGE}]]세</div>
+                    <div class="datagrid-content" th:if="${memberinfo.MBR_AGE != 0}">[[${memberinfo.MBR_AGE}]]세</div>
+                    <div class="datagrid-content" th:unless="${memberinfo.MBR_AGE != 0}">-</div>
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">성별</div>
-                    <div class="datagrid-content">[[${memberinfo.MBR_GENDER}]]</div>
+                    <div class="datagrid-content" th:if="${memberinfo.MBR_GENDER != null}">[[${memberinfo.MBR_GENDER}]]</div>
+                    <div class="datagrid-content" th:unless="${memberinfo.MBR_GENDER != null}">-</div>
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">선호 지역</div>
@@ -106,15 +108,26 @@
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">소셜 링크</div>
-                    <div class="datagrid-content">
-                      <img th:src="@{/image/youtube_icon.png}" alt="youtube" width="20px"
-                           class="social_icon">
-                      <img th:src="@{/image/instagram_icon.png}" alt="instagram" width="20px"
-                           class="social_icon">
-                      <img th:src="@{/image/soundcloud_icon.png}" alt="soundcloud" width="20px"
-                           class="social_icon">
-                      <img th:src="@{/image/spotify_icon.png}" alt="spotify" width="20px"
-                           class="social_icon">
+                    <div class="datagrid-content" th:if="${socialinfo != null}">
+                      <a th:href="${socialinfo.YT_ADDR}" target="_blank">
+                        <img th:src="@{/image/youtube_icon.png}" alt="youtube" width="20px"
+                             class="social_icon" th:if="${socialinfo.YT_ADDR != null}">
+                      </a>
+                      <a th:href="${socialinfo.INSTA_ADDR}" target="_blank">
+                        <img th:src="@{/image/instagram_icon.png}" alt="instagram" width="20px"
+                             class="social_icon" th:if="${socialinfo.INSTA_ADDR != null}">
+                      </a>
+                      <a th:href="${socialinfo.SC_ADDR}" target="_blank">
+                        <img th:src="@{/image/soundcloud_icon.png}" alt="soundcloud" width="20px"
+                             class="social_icon" th:if="${socialinfo.SC_ADDR != null}">
+                      </a>
+                      <a th:href="${socialinfo.SPOTI_ADDR}" target="_blank">
+                        <img th:src="@{/image/spotify_icon.png}" alt="spotify" width="20px"
+                             class="social_icon" th:if="${socialinfo.SPOTI_ADDR != null}">
+                      </a>
+                    </div>
+                    <div class="datagrid-content" th:unless="${socialinfo != null}">
+                      <p>-</p>
                     </div>
                   </div>
                 </div>
