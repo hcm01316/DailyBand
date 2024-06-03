@@ -154,31 +154,34 @@ public class MemberController {
 		return "member/join2";
 	}
 
+	//내 프로필 정보
 	@RequestMapping("/myprofile")
 	public ModelAndView myProfile(
-			HttpServletRequest request,
+			HttpServletRequest request, Principal principal,
 			ModelAndView mv) {
-		Principal principal = request.getUserPrincipal();
-		Member m = memberService.member_info(principal.getName());
-		//logger.info("회원 principal.getName = " + principal.getName());
+		String id = principal.getName();
+		Member member = memberService.member_info(id);
+		Social social = memberService.mysocial(id);
+
+		logger.info("회원 id = " + id);
 		mv.setViewName("member/my_profile");
-		mv.addObject("memberinfo", m);
+		mv.addObject("memberinfo", member);
+		mv.addObject("socialinfo", social);
 		return mv;
 	}
 
+	//상대 프로필 정보
 	@RequestMapping("/info")
 	public ModelAndView mbrInfo(@RequestParam("id") String id,
 			HttpServletRequest request, ModelAndView mv) {
-		Member m = memberService.member_info(id);
+		Member member = memberService.member_info(id);
+		Social social = memberService.mysocial(id);
 
 		logger.info("회원 아이디 : " + id);
-		if(m != null) {
+		if(member != null) {
 			mv.setViewName("member/member_info");
-			mv.addObject("memberinfo", m);
-		} else {
-			mv.addObject("url", request.getRequestURL());
-			mv.addObject("message", "해당 정보가 없습니다.");
-			mv.setViewName("error/error");
+			mv.addObject("memberinfo", member);
+			mv.addObject("socialinfo", social);
 		}
 		return mv;
 	}

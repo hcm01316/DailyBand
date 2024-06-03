@@ -77,41 +77,45 @@ public class Member implements UserDetails {
 	}
 
 	public String getAREA_IDK() {
-		String area = MBR_PREFER_AREA;
-		if (area.equals("A01"))
-			area = "서울";
-		else if (area.equals("A02"))
-			area = "경기";
-		else if (area.equals("A03"))
-			area = "부산";
-		else if (area.equals("A04"))
-			area = "대구";
-		else if (area.equals("A05"))
-			area = "광주";
-		else if (area.equals("A06"))
-			area = "대전";
-		else if (area.equals("A07"))
-			area = "충남";
-		else if (area.equals("A08"))
-			area = "충북";
-		else if (area.equals("A09"))
-			area = "세종";
-		else if (area.equals("A10"))
-			area = "울산";
-		else if (area.equals("A11"))
-			area = "인천";
-		else if (area.equals("A12"))
-			area = "강원";
-		else if (area.equals("A13"))
-			area = "전남";
-		else if (area.equals("A14"))
-			area = "전북";
-		else if (area.equals("A15"))
-			area = "경북";
-		else if (area.equals("A16"))
-			area = "광남";
-		else if (area.equals("A17"))
-			area = "제주";
+		String gairesult[] = MBR_PREFER_AREA.split(",");
+		String area = "";
+		for (String a : gairesult) {
+			if (a.equals("A01"))
+				area += "서울 ";
+			else if (a.equals("A02"))
+				area += "경기 ";
+			else if (a.equals("A03"))
+				area += "부산 ";
+			else if (a.equals("A04"))
+				area += "대구 ";
+			else if (a.equals("A05"))
+				area += "광주 ";
+			else if (a.equals("A06"))
+				area += "대전 ";
+			else if (a.equals("A07"))
+				area += "충남 ";
+			else if (a.equals("A08"))
+				area += "충북 ";
+			else if (a.equals("A09"))
+				area += "세종 ";
+			else if (a.equals("A10"))
+				area += "울산 ";
+			else if (a.equals("A11"))
+				area += "인천 ";
+			else if (a.equals("A12"))
+				area += "강원 ";
+			else if (a.equals("A13"))
+				area += "전남 ";
+			else if (a.equals("A14"))
+				area += "전북 ";
+			else if (a.equals("A15"))
+				area += "경북 ";
+			else if (a.equals("A16"))
+				area += "광남 ";
+			else if (a.equals("A17"))
+				area += "제주 ";
+		}
+
 		return area;
 	}
 
