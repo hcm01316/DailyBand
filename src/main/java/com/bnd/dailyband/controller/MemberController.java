@@ -3,6 +3,7 @@ package com.bnd.dailyband.controller;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.MailVO;
+import com.bnd.dailyband.service.s3upload.ImageUploadService;
 import com.bnd.dailyband.task.SendMail;
 import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.service.member.MemberService;
@@ -12,14 +13,18 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 
@@ -32,14 +37,16 @@ public class MemberController {
 	private MemberService memberService;
 	private PasswordEncoder passwordEncoder;
 	private SendMail sendMail;
+	private ImageUploadService imageUploadService;
 
 	@Autowired
 	public MemberController(MemberService memberService,
 							PasswordEncoder passwordEncoder,
-							SendMail sendMail) {
+							SendMail sendMail,ImageUploadService imageUploadService) {
 		this.memberService=memberService;
 		this.passwordEncoder=passwordEncoder;
 		this.sendMail = sendMail;
+		this.imageUploadService= imageUploadService;
 	}
 
 	@ModelAttribute
@@ -214,21 +221,127 @@ public class MemberController {
 		return mv;
 	}
 
+	@PostMapping("/upload")
+	public String upload(MultipartFile image, Model model, Principal userPrincipal) throws IOException {
+		/* 이미지 업로드 로직 */
+		String imageUrl = imageUploadService.upload(image);
+		String id = userPrincipal.getName();
+
+		memberService.imageupdate(imageUrl,id);
+		Member member = memberService.myallinfo(id);
+
+		UsernamePasswordAuthenticationToken authentication =
+				new UsernamePasswordAuthenticationToken(member, member.getPassword(), member.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
+		/* View에게 전달할 데이터를 Model에 담음 */
+		model.addAttribute("imageUrl", imageUrl);
+
+
+
+		/* View의 이름을 반환하여 View를 렌더링하도록 함 */
+		return "redirect:update";
+	}
+
+	@GetMapping("/imageremove")
+	public String imageremove(Model model, Principal userPrincipal) {
+		/* 이미지 업로드 로직 */
+		String id = userPrincipal.getName();
+		String url = "https://myfirsttest1bucket.s3.ap-northeast-2.amazonaws.com/profile.png";
+		memberService.imageupdate(url,id);
+
+		Member member = memberService.myallinfo(id);
+
+		UsernamePasswordAuthenticationToken authentication =
+				new UsernamePasswordAuthenticationToken(member, member.getPassword(), member.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		return "redirect:update";
+	}
+
 	@RequestMapping("/updateaction")
 	public ModelAndView Modifyaction(Principal userPrincipal,
-								   HttpServletRequest request, ModelAndView mv,RedirectAttributes redirect) {
+									 HttpServletRequest request, ModelAndView mv, RedirectAttributes redirect, Member member, Social social) {
+
 		String id = userPrincipal.getName();
-		int modify = memberService.myinfo_modify(id);
-		Social social = new Social();
-
-
-		if (social != null) {
-			//Social social = memberService.mysocial(id);
-			redirect.addFlashAttribute("message", "정보수정이 성공적으로 완료되었습니다.");
+		String area[] = request.getParameterValues("MBR_PREFER_AREA");
+		String genre[] = request.getParameterValues("MBR_PREFER_GENRE");
+		String realm[] = request.getParameterValues("MBR_ACT_REALM");
+		String tgenre = "";
+		String trealm = "";
+		String tarea = "";
+		if (area != null && area.length != 0) {
+			tarea += area[0];
+			for (int i = 1; i < area.length; i++) {
+				tarea += ","+area[i];
+			}
+		}
+		if (genre != null && genre .length != 0) {
+			tgenre  += genre [0];
+			for (int i = 1; i < genre .length; i++) {
+				tgenre += ","+genre [i];
+			}
 		}
 
-		else {
-			redirect.addFlashAttribute("message", "정보수정이 실패했습니다.");
+		if (realm != null && realm .length != 0) {
+			trealm  += realm [0];
+			for (int i = 1; i < realm .length; i++) {
+				trealm += ","+realm [i];
+			}
+		}
+
+		member.setMBR_ACT_REALM(trealm);
+		member.setMBR_PREFER_AREA(tarea);
+		member.setMBR_PREFER_GENRE(tgenre);
+
+		int modify = memberService.myinfo_modify(member,id);
+
+		if (modify == 1) {
+			redirect.addFlashAttribute("message", "정보 수정에 성공 했습니다.");
+		}
+
+		if (modify != 1) {
+			redirect.addFlashAttribute("message", "정보 수정에 실패 했습니다.");
+		}
+
+		int ck = 0;
+		String in = request.getParameter("INSTA_ADDR");
+		String yt = request.getParameter("YT_ADDR");
+		String sc = request.getParameter("SC_ADDR");
+		String sp = request.getParameter("SPOTI_ADDR");
+
+		if (in != null)
+		{
+			ck++;
+		}
+
+		if (yt != null)
+		{
+			ck++;
+		}
+
+		if (sc != null)
+		{
+			ck++;
+		}
+
+		if (sp != null)
+		{
+			ck++;
+		}
+
+		social.setINSTA_ADDR(in);
+		social.setSC_ADDR(sc);
+		social.setYT_ADDR(yt);
+		social.setSPOTI_ADDR(sp);
+
+
+		if (memberService.mysocial(id) != null && ck >= 1 ) { // 기존에 소셜 링크가 있으면서 소셜링크 입력한게 있다면
+			memberService.social_update(social,id);
+		}
+		else if (memberService.mysocial(id) == null && ck >= 1) { // 기존에 소셜 링크가 없으면서 소셜 링크 입력한게 있다면
+			memberService.social_insert(social,id);
 		}
 		mv.setViewName("redirect:update");
 		return mv;
