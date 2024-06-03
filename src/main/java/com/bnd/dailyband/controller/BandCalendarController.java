@@ -20,6 +20,7 @@ public class BandCalendarController {
 
     @GetMapping("/bandcal")
     public String showBandCalendarPage(Model model) {
+        model.addAttribute("current", "bandCal");
         model.addAttribute("bbsSn",9);
         model.addAttribute("allData",calendarService.getAllCalendars(9));
         return "calendar/band_calendar";
@@ -43,12 +44,7 @@ public class BandCalendarController {
         return "ok";
     }
 
-    /*@GetMapping("/calendar/all")
-    public List<Calendar> getAllCalendars() {
-        return calendarService.getAllCalendars();
-    }*/
-
-    @PostMapping("/delete")
+    @PostMapping("/delete/{cal_id}")
     @ResponseBody
     public String deleteCalendar(@PathVariable("cal_id") int cal_id) {
         calendarService.deleteCalendar(cal_id);
