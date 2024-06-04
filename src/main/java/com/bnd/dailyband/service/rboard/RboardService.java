@@ -46,7 +46,7 @@ public interface RboardService {
     public void join(String id, int num);
 
     // 가입 수락시 다른 가입 대기중 삭제
-    public void joinwatingdel(String id);
+    public void joinwatingdel(int num);
 
     public List<Bandhr>getjoinlist(int bbs_sn);
     // 자신이 속한 밴드 확인
@@ -80,5 +80,6 @@ public interface RboardService {
     public void teamstopen(int num);
 
     public int updateRboard(Rboard rboard);
+
 
 }

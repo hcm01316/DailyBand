@@ -12,6 +12,15 @@ public class Rlist {
     private int RCRIT_STTUS_CD;
     private int RCRIT_NOPE;
     private int BBS_READ_CNT;
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public String getMBR_PROFL_PHOTO() {
         return MBR_PROFL_PHOTO;

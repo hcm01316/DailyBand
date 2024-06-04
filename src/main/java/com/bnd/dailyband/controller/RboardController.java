@@ -2,21 +2,33 @@ package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.*;
 import com.bnd.dailyband.service.rboard.RboardService;
+import com.bnd.dailyband.service.s3upload.ImageUploadService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/rboard")
@@ -25,12 +37,13 @@ public class RboardController {
 	private static final Logger logger = LoggerFactory.getLogger(RboardController.class);
 
 	private RboardService rboardService;
-
+	private ImageUploadService imageUploadService;
 
 	@Autowired
-	public RboardController(RboardService rboardService)
+	public RboardController(RboardService rboardService, ImageUploadService imageUploadService)
 	{
 		this.rboardService = rboardService;
+		this.imageUploadService = imageUploadService;
 	}
 
 	@ModelAttribute
@@ -147,7 +160,7 @@ public class RboardController {
 	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv,Principal userPrincipal) {
 
 		String id = userPrincipal.getName();
-		int limit = 4; // 한 화면에 출력할 로우 갯수
+		int limit = 6; // 한 화면에 출력할 로우 갯수
 
 		int listcount = rboardService.getListCount(); // 총 리스트 수를 받아옴
 
@@ -161,7 +174,18 @@ public class RboardController {
 		if (endpage > maxpage)
 			endpage = maxpage;
 
-		List<Rlist> rboardlist = rboardService.getRboardList(page, limit); // 리스트를 받아옴
+		List<Rlist> rboardlist = rboardService.getRboardList(page, limit);// 리스트를 받아옴
+
+		for (Rlist vo : rboardlist) {
+			System.out.println(vo.getBBS_CN());
+			String imageUrl = getImgSrc(vo.getBBS_CN());
+			vo.setImageUrl(imageUrl.isEmpty() ? "/image/rboard.png" : imageUrl);
+		}
+
+
+
+
+
 		int bandck = rboardService.bandck(id);
 		if (bandck == -1) {
 			mv.addObject("isband", 0);
@@ -180,6 +204,17 @@ public class RboardController {
 		mv.addObject("limit", limit);
 		mv.addObject("current", "rBoard");
 		return mv;
+	}
+
+	public String getImgSrc(String content) {
+		if (content != null) {
+			Pattern imgTagPattern = Pattern.compile("<img\\s+[^>]*src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+			Matcher matcher = imgTagPattern.matcher(content);
+			if (matcher.find()) {
+				return matcher.group(1);
+			}
+		}
+		return "";
 	}
 
 	@RequestMapping ("/join")
@@ -206,9 +241,10 @@ public class RboardController {
 
 		int resign = rboardService.resign(id,num);
 
+		int cnt = rboardService.bandacceptcnt(num);
 		int nope = rboardService.getrenope(num);
 
-		if (nope == 0)
+		if(cnt != nope)
 		{
 			rboardService.teamstopen(num);
 		}
@@ -235,7 +271,7 @@ public class RboardController {
 
 		if (accept == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
-			rboardService.joinwatingdel(id);
+			rboardService.joinwatingdel(num);
 
 			int cnt = rboardService.bandacceptcnt(num);
 			int nope = rboardService.getrenope(num);
@@ -327,9 +363,10 @@ public class RboardController {
 		String id = userPrincipal.getName();
 		int leave = rboardService.leave(id,num);
 
+		int cnt = rboardService.bandacceptcnt(num);
 		int nope = rboardService.getrenope(num);
 
-		if (nope == 0)
+		if(cnt != nope)
 		{
 			rboardService.teamstopen(num);
 		}
@@ -362,6 +399,21 @@ public class RboardController {
 
 		logger.info(rboard.toString()); // selectKey로 정의한 BOARD_NUM 값 확인해 봅시다.
 		return "redirect:list";
+	}
+
+	@RequestMapping("/upload")
+	@ResponseBody
+	public ResponseEntity<Map<String, String>> upload(MultipartFile upload) throws IOException {
+		// 이미지 업로드 로직
+		String imageUrl = imageUploadService.upload(upload);
+
+		System.out.println("Received file: " + upload.getOriginalFilename());
+		System.out.println("File size: " + upload.getSize());
+
+		Map<String, String> response = new HashMap<>();
+		response.put("url", imageUrl);
+		// 이미지 URL 반환
+		return ResponseEntity.ok(response);
 	}
 
 

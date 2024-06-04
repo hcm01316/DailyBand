@@ -88,11 +88,11 @@
                                     [[${item.MBR_NCNM}]]
                                 </td>
                                 <td class="text-secondary">
-                                    <th:block th:if="${item.MBR_AGE} != null">
+                                    <th:block th:if="${item.MBR_AGE} != 0">
                                         [[${item.MBR_AGE}]]
                                     </th:block>
-                                    <th:block th:if="${item.MBR_AGE} == null">
-                                        선택안함
+                                    <th:block th:if="${item.MBR_AGE} == 0">
+                                        -
                                     </th:block>
                                 </td>
                                 <td class="text-secondary">
@@ -137,13 +137,13 @@
                                 </td>
                                 <td>
                                     <th:block th:if="${leaderck} == 2 and ${item.MBR_ID} == ${id}">
-                                        <a th:href="@{/rboard/breakup(num=${item.BBS_SN})}" onclick="return confirm('정말 해체 하시겠습니까?')">해체</a>
+                                        <a class="btn btn-red" th:href="@{/rboard/breakup(num=${item.BBS_SN})}" onclick="return confirm('정말 해체 하시겠습니까?')">해체</a>
                                     </th:block>
                                     <th:block th:if="${leaderck} == 2 and ${item.MBR_ID} != ${id}">
-                                        <a th:href="@{/rboard/refuse(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 강퇴하시겠습니까?')">강퇴</a>
+                                        <a class="btn btn-red" th:href="@{/rboard/resign(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 강퇴하시겠습니까?')">강퇴</a>
                                     </th:block>
                                     <th:block th:if="${leaderck} == 1 and ${item.MBR_ID} == ${id} ">
-                                        <a th:href="@{/rboard/leave(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 탈퇴 하시겠습니까?')">탈퇴</a>
+                                        <a class="btn btn-red" th:href="@{/rboard/leave(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 탈퇴 하시겠습니까?')">탈퇴</a>
                                     </th:block>
                                 </td>
                             </tr>
@@ -218,8 +218,8 @@
                                         </th:block>
                                     </td>
                                     <td>
-                                        <a th:href="@{/rboard/accept(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 수락 하시겠습니까?')">수락</a>
-                                        | <a th:href="@{/rboard/refuse(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 거절 하시겠습니까?')">거절</a>
+                                        <a class="btn btn-lime" th:href="@{/rboard/accept(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 수락 하시겠습니까?')">수락</a>
+                                        <a class="btn btn-red" th:href="@{/rboard/refuse(id=${item.MBR_ID}, num=${item.BBS_SN})}" onclick="return confirm('정말 거절 하시겠습니까?')">거절</a>
                                     </td>
                                 </tr>
                                 </tbody>
