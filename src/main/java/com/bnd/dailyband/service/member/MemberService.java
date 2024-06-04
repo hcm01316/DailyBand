@@ -30,11 +30,12 @@ public interface MemberService {
 
 	public int social_update(Social social,String id);
 
-	int isEmail(String email);
+	public int isEmail(String email);
 
 	public void imageupdate(String url, String id);
 
 	public Member myallinfo(String id);
 
+	public String findIdByEmail(String email);
 
 }
