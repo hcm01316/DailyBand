@@ -1,18 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org/"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>밴드 관리</title>
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-<div th:if="${message != null}">
+<div th:if="${message}">
     <script th:inline="javascript">
-        var isMessage = true;
-        if (isMessage) {
-            alert([[${message}]]);
-            isMessage = false;
-        }
+        Swal.fire({
+            icon: [[${status}]] === 'success' ? 'success' : 'error',
+            title: [[${status}]] === 'success' ? '성공' : '실패',
+            text: [[${message}]],
+            confirmButtonText: '확인'
+        });
     </script>
 </div>
 <div class="page">
