@@ -2,11 +2,14 @@ package com.bnd.dailyband.service.Calendar;
 
 import com.bnd.dailyband.domain.Calendar;
 import com.bnd.dailyband.mybatis.mapper.CalendarMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class CalendarServiceImpl implements CalendarService {
 
@@ -17,9 +20,11 @@ public class CalendarServiceImpl implements CalendarService {
         this.calendarMapper = calendarMapper;
     }
 
+    @Transactional
     @Override
     public void addCalendar(Calendar calendar) {
         calendarMapper.insertCalendar(calendar);
+        log.info(calendar.getCal_id()+"cal_id");
     }
 
     @Override
