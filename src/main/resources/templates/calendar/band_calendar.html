@@ -68,7 +68,6 @@
                 </div>
             </div>
         </div>
-        <!-- Page body -->
         <div class="page-body">
             <div class="container-xl">
                 <div id="yrModal" style="display:none;">
@@ -108,7 +107,8 @@
 
     const bbsSn = [[${bbsSn}]]
 
-    document.addEventListener('DOMContentLoaded', function () {
+    let calendar = {}
+
         const calendarEl = document.querySelector('#calendar');
         const mySchStart = document.querySelector("#schStart");
         const mySchStartTime = document.querySelector("#schStartTime");
@@ -120,44 +120,84 @@
         const mySchFColor = document.querySelector("#schFColor");
         const YrModal = document.querySelector("#yrModal");
 
-        const calendarOption = {
-            height: '700px',
-            expandRows: true,
-            headerToolbar: {
-                left: 'prevYear,prev,next,nextYear today',
-                center: 'title',
-                right: 'dayGridMonth,dayGridWeek,timeGridDay'
-            },
-            initialView: 'dayGridMonth',
-            locale: 'kr',
-            selectable: true,
-            selectMirror: true,
-            navLinks: true,
-            editable: true,
-            dayMaxEventRows: true,
-            nowIndicator: true,
-            events:[[${allData}]]
+        let respondata = [];
+
+        function getlist(){
+            $.ajax({
+                url:"select",
+                method : "GET",
+                async : false,
+                success : function (rdata){
+
+                    respondata = rdata;
+
+                    const calendarOption = {
+                        height: '700px',
+                        expandRows: true,
+                        headerToolbar: {
+                            left: 'prevYear,prev,next,nextYear today',
+                            center: 'title',
+                            right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                        },
+                        initialView: 'dayGridMonth',
+                        locale: 'kr',
+                        selectable: true,
+                        selectMirror: true,
+                        navLinks: true,
+                        editable: true,
+                        dayMaxEventRows: true,
+                        nowIndicator: true,
+                        events:rdata
+                    }
+
+                    calendar = new FullCalendar.Calendar(calendarEl, calendarOption);
+
+                    calendar.on("select", info => {
+                        mySchStart.value = info.startStr.split('T')[0];
+                        mySchEnd.value = info.endStr.split('T')[0];
+
+                        // 선택한 날짜의 시간을 입력란에 표시합니다.
+                        if (!info.allDay) {
+                            mySchStartTime.value = info.startStr.split('T')[1].substring(0, 5);
+                            mySchEndTime.value = info.endStr.split('T')[1].substring(0, 5);
+                        }
+
+                        // 월간 뷰에서는 종료일을 선택한 날짜의 마지막 날짜로 설정
+                        if (info.view.type === 'dayGridMonth') {
+                            let endDate = new Date(info.endStr);
+                            endDate.setDate(endDate.getDate() - 1); // 선택한 달의 마지막 날짜로 설정
+                            mySchEnd.value = endDate.toISOString().split('T')[0];
+                        }
+                        // 주간 뷰에서는 종료일을 선택한 주의 마지막 날짜로 설정
+                        else if (info.view.type === 'dayGridWeek') {
+                            let endDate = new Date(info.endStr);
+                            endDate.setDate(endDate.getDate() -1); // 선택한 주의 마지막 날짜로 설정
+                            mySchEnd.value = endDate.toISOString().split('T')[0];
+                        }
+
+                        YrModal.style.display = "flex";
+                    });
+
+
+
+
+                    calendar.on('eventClick', function(info) {
+                        if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
+                            deleteCalendar(info.event.extendedProps.cal_id);
+                        }
+                    });
+
+                    calendar.render();
+
+                    console.log("getlist()");
+                }
+            })
         }
+        getlist();
 
-        const calendar = new FullCalendar.Calendar(calendarEl, calendarOption);
-        calendar.render();
 
-        calendar.on("select", info => {
-            mySchStart.value = info.startStr;
-            let endDate = new Date(info.endStr); // 종료일을 선택한 날짜로 설정
-            endDate.setDate(endDate.getDate() - 1); // 하루를 빼서 시작일과 종료일을 동일하게 설정
-            mySchEnd.value = endDate.toISOString().split('T')[0];
-            YrModal.style.display = "flex";
-        });
-
-        calendar.on('eventClick', function(info) {
-            if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
-                deleteCalendar(info.event.extendedProps.cal_id);
-            }
-        });
 
         function deleteCalendar(cal_id) {
-            console.log("/delete/" + cal_id);
             $.ajax({
                 url: "delete/" + cal_id,
                 method: "POST",
@@ -201,12 +241,26 @@
 
             if (mySchAllday.checked) {
                 // 하루 종일 이벤트
-                event.start = mySchStart.value;
-                event.end = mySchEnd.value;
+                event.start = mySchStart.value + 'T00:00'; // 시작일의 00:00
+                // 종료일은 시작일의 다음 날의 00:00으로 설정
+                let endDate = new Date(mySchEnd.value);
+                endDate.setDate(endDate.getDate() + 1);
+                event.end = endDate.toISOString().split('T')[0] + 'T00:00';
+
+                // 종료일이 시작일보다 이후인지 확인
+                if (new Date(event.start) >= new Date(event.end)) {
+                    alert("시작시간은 종료시간보다 빨라야 합니다.");
+                    return;
+                }
             } else {
                 // 시간이 지정된 이벤트
                 event.start = mySchStart.value + 'T' + mySchStartTime.value;
                 event.end = mySchEnd.value + 'T' + mySchEndTime.value;
+
+                if (new Date(event.start) > new Date(event.end)) {
+                    alert("시작시간은 종료시간보다 빨라야 합니다.");
+                    return;
+                }
             }
 
             calendar.addEvent(event);
@@ -235,8 +289,8 @@
                     xhr.setRequestHeader(header, token);
                 },
                 cache : false,
-                success:function (response){
-                    console.log(response)
+                success:function (){
+                    getlist();
                 }
             })
             fMClose();
@@ -248,7 +302,7 @@
 
         window.fCalAdd = fCalAdd;
         window.fMClose = fMClose;
-    });
+
 
 </script>
 </body>

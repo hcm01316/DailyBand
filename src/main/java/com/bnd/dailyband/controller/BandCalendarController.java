@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @Slf4j
 @RequestMapping("/calendar")
@@ -21,11 +23,17 @@ public class BandCalendarController {
     @GetMapping("/bandcal")
     public String showBandCalendarPage(Model model) {
         model.addAttribute("current", "bandCal");
-        model.addAttribute("bbsSn",9);
-        model.addAttribute("allData",calendarService.getAllCalendars(9));
+        model.addAttribute("bbsSn",20);
         return "calendar/band_calendar";
     }
 
+    @GetMapping("/select")
+    @ResponseBody
+    public List<Calendar> select(){
+
+        return calendarService.getAllCalendars(20);
+
+    }
 
     // 모든 요청에 대해 사용자 정보를 모델에 추가
     @ModelAttribute
