@@ -126,9 +126,10 @@ public class RboardController {
 
 
 	@RequestMapping ("/bandHR")
-	public ModelAndView mgmtlist(ModelAndView mv, HttpServletRequest request,Principal userPrincipal) {
+	public ModelAndView mgmtlist(ModelAndView mv, HttpServletRequest request,
+			@CurrentSecurityContext SecurityContext userPrincipal) {
 
-		String id = userPrincipal.getName();
+		String id = userPrincipal.getAuthentication().getName();
 		mv.addObject("id", id);
 
 		int bandck = rboardService.bandck(id);
@@ -157,9 +158,10 @@ public class RboardController {
 
 
 	@RequestMapping(value= "/list", method=RequestMethod.GET)
-	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv,Principal userPrincipal) {
+	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv,
+			@CurrentSecurityContext SecurityContext userPrincipal) {
 
-		String id = userPrincipal.getName();
+		String id = userPrincipal.getAuthentication().getName();
 		int limit = 6; // 한 화면에 출력할 로우 갯수
 
 		int listcount = rboardService.getListCount(); // 총 리스트 수를 받아옴
@@ -226,10 +228,12 @@ public class RboardController {
 		if (isjoin == 0) {
 			rboardService.join(id,num);
 			redirect.addFlashAttribute("message", "가입 신청이 성공적으로 완료되었습니다.");
+			redirect.addFlashAttribute("status", "success");
 		}
 
 		if (isjoin >= 1) {
 			redirect.addFlashAttribute("message", "이미 신청을 했거나 밴드에 참여중 입니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 		mv.addObject("num", num);
 		mv.setViewName("redirect:detail");
@@ -251,26 +255,30 @@ public class RboardController {
 
 		if (resign == 0) {
 			redirect.addFlashAttribute("message", "강퇴에 실패 했습니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 
 		if (resign == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 강퇴 하였습니다.");
+			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");
 		return mv;
 	}
 
 	@RequestMapping ("/accept")
-	public ModelAndView accept(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+	public String accept(HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
 
 		int accept = rboardService.bandaccept(id,num);
 
 		if (accept == 0) {
 			redirect.addFlashAttribute("message", "수락에 실패했습니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 
 		if (accept == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
+			redirect.addFlashAttribute("status", "success");
 			rboardService.joinwatingdel(num);
 
 			int cnt = rboardService.bandacceptcnt(num);
@@ -281,12 +289,11 @@ public class RboardController {
 				rboardService.teamstclose(num);
 			}
 		}
-		mv.setViewName("redirect:bandHR");
-		return mv;
+		return "redirect:" +request.getHeader("Referer");
 	}
 
 	@RequestMapping ("/refuse")
-	public ModelAndView refuse(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+	public String refuse(HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
 
 
 
@@ -294,13 +301,14 @@ public class RboardController {
 
 		if (refuse == 0) {
 			redirect.addFlashAttribute("message", "거절에 실패했습니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 
 		if (refuse == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 거절 하였습니다.");
+			redirect.addFlashAttribute("status", "success");
 		}
-		mv.setViewName("redirect:bandHR");
-		return mv;
+		return "redirect:" +request.getHeader("Referer");
 	}
 
 	@RequestMapping ("/breakup")
@@ -313,10 +321,12 @@ public class RboardController {
 
 		if (breakup == 0) {
 			redirect.addFlashAttribute("message", "해체에 실패했습니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 
 		if (breakup == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 해체 하였습니다.");
+			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");
 		return mv;
@@ -348,10 +358,12 @@ public class RboardController {
 
 		if (delete == 0) {
 			redirect.addFlashAttribute("message", "게시글 삭제에 실패 했습니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 
 		if (delete == 1) {
 			redirect.addFlashAttribute("message", "게시글 삭제에 성공 하였습니다.");
+			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:list");
 		return mv;
@@ -372,13 +384,15 @@ public class RboardController {
 		}
 
 		if (leave == 0) {
-			redirect.addFlashAttribute("message", "성공적으로 탈퇴 했습니다.");
+			redirect.addFlashAttribute("message", "탈퇴에 실패 했습니다.");
+			redirect.addFlashAttribute("status", "error");
 		}
 
 		if (leave  == 1) {
-			redirect.addFlashAttribute("message", "탈퇴에 실패 했습니다.");
+			redirect.addFlashAttribute("message", "성공적으로 탈퇴 했습니다.");
+			redirect.addFlashAttribute("status", "success");
 		}
-		mv.setViewName("redirect:list");
+		mv.setViewName("redirect:bandHR");
 		return mv;
 	}
 

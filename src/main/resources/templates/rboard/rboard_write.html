@@ -20,6 +20,14 @@
         }
     </style>
     <title>밴드원 모집 게시글</title>
+    <script>
+        function checkOnlyOne(checkbox, groupName) {
+            var checkboxes = document.getElementsByName(groupName);
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="page">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>밴드원 모집 관리</title>
@@ -7,6 +7,16 @@
   <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 </head>
 <body>
+<div th:if="${message}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: [[${status}]] === 'success' ? 'success' : 'error',
+      title: [[${status}]] === 'success' ? '성공' : '실패',
+      text: [[${message}]],
+      confirmButtonText: '확인'
+    });
+  </script>
+</div>
 <div class="page">
   <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
   <th:block th:replace="~{dailyband/header :: headerFragment}"/>
@@ -34,7 +44,8 @@
                 <h3>밴드원 모집 정보 조회</h3>
               </div>
               <div class="card-body">
-                <table id="mbr_table" class="table table-vcenter card-table table-bordered" style="width:100%">
+                <table id="rboard_table" class="table table-vcenter card-table table-bordered"
+                       style="width:100%">
                   <thead>
                   <tr>
                     <th>지역</th>
@@ -42,26 +53,43 @@
                     <th>분야</th>
                     <th>밴드 팀명</th>
                     <th>작성자</th>
-                    <th>모집인원</th>
                     <th>모집현황</th>
+                    <th>모집상태</th>
                     <th>작성일자</th>
                     <th>참여목록</th>
                   </tr>
                   </thead>
                   <tbody>
                   <tr th:each="r : ${rBoardList}">
-                    <td>[[${r.RCRIT_AREA_ID}]]</td>
-                    <td>[[${r.RCRIT_GENRE_ID}]]</td>
-                    <td>[[${r.RCRIT_REALM_ID}]]</td>
-                    <td>[[${r.BAND_TEAM_NM}]]</td>
+                    <td>[[${r.RCRIT_AREA_IDK}]]</td>
+                    <td>[[${r.RCRIT_GENRE_IDK}]]</td>
+                    <td>[[${r.RCRIT_REALM_IDK}]]</td>
+                    <td class="text-muted"><a th:href="@{../rboard/detail(num=${r.BBS_SN})}">[[${r.BAND_TEAM_NM}]]</a>
+                    </td>
                     <td>[[${r.MBR_ID}]]</td>
                     <td>
-                     [[${r.PRPT_STTUS}]]/[[${r.RCRIT_NOPE}]]
+                      [[${r.PRPT_STTUS + 1}]]/[[${r.RCRIT_NOPE + 1}]]
                     </td>
-                    <td th:if="${r.RCRIT_STTUS_CD == 1}">모집중</td>
-                    <td th:unless="${r.RCRIT_STTUS_CD == 1}">모집완료</td>
+                    <td th:if="${r.RCRIT_STTUS_CD == 1}">
+                      <span class="status status-green">
+                        <span class="status-dot status-dot-animated"></span>
+                        모집중
+                      </span>
+                    </td>
+                    <td th:unless="${r.RCRIT_STTUS_CD == 1}">
+                      <span class="status status-red">
+                        <span class="status-dot"></span>
+                        모집완료
+                      </span>
+                    </td>
                     <td th:text="${#strings.substring(r.REG_DT, 0, 11)}"></td>
-                    <td>참여목록</td>
+                    <td>
+                      <button type="button" class="btn btn-pill btn-sm btn-outline-info"
+                              data-bs-toggle="modal" data-bs-target="#modal-participant"
+                              th:data-bbs-sn="${r.BBS_SN}" th:data-mbr-id="${r.MBR_ID}">
+                        참여목록
+                      </button>
+                    </td>
                   </tr>
                   </tbody>
                 </table>
@@ -75,5 +103,122 @@
   </div>
 </div>
 
+<div class="modal fade" id="modal-participant" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">참여 목록</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h4>밴드원 목록</h4>
+        <table class="table table-vcenter table-bordered">
+          <thead>
+          <tr>
+            <th>닉네임(아이디)</th>
+            <th>나이</th>
+            <th>성별</th>
+            <th>관리</th>
+          </tr>
+          </thead>
+          <tbody id="prptTableBody">
+          </tbody>
+        </table>
+        <hr>
+        <h4>가입 대기 목록</h4>
+        <table class="table table-vcenter table-bordered">
+          <thead>
+          <tr>
+            <th>닉네임(아이디)</th>
+            <th>나이</th>
+            <th>성별</th>
+            <th>관리</th>
+          </tr>
+          </thead>
+          <tbody id="joinListTableBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-primary ms-auto" data-bs-dismiss="modal">닫기</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+<script th:inline="javascript">
+  $('#rboard_table').DataTable({
+    responsive: true,
+    language: {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다",
+      "info": "_START_ - _END_ (총 _TOTAL_개)",
+      "infoEmpty": "0명",
+      "infoFiltered": "(전체 _MAX_ 개 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩 중...",
+      "processing": "처리 중...",
+      "search": "검색:",
+      "zeroRecords": "검색된 데이터가 없습니다",
+      "aria": {
+        "sortAscending": ": 오름차순 정렬",
+        "sortDescending": ": 내림차순 정렬"
+      }
+    },
+    lengthMenu: [10, 25, 35, 50, {label: '전체', value: -1}]
+
+  });
+
+  $("button[data-bs-toggle='modal']").click(function () {
+    var bbsSn = $(this).data("bbs-sn");
+    var mbrId = $(this).data("bbs-sn");
+    var participantsMap = /*[[${participantsMap}]]*/ {};
+    var joinListMap = /*[[${joinListMap}]]*/ {};
+    var participantList = participantsMap[bbsSn];
+    var joinList = joinListMap[bbsSn];
+    console.log(bbsSn);
+    console.log(participantsMap);
+    console.log(participantList);
+    console.log(mbrId);
+
+    var prptTableBody = $("#prptTableBody");
+    prptTableBody.empty();
+    if (participantList.length === 0) {
+      prptTableBody.append("<tr><td colspan='3'>참여목록이 없습니다.</td></tr>");
+    } else {
+      $.each(participantList, function (index, participant) {
+        var participantRow = `<tr>
+          <td>${participant.mbr_NCNM}(${participant.mbr_ID})</td>
+          <td>${participant.mbr_AGE}세</td>
+          <td>${participant.mbr_GENDER || '-'} </td>
+          <td>강퇴</td>
+        </tr>`;
+        prptTableBody.append(participantRow);
+      });
+    }
+
+    var joinListTableBody = $("#joinListTableBody");
+    joinListTableBody.empty();
+    if (joinList.length === 0) {
+      joinListTableBody.append("<tr><td colspan='3'>가입 신청 회원이 없습니다.</td></tr>");
+    } else {
+      $.each(joinList, function (index, join) {
+        var joinRow = `<tr>
+        <td>${join.mbr_NCNM}(${join.mbr_ID})</td>
+          <td>${join.mbr_AGE}세</td>
+          <td>${join.mbr_GENDER || '-'} </td>
+          <td><a href="../rboard/accept?id=${join.mbr_ID}&num=${bbsSn}">수락</a> | <a href="../rboard/refuse?id=${join.mbr_ID}&num=${bbsSn}">거절</a></td>
+        </tr>`;
+        joinListTableBody.append(joinRow);
+      });
+    }
+
+  });
+</script>
 </body>
 </html>
