@@ -22,13 +22,15 @@ import java.util.Map;
 @Service
 public class MemberServiceImpl implements MemberService{
 
+	private final MemberMapper memberMapper;
 	private MemberMapper dao;
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	public MemberServiceImpl(MemberMapper dao, PasswordEncoder passwordEncoder) {
+	public MemberServiceImpl(MemberMapper dao, PasswordEncoder passwordEncoder, MemberMapper memberMapper) {
 		this.dao = dao;
 		this.passwordEncoder=passwordEncoder;
+		this.memberMapper = memberMapper;
 	}
 
 	@Value("${s3.bucket}")
@@ -52,6 +54,8 @@ public class MemberServiceImpl implements MemberService{
 		}
 		return result;
 	}
+
+
 
 	@Override
 	public int insert(Member m) {
@@ -140,5 +144,9 @@ public class MemberServiceImpl implements MemberService{
 		return dao.myallinfo(id);
 	}
 
+	@Override
+	public String findIdByEmail(String email) {
+		return dao.findIdByEmail(email);
+	}
 
 }

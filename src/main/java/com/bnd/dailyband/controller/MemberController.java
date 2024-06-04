@@ -1,12 +1,12 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.MailVO;
-import com.bnd.dailyband.service.s3upload.ImageUploadService;
-import com.bnd.dailyband.task.SendMail;
+import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.service.member.MemberService;
+import com.bnd.dailyband.service.s3upload.ImageUploadService;
+import com.bnd.dailyband.task.SendMail;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -154,6 +155,54 @@ public class MemberController {
 		return "member/join2";
 	}
 
+	//아이디와 비밀번호 찾기
+	@RequestMapping("/forgot")
+	public String forgot(Model model) {
+		return "member/forgot";
+	}
+
+	//아이디 찾기와 비밀번호 찾기 이메일 인증
+	@ResponseBody
+	@RequestMapping(value = "find_id", method = RequestMethod.POST)
+	public String find_id(MailVO vo) {
+		sendMail.sendMail(vo);
+		return vo.getContent();
+	}
+	@ResponseBody
+	@RequestMapping(value = "/find_password", method = RequestMethod.POST)
+	public String find_password(MailVO vo) {
+		sendMail.sendMail(vo);
+		return vo.getContent();
+	}
+
+	@RequestMapping(value = "/find_id_Process", method = RequestMethod.POST)
+	public String find_id_Process(Member member,
+								  RedirectAttributes rattr,
+								  Model model,
+								  HttpServletRequest request) {
+		return "redirect:find_id";
+	}
+
+	@RequestMapping(value = "/change_pass_Process", method = RequestMethod.POST)
+	public String change_pass_Process(Member member,
+								  RedirectAttributes rattr,
+								  Model model,
+								  HttpServletRequest request) {
+		return "redirect:change_password";
+	}
+
+
+	//아이디 값이 나오는 화면
+	@RequestMapping("/id_result")
+	public String id_result(Model model, @RequestParam(value = "MBR_EML_ADDR") String MBR_EML_ADDR) {
+		String findId = memberService.findIdByEmail(MBR_EML_ADDR);
+		model.addAttribute("findId", findId);
+		return "member/id_result";
+	}
+
+
+
+
 	//내 프로필 정보
 	@RequestMapping("/myprofile")
 	public ModelAndView myProfile(
@@ -186,11 +235,6 @@ public class MemberController {
 		return mv;
 	}
 
-	//아이디와 비밀번호 찾기
-	@RequestMapping("/forgot")
-	public String forgot(Model model) {
-		return "member/forgot";
-	}
 
 	@RequestMapping("/update")
 	public ModelAndView infoModify(Principal userPrincipal,

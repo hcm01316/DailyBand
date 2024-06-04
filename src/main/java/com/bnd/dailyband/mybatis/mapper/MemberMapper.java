@@ -32,4 +32,7 @@ public interface MemberMapper {
 	public void imageupdate(String url, String id);
 
 	public Member myallinfo(String id);
+
+	public String findIdByEmail(String email);
+
 }
