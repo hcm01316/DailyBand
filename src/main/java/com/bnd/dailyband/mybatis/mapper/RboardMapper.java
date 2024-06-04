@@ -59,7 +59,7 @@ public interface RboardMapper  {
     public void join(String id, int num);
 
     //가입 수락시 다른 신청 대기중 삭제
-    public void joinwatingdel(String id);
+    public void joinwatingdel(int num);
 
     //가입 대기 리스트
     public List<Bandhr>getjoinlist(int bbs_sn);

@@ -95,8 +95,8 @@ public class RboardServiceImpl implements RboardService {
     }
 
     @Override
-    public void joinwatingdel(String id) {
-        dao.joinwatingdel(id);
+    public void joinwatingdel(int num) {
+        dao.joinwatingdel(num);
     }
 
     @Override
@@ -163,6 +163,8 @@ public class RboardServiceImpl implements RboardService {
     public int updateRboard(Rboard rboard) {
         return dao.updateRboard(rboard);
     }
+
+
 
 }
 

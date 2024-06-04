@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <script src = "../js/UploadAdapter.js" charset="utf-8"></script>
     <style>
         #container {
             width: 1000px;
@@ -55,10 +56,6 @@
                         <input type="text" class="form-control" name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." th:value="${rboarddata.BAND_TEAM_NM}"/>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">내용</label>
-                        <input type="text" class="form-control" name="BBS_CN" placeholder="내용을 입력하세요." th:value="${rboarddata.BBS_CN}"/>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">분야</label>
                         <div class="form-selectgroup form-selectgroup-pills">
                             <label class="form-selectgroup-item" th:each="item, iterStat : ${Realemlist}">
@@ -89,7 +86,7 @@
                         <label class="form-label">인원수</label>
                         <div class="form-selectgroup form-selectgroup-pills">
                             <label class="form-selectgroup-item">
-                                <input type="checkbox" name="RCRIT_NOPE" th:value="1" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')" checked />
+                                <input type="checkbox" name="RCRIT_NOPE" th:value="1" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'RCRIT_NOPE')"/>
                                 <span class="form-selectgroup-label">1명</span>
                             </label>
                             <label class="form-selectgroup-item">
@@ -119,15 +116,16 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <div id="editor">
-                            <p>This is some sample content.</p>
-                        </div>
+                        <textarea id="editor" name="BBS_CN">[[${rboarddata.BBS_CN}]]</textarea>
                         <script>
                             ClassicEditor
-                                .create( document.querySelector( '#editor' ) )
-                                .catch( error => {
-                                    console.error( error );
-                                } );
+                                .create(document.querySelector('#editor'), {
+                                    language:'ko',
+                                    extraPlugins: [MyCustomUploadAdapterPlugin]
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                });
                         </script>
                     </div>
                     <input type="submit" class="btn" value="글쓰기"/>
