@@ -25,6 +25,7 @@ public class MemberServiceImpl implements MemberService{
 	private final MemberMapper memberMapper;
 	private MemberMapper dao;
 	private PasswordEncoder passwordEncoder;
+	private MemberServiceImpl memberDAO;
 
 	@Autowired
 	public MemberServiceImpl(MemberMapper dao, PasswordEncoder passwordEncoder, MemberMapper memberMapper) {
@@ -149,4 +150,13 @@ public class MemberServiceImpl implements MemberService{
 		return dao.findIdByEmail(email);
 	}
 
+	@Override
+	public String findPassByEmail(String email){
+		return dao.findPassByEmail(email);
+	}
+
+	@Override
+	public int pwd_update(String memberEmail, String encPassword) {
+		return dao.pwd_update(memberEmail, encPassword);
+	}
 }

@@ -183,12 +183,12 @@ public class MemberController {
 		return "redirect:find_id";
 	}
 
-	@RequestMapping(value = "/change_pass_Process", method = RequestMethod.POST)
+	@RequestMapping(value = "/find_pass_Process", method = RequestMethod.POST)
 	public String change_pass_Process(Member member,
 								  RedirectAttributes rattr,
 								  Model model,
 								  HttpServletRequest request) {
-		return "redirect:change_password";
+		return "redirect:find_password";
 	}
 
 
@@ -199,6 +199,35 @@ public class MemberController {
 		model.addAttribute("findId", findId);
 		return "member/id_result";
 	}
+
+
+	//비밀번호 값이 나오는 화면
+	@RequestMapping("/change_pass")
+	public String change_pass(Model model, @RequestParam(value = "MBR_EML_ADDR1") String MBR_EML_ADDR){
+		String findPass = memberService.findPassByEmail(MBR_EML_ADDR);
+		model.addAttribute("email", MBR_EML_ADDR);
+		return "member/change_pass";
+	}
+
+
+	@RequestMapping(value = "/pwUpdate", method = RequestMethod.POST)
+	public String pwUpdate(Model model,
+						   String memberEmail,
+						   String memberPw1
+						   ) {
+		//비밀번호 암호화
+		String encPassword = passwordEncoder.encode(memberPw1);
+		logger.info(encPassword);
+
+		int result = memberService.pwd_update(memberEmail, encPassword);
+
+
+		return "redirect:login";
+	}
+
+
+
+
 
 
 

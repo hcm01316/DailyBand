@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>비밀번호 찾기</title>
@@ -20,6 +20,26 @@
 
 </head>
 <body>
+<script th:inline="javascript">
+    $(document).ready(function (){
+
+        $("#pwUpdate").on("click",function(){
+            if($("#memberPw1").val == ""){
+                alert("변경 비밀번호(을)를 입력해주세요");
+                $("#memberPw1").focus();
+                return false
+            }
+        $("#pwUpdate").on("click",function() {
+            if ($("#memberPw1").val == "") {
+                alert("변경 비밀번호(을)를 입력해주세요");
+                $("#memberPw1").focus();
+                return false
+            }
+        })
+        })
+    });
+</script>
+
 <div class="page">
     <!-- Navbar -->
     <div class="page-wrapper">
@@ -47,17 +67,25 @@
                     <div class="col-md-6" style="padding: 0px;">
                         <div class="card" style="height: 700px;">
 
-                            <form action="#" th:action="@{/reset-password}" method="post">
-                                <input type="hidden" name="email" th:value="${findPass}">
+                            <form th:action="@{/member/pwUpdate}" method="post" id="pwUpdateForm" name="pwUpdateForm">
+                                <input type="hidden" id="memberId" name="memberEmail" th:value="${email}">
+                                <div class="col-sm-8 col-sm-offset-2">
+                                    <div class="panel panel-default panel-margin-10">
+                                        <div class="panel-body panel-body-content text-center">
+                                            <p class="lead">변경하실 비밀번호를 입력해 주세요.</p>
 
-                                <label for="newPassword">새로운 비밀번호 입력</label>
-                                <input type="password" id="newPassword" name="newPassword" required>
-                                <br>
-                                <label for="confirmNewPassword">비밀번호 재입력</label>
-                                <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
-                                <br>
-                                <button type="submit">비밀번호 변경</button>
+                                            <div class="form-group">
+                                                <input type="password" name="memberPw1" class="form-control form-control-inline text-center" placeholder="새 비밀번호" />
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="password" name="memberPw2" class="form-control form-control-inline text-center" placeholder="새 비밀번호 확인" />
+                                            </div>
+                                            <button type="submit" id="pwUpdate" name="pwUpdate" class="btn btn-primary">비밀번호 변경</button> <a href="/member/infoView" class="btn btn-default">취소</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </form>
+
 
                         </div>
                     </div>

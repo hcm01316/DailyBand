@@ -54,27 +54,27 @@
 	</update>
 
 	<select id="myallinfo" resultType="member">
-		select * from MBR_INFO  WHERE MBR_ID = #{id}
+		select * from MBR_INFO  WHERE MBR_ID = #{MBR_ID}
 	</select>
 
 	<select id="findIdByEmail">
 		select CONCAT(SUBSTRING(MBR_ID, 1, 3), REPEAT('*', LENGTH(MBR_ID) - 3)) AS maskedMBR_ID
 		from MBR_INFO
-		where MBR_EML_ADDR = #{email}
+		where MBR_EML_ADDR = #{MBR_EML_ADDR}
 	</select>
 
 	<select id="findPassByEmail">
-		select MBR_INFO
-		from MBR_PWD
-		where MBR_EML_ADDR = #{email}
+		select MBR_PWD
+		from MBR_INFO
+		where MBR_EML_ADDR = #{MBR_EML_ADDR}
 	</select>
 
-
-
-	<update id="changePassByEmail">
+	<update id="pwd_update">
 		update MBR_INFO
-		set MBR_PWD = #{pass}
-		where MBR_EML_ADDR = #{email}
+		set MBR_PWD = #{encPassword}
+		where MBR_EML_ADDR = #{memberEmail}
 	</update>
+
+
 
 </mapper>
