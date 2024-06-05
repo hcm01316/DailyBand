@@ -8,4 +8,5 @@ public interface CalendarService {
     void addCalendar(Calendar calendar);
     List<Calendar> getAllCalendars(int bbs_sn);
     void deleteCalendar(int cal_id);
+    void updateCalendar(Calendar calendar);
 }
