@@ -38,4 +38,7 @@ public interface MemberService {
 
 	public String findIdByEmail(String email);
 
+	public String findPassByEmail(String email);
+
+	public int pwd_update(String memberEmail, String encPassword);
 }
