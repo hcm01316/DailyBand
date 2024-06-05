@@ -10,4 +10,5 @@ public interface CalendarMapper {
     void insertCalendar(Calendar calendar);
     List<Calendar> getAllCalendars(int bbs_sn);
     void deleteCalendar(int cal_id);
+    void updateCalendar(Calendar calendar);
 }

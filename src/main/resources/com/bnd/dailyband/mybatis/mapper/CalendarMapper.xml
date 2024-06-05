@@ -15,4 +15,9 @@
         DELETE FROM CALENDAR WHERE cal_id = #{cal_id}
     </delete>
 
+    <update id="updateCalendar" >
+        UPDATE CALENDAR
+        SET start = #{start}, end = #{end}
+        WHERE cal_id = #{cal_id}
+    </update>
 </mapper>

@@ -37,4 +37,9 @@ public class CalendarServiceImpl implements CalendarService {
         calendarMapper.deleteCalendar(cal_id);
     }
 
+    @Override
+    public void updateCalendar(Calendar calendar) {
+        calendarMapper.updateCalendar(calendar);
+    }
+
 }

@@ -4,6 +4,8 @@ import com.bnd.dailyband.domain.Calendar;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.service.Calendar.CalendarService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ public class BandCalendarController {
 
     @Autowired
     private CalendarService calendarService;
+    private static final Logger logger = LoggerFactory.getLogger(BandCalendarController.class);
 
     @GetMapping("/bandcal")
     public String showBandCalendarPage(Model model) {
@@ -56,6 +59,14 @@ public class BandCalendarController {
     @ResponseBody
     public String deleteCalendar(@PathVariable("cal_id") int cal_id) {
         calendarService.deleteCalendar(cal_id);
+        return "ok";
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public String updateCalendar(@RequestBody Calendar calendar) {
+        log.info(calendar.toString());
+        calendarService.updateCalendar(calendar);
         return "ok";
     }
 
