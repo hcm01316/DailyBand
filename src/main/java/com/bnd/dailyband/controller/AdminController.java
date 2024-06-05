@@ -50,10 +50,10 @@ public class AdminController {
     mv.addObject("current_show", "admin");
     mv.addObject("current_drop", "adminMbrMgmt");
 
-    List<Member> list = adminService.getMemberList();
+    List<Map<String, Object>> mlist = adminService.getMemberList();
 
     mv.setViewName("admin/mbr_mgmt");
-    mv.addObject("memberlist", list);
+    mv.addObject("memberlist", mlist);
     return mv;
   }
 

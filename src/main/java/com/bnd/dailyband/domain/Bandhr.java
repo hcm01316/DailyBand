@@ -30,22 +30,54 @@ public class Bandhr {
 
     for (String a : gresult) {
       switch (a) {
-        case "G01": genre.append("팝 "); break;
-        case "G02": genre.append("발라드 "); break;
-        case "G03": genre.append("인디음악 "); break;
-        case "G04": genre.append("랩·힙합 "); break;
-        case "G05": genre.append("K-POP "); break;
-        case "G06": genre.append("트로트 "); break;
-        case "G07": genre.append("일렉트로닉 "); break;
-        case "G08": genre.append("락 "); break;
-        case "G09": genre.append("메탈 "); break;
-        case "G10": genre.append("R&B "); break;
-        case "G11": genre.append("재즈 "); break;
-        case "G12": genre.append("클래식 "); break;
-        case "G13": genre.append("뮤지컬 "); break;
-        case "G14": genre.append("국악 "); break;
-        case "G15": genre.append("J-POP "); break;
-        case "G16": genre.append("월드뮤직 "); break;
+        case "G01":
+          genre.append("팝 ");
+          break;
+        case "G02":
+          genre.append("발라드 ");
+          break;
+        case "G03":
+          genre.append("인디음악 ");
+          break;
+        case "G04":
+          genre.append("랩·힙합 ");
+          break;
+        case "G05":
+          genre.append("K-POP ");
+          break;
+        case "G06":
+          genre.append("트로트 ");
+          break;
+        case "G07":
+          genre.append("일렉트로닉 ");
+          break;
+        case "G08":
+          genre.append("락 ");
+          break;
+        case "G09":
+          genre.append("메탈 ");
+          break;
+        case "G10":
+          genre.append("R&B ");
+          break;
+        case "G11":
+          genre.append("재즈 ");
+          break;
+        case "G12":
+          genre.append("클래식 ");
+          break;
+        case "G13":
+          genre.append("뮤지컬 ");
+          break;
+        case "G14":
+          genre.append("국악 ");
+          break;
+        case "G15":
+          genre.append("J-POP ");
+          break;
+        case "G16":
+          genre.append("월드뮤직 ");
+          break;
       }
     }
 
@@ -57,26 +89,65 @@ public class Bandhr {
       return "";
     }
 
-    switch (MBR_PREFER_AREA) {
-      case "A01": return "서울";
-      case "A02": return "경기";
-      case "A03": return "부산";
-      case "A04": return "대구";
-      case "A05": return "광주";
-      case "A06": return "대전";
-      case "A07": return "충남";
-      case "A08": return "충북";
-      case "A09": return "세종";
-      case "A10": return "울산";
-      case "A11": return "인천";
-      case "A12": return "강원";
-      case "A13": return "전남";
-      case "A14": return "전북";
-      case "A15": return "경북";
-      case "A16": return "광남";
-      case "A17": return "제주";
-      default: return "";
+    String[] aresult = MBR_PREFER_AREA.split(",");
+    StringBuilder area = new StringBuilder();
+
+    for (String a : aresult) {
+      switch (a) {
+        case "A01":
+          area.append("서울");
+          break;
+        case "A02":
+          area.append("경기");
+          break;
+        case "A03":
+          area.append("부산");
+          break;
+        case "A04":
+          area.append("대구");
+          break;
+        case "A05":
+          area.append("광주");
+          break;
+        case "A06":
+          area.append("대전");
+          break;
+        case "A07":
+          area.append("충남");
+          break;
+        case "A08":
+          area.append("충북");
+          break;
+        case "A09":
+          area.append("세종");
+          break;
+        case "A10":
+          area.append("울산");
+          break;
+        case "A11":
+          area.append("인천");
+          break;
+        case "A12":
+          area.append("강원");
+          break;
+        case "A13":
+          area.append("전남");
+          break;
+        case "A14":
+          area.append("전북");
+          break;
+        case "A15":
+          area.append("경북");
+          break;
+        case "A16":
+          area.append("광남");
+          break;
+        case "A17":
+          area.append("제주");
+          break;
+      }
     }
+    return area.toString().trim();
   }
 
   public String getMBR_ACT_REALMK() {
@@ -89,11 +160,21 @@ public class Bandhr {
 
     for (String a : gresult) {
       switch (a) {
-        case "R01": realm.append("기타/베이스 "); break;
-        case "R02": realm.append("드럼 "); break;
-        case "R03": realm.append("키보드 "); break;
-        case "R04": realm.append("보컬 "); break;
-        case "R05": realm.append("그 외 "); break;
+        case "R01":
+          realm.append("기타/베이스 ");
+          break;
+        case "R02":
+          realm.append("드럼 ");
+          break;
+        case "R03":
+          realm.append("키보드 ");
+          break;
+        case "R04":
+          realm.append("보컬 ");
+          break;
+        case "R05":
+          realm.append("그 외 ");
+          break;
       }
     }
 

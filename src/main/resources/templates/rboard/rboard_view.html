@@ -54,8 +54,14 @@
 
                 </div>
                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
-                    <img th:src="${rboarddata.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                    <span class="avatar avatar-sm"
+                          th:style="|background-image: url('${rboarddata.MBR_PROFL_PHOTO}');| "></span>
+                    <th:block th:if="${rboarddata.MBR_ID != username}">
                     <a th:href="@{/member/info(id=${rboarddata.MBR_ID})}">[[${rboarddata.MBR_NCNM}]]</a>
+                    </th:block>
+                    <th:block th:if="${rboarddata.MBR_ID == username}">
+                        <a th:href="@{../member/myprofile}">[[${rboarddata.MBR_NCNM}]]</a>
+                    </th:block>
                     <span>조회수 [[${rboarddata.BBS_READ_CNT}]] [[${rboarddata.REG_DT}]]</span>
                 </div>
                 <hr style="margin: 0 auto">

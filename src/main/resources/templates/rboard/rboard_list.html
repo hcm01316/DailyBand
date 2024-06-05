@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <title>밴드원 모집 게시글</title>
@@ -13,10 +14,7 @@
                 if (item !== checkbox) item.checked = false;
             });
         }
-
-
     </script>
-
 </head>
 <body>
 <div th:if="${message}">
@@ -41,7 +39,7 @@
                         <h2 style="display:inline;" class="page-title">
                             밴드원 모집 리스트
                         </h2>
-                        <th:block th:if="${isband} == 0">
+                        <th:block th:if="${isband} == 0" sec:authorize="isAuthenticated()">
 
                                 <a th:href="@{/rboard/write}" class="btn btn-indigo" aria-label="Button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -72,12 +70,18 @@
                                                 <div class="row align-items-center">
                                                     <div class="col-auto">
                                                         <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
-                                                            <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                                                            <span class="avatar avatar-sm"
+                                                                  th:style="|background-image: url('${item.MBR_PROFL_PHOTO}');| "></span>
                                                         </th:block>
                                                     </div>
                                                     <div class="col">
                                                         <div class="card-title">
+                                                            <th:block th:if="${item.MBR_ID != username}">
                                                             <a th:href="@{/member/info(id=${item.MBR_ID})}">[[${item.MBR_NCNM}]]</a>
+                                                            </th:block>
+                                                            <th:block th:if="${item.MBR_ID == username}">
+                                                                <a th:href="@{../member/myprofile}">[[${item.MBR_NCNM}]]</a>
+                                                            </th:block>
                                                              [[${item.BAND_TEAM_NM}]]</div>
                                                         <div class="card-subtitle">
                                                             [[${item.formattedRegDt}]] <span class="badge bg-blue-lt">[[${item.RCRIT_GENRE_IDK}]]</span>

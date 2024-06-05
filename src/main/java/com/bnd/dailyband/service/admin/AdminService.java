@@ -8,7 +8,7 @@ import java.util.Map;
 public interface AdminService {
 
   //회원 목록
-  List<Member> getMemberList();
+  List<Map<String, Object>> getMemberList();
 
 
   //회원 권한 변경

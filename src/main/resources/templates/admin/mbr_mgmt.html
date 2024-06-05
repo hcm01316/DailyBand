@@ -54,6 +54,7 @@
                     <tr>
                       <th>아이디</th>
                       <th>이메일</th>
+                      <th>밴드 팀명</th>
                       <th>닉네임</th>
                       <th>성별</th>
                       <th>나이</th>
@@ -65,22 +66,23 @@
                     <tbody>
                     <tr th:each="m : ${memberlist}">
                       <td>
-                        <th:block th:if="${m.MBR_ID != username}">
+                        <th:block th:if="${m['MBR_ID'] != username}">
                         <span class="avatar avatar-sm"
-                              th:style="|background-image: url('${m.MBR_PROFL_PHOTO}');| "></span>
-                        <a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m.MBR_ID}]]</a>
+                              th:style="|background-image: url('${m['MBR_PROFL_PHOTO']}');| "></span>
+                        <a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m['MBR_ID']}]]</a>
                         </th:block>
                         <th:block th:if="${m.MBR_ID == username}">
                         <span class="avatar avatar-sm"
                               th:style="|background-image: url('${m.MBR_PROFL_PHOTO}');| "></span>
-                          <a th:href="@{../member/myprofile}">[[${m.MBR_ID}]]</a>
+                          <a th:href="@{../member/myprofile}">[[${m['MBR_ID']}]]</a>
                         </th:block>
                       </td>
-                      <td>[[${m.MBR_EML_ADDR}]]</td>
-                      <td>[[${m.MBR_NCNM}]]</td>
-                      <td>[[${m.MBR_GENDER}]]</td>
-                      <td th:if="${m.MBR_AGE != 0}">[[${m.MBR_AGE}]]세</td>
-                      <td th:if="${m.MBR_AGE == 0}"></td>
+                      <td>[[${m['MBR_EML_ADDR']}]]</td>
+                      <td>[[${m['BAND_NM']}]]</td>
+                      <td>[[${m['MBR_NCNM']}]]</td>
+                      <td>[[${m['MBR_GENDER']}]]</td>
+                      <td th:if="${m['MBR_AGE'] != 0}">[[${m['MBR_AGE']}]]세</td>
+                      <td th:if="${m['MBR_AGE'] == 0}"></td>
                       <td class="text-end" sec:authorize="hasAnyRole('ROLE_ADMIN')">
                         <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_MEMBER'}">회원</a>
                         <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_MANAGER'}">매니저</a>
@@ -104,7 +106,7 @@
                           <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, newStatus=1)}">비활성화</a>
                         </div>
                       </td>
-                      <td>[[${m.REG_DT}]]</td>
+                      <td>[[${m['REG_DT']}]]</td>
                     </tr>
                     </tbody>
                   </table>

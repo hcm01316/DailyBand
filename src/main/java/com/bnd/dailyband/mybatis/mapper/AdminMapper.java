@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 public interface AdminMapper {
 
   //회원 목록
-  List<Member> getMemberList(Map<String, Object> map);
+  List<Map<String, Object>> getMemberList();
 
   //회원 권한 변경
   int changeType(@Param("id") String id, @Param("role") String role);

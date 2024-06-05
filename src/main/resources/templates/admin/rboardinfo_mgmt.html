@@ -5,6 +5,10 @@
   <title>밴드원 모집 관리</title>
   <!-- DataTables CSS -->
   <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div th:if="${message}">
@@ -53,7 +57,7 @@
                     <th>분야</th>
                     <th>밴드 팀명</th>
                     <th>작성자</th>
-                    <th>모집현황</th>
+                    <th>모집현황(가입대기)</th>
                     <th>모집상태</th>
                     <th>작성일자</th>
                     <th>참여목록</th>
@@ -68,7 +72,10 @@
                     </td>
                     <td>[[${r.MBR_ID}]]</td>
                     <td>
-                      [[${r.PRPT_STTUS + 1}]]/[[${r.RCRIT_NOPE + 1}]]
+                      [[${r.PRPT_STTUS}]]/[[${r.RCRIT_NOPE + 1}]]
+                      <th:block th:if="${r.JOIN_STTUS != 0 }">(대기 :
+                        <span class="badge bg-indigo-lt">[[${r.JOIN_STTUS}]]</span>)
+                      </th:block>
                     </td>
                     <td th:if="${r.RCRIT_STTUS_CD == 1}">
                       <span class="status status-green">
@@ -84,10 +91,36 @@
                     </td>
                     <td th:text="${#strings.substring(r.REG_DT, 0, 11)}"></td>
                     <td>
-                      <button type="button" class="btn btn-pill btn-sm btn-outline-info"
+                      <button type="button" class="btn btn-primary btn-icon"
                               data-bs-toggle="modal" data-bs-target="#modal-participant"
                               th:data-bbs-sn="${r.BBS_SN}" th:data-mbr-id="${r.MBR_ID}">
-                        참여목록
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-list-details">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M13 5h8"/>
+                          <path d="M13 9h5"/>
+                          <path d="M13 15h8"/>
+                          <path d="M13 19h5"/>
+                          <path
+                              d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/>
+                          <path
+                              d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/>
+                        </svg>
+                      </button>
+                      <button type="button" class="btn btn-danger btn-icon" >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M4 7l16 0"/>
+                          <path d="M10 11l0 6"/>
+                          <path d="M14 11l0 6"/>
+                          <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>
+                          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>
+                        </svg>
                       </button>
                     </td>
                   </tr>

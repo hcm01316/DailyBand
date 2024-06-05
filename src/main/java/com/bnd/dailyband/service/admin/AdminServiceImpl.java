@@ -21,9 +21,8 @@ public class AdminServiceImpl implements AdminService{
 
   //회원 목록
   @Override
-  public List<Member> getMemberList() {
-    Map<String, Object> map = new HashMap<>();
-    return adao.getMemberList(map);
+  public List<Map<String, Object>> getMemberList() {
+    return adao.getMemberList();
   }
 
   //회원 권한 변경
