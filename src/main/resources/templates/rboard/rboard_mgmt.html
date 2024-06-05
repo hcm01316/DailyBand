@@ -82,13 +82,16 @@
                             <h1>밴드 가입 현황</h1>
                             <tr th:each="item, iterStat : ${bandlist}">
                                 <td>
-                                    <th:block th:if="${item.MBR_PROFL_PHOTO} == null">
-                                        <img th:src="@{/image/profile.png}" class="rounded-circle" width="30px">
-                                    </th:block>
                                     <th:block th:if="${item.MBR_PROFL_PHOTO} != null">
-                                        <img th:src="${item.MBR_PROFL_PHOTO}" class="rounded-circle" width="30px">
+                                        <span class="avatar avatar-sm"
+                                              th:style="|background-image: url('${item.MBR_PROFL_PHOTO}');| "></span>
                                     </th:block>
-                                    [[${item.MBR_NCNM}]]
+                                    <th:block th:if="${item.MBR_ID != username}">
+                                        <a th:href="@{../member/info(id=${item.MBR_ID})}">[[${item.MBR_NCNM}]]</a>
+                                    </th:block>
+                                    <th:block th:if="${item.MBR_ID == username}">
+                                        <a th:href="@{../member/myprofile}">[[${item.MBR_NCNM}]]</a>
+                                    </th:block>
                                 </td>
                                 <td class="text-secondary">
                                     <th:block th:if="${item.MBR_AGE} != 0">
@@ -103,7 +106,7 @@
                                         [[${item.MBR_GENDER}]]
                                     </th:block>
                                     <th:block th:if="${item.MBR_GENDER} == null">
-                                        선택 안함
+                                        -
                                     </th:block>
                                 </td>
                                 <td class="text-secondary">
@@ -119,7 +122,7 @@
                                         [[${item.MBR_PREFER_AREAK}]]
                                     </th:block>
                                     <th:block th:if="${item.MBR_PREFER_AREA} == null">
-                                        선택 안함
+                                        -
                                     </th:block>
                                 </td>
                                 <td class="text-secondary">
@@ -127,7 +130,7 @@
                                         [[${item.MBR_PREFER_GENREK}]]
                                     </th:block>
                                     <th:block th:if="${item.MBR_PREFER_GENRE} == null">
-                                        선택 안함
+                                        -
                                     </th:block>
                                 </td>
                                 <td class="text-secondary">
@@ -135,7 +138,7 @@
                                         [[${item.MBR_ACT_REALMK}]]
                                     </th:block>
                                     <th:block th:if="${item.MBR_ACT_REALM} == null">
-                                        선택 안함
+                                        -
                                     </th:block>
                                 </td>
                                 <td>

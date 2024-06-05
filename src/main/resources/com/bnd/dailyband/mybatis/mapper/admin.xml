@@ -5,8 +5,12 @@
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.AdminMapper">
 
   <!-- 회원 목록 -->
-  <select id="getMemberList" resultType="member">
-    select * from MBR_INFO where MBR_ID != 'admin';
+  <select id="getMemberList" resultType="map">
+    select m.*, r.BAND_TEAM_NM as BAND_NM from MBR_INFO m
+    left join RCRIT_BBS r
+    on m.MBR_ID = r.MBR_ID
+    where m.MBR_ID != 'admin'
+    group by m.MBR_ID;
   </select>
 
   <!-- 회원 권한 변경 -->
@@ -108,10 +112,21 @@
 
   <!-- 밴드원 모집 조회-->
   <select id="getRboardList" resultType="map">
-    select rb.*, count(bpi.BBS_SN) as PRPT_STTUS
-    from RCRIT_BBS rb left outer join BAND_PRPT_INFO bpi
-                                      on rb.BBS_SN = bpi.BBS_SN
-                                        and bpi.MBR_PRPT_STTUS = 1
-    group by rb.BBS_SN;
+    select rb.*,
+           COALESCE(prpt.PRPT_STTUS, 0) as PRPT_STTUS,
+           COALESCE(joined.JOIN_STTUS, 0) as JOIN_STTUS
+    FROM RCRIT_BBS rb
+           left outer join (
+      select bpi.BBS_SN, COUNT(bpi.BBS_SN) as PRPT_STTUS
+      from BAND_PRPT_INFO bpi
+      where bpi.MBR_PRPT_STTUS in (1, 2)
+      group by bpi.BBS_SN
+    ) prpt on rb.BBS_SN = prpt.BBS_SN
+           left outer join (
+      select bpi.BBS_SN, COUNT(bpi.BBS_SN) as JOIN_STTUS
+      from BAND_PRPT_INFO bpi
+      where bpi.MBR_PRPT_STTUS = 0
+      group by bpi.BBS_SN
+    ) joined on rb.BBS_SN = joined.BBS_SN;
   </select>
 </mapper>
