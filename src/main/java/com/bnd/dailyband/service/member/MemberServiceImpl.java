@@ -111,7 +111,7 @@ public class MemberServiceImpl implements MemberService{
 	public int social_insert(Social social,String id) {
 		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("MBR_ID", id);
-		paramMap.put("INSTA_ADDRM",social.getINSTA_ADDR());
+		paramMap.put("INSTA_ADDR",social.getINSTA_ADDR());
 		paramMap.put("YT_ADDR", social.getYT_ADDR());
 		paramMap.put("SC_ADDR", social.getSC_ADDR());
 		paramMap.put("SPOTI_ADDR", social.getSPOTI_ADDR());
