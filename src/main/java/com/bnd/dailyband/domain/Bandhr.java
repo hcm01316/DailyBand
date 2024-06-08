@@ -140,7 +140,7 @@ public class Bandhr {
           area.append("경북");
           break;
         case "A16":
-          area.append("광남");
+          area.append("경남");
           break;
         case "A17":
           area.append("제주");
