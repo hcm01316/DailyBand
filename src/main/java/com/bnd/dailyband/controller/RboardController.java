@@ -262,7 +262,7 @@ public class RboardController {
 			redirect.addFlashAttribute("message", "성공적으로 강퇴 하였습니다.");
 			redirect.addFlashAttribute("status", "success");
 		}
-		mv.setViewName("redirect:bandHR");
+		mv.setViewName("redirect:" + request.getHeader("Referer"));
 		return mv;
 	}
 
@@ -279,17 +279,19 @@ public class RboardController {
 		if (accept == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
 			redirect.addFlashAttribute("status", "success");
-			rboardService.joinwatingdel(num);
 
 			int cnt = rboardService.bandacceptcnt(num);
+			logger.info("cnt : "+cnt);
 			int nope = rboardService.getrenope(num);
+			logger.info("nope : "+nope);
 
 			if(cnt == nope)
 			{
+				rboardService.joinwatingdel(num);
 				rboardService.teamstclose(num);
 			}
 		}
-		return "redirect:" +request.getHeader("Referer");
+		return "redirect:" + request.getHeader("Referer");
 	}
 
 	@RequestMapping ("/refuse")
@@ -308,7 +310,7 @@ public class RboardController {
 			redirect.addFlashAttribute("message", "성공적으로 거절 하였습니다.");
 			redirect.addFlashAttribute("status", "success");
 		}
-		return "redirect:" +request.getHeader("Referer");
+		return "redirect:" + request.getHeader("Referer");
 	}
 
 	@RequestMapping ("/breakup")
@@ -365,7 +367,13 @@ public class RboardController {
 			redirect.addFlashAttribute("message", "게시글 삭제에 성공 하였습니다.");
 			redirect.addFlashAttribute("status", "success");
 		}
-		mv.setViewName("redirect:list");
+
+		String referer = request.getHeader("Referer");
+		if (referer.contains("detail")) {
+			mv.setViewName("redirect:list");
+		} else {
+			mv.setViewName("redirect:" + referer);
+		}
 		return mv;
 	}
 
