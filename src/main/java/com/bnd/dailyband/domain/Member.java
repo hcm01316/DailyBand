@@ -111,7 +111,7 @@ public class Member implements UserDetails {
 			else if (a.equals("A15"))
 				area += "경북 ";
 			else if (a.equals("A16"))
-				area += "광남 ";
+				area += "경남 ";
 			else if (a.equals("A17"))
 				area += "제주 ";
 		}

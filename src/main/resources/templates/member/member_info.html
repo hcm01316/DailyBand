@@ -56,8 +56,8 @@
               <div class=" flex-column align-items-center text-center">
                 <div class="col">
                   <!-- Photo -->
-                  <img th:src="@{${memberinfo.MBR_PROFL_PHOTO}}" class="rounded-circle"
-                       alt="mbrProfile" width="150" style="margin: 20px;">
+                  <span class="avatar avatar-2xl" th:style="|background-image: url('${memberinfo.MBR_PROFL_PHOTO}');
+                  width: 150px;height: 150px; margin-top: 20px;|  "></span>
                 </div>
                 <div class="mt-3">
                   <h2>[[${memberinfo.MBR_NCNM}]]</h2>
@@ -74,8 +74,8 @@
                 <div class="datagrid">
                   <div class="datagrid-item">
                     <div class="datagrid-title">나이</div>
-                    <div class="datagrid-content" th:if="${memberinfo.MBR_AGE != 0}">[[${memberinfo.MBR_AGE}]]세</div>
-                    <div class="datagrid-content" th:unless="${memberinfo.MBR_AGE != 0}">-</div>
+                    <div class="datagrid-content" th:if="${memberinfo.MBR_AGE != 0 and memberinfo.MBR_AGE != null}">[[${memberinfo.MBR_AGE}]]세</div>
+                    <div class="datagrid-content" th:unless="${memberinfo.MBR_AGE != 0 and memberinfo.MBR_AGE != null}">-</div>
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">성별</div>
@@ -84,26 +84,26 @@
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">선호 지역</div>
-                    <div th:if="${memberinfo.MBR_PREFER_AREA != null}" class="datagrid-content">
+                    <div th:if="${memberinfo.MBR_PREFER_AREA != null and memberinfo.MBR_PREFER_AREA != ''}" class="datagrid-content">
                       [[${memberinfo.AREA_IDK}]]
                     </div>
-                    <div th:if="${memberinfo.MBR_PREFER_AREA == null}" class="datagrid-content">-
+                    <div th:unless="${memberinfo.MBR_PREFER_AREA != null and memberinfo.MBR_PREFER_AREA != ''}" class="datagrid-content">-
                     </div>
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">선호 장르</div>
-                    <div th:if="${memberinfo.MBR_PREFER_GENRE != null}" class="datagrid-content">
+                    <div th:if="${memberinfo.MBR_PREFER_GENRE != null and memberinfo.MBR_PREFER_GENRE != ''}" class="datagrid-content">
                       [[${memberinfo.GENRE_IDK}]]
                     </div>
-                    <div th:if="${memberinfo.MBR_PREFER_GENRE == null}" class="datagrid-content">-
+                    <div th:unless="${memberinfo.MBR_PREFER_GENRE != null and memberinfo.MBR_PREFER_GENRE != ''}" class="datagrid-content">-
                     </div>
                   </div>
                   <div class="datagrid-item">
                     <div class="datagrid-title">선호 분야</div>
-                    <div th:if="${memberinfo.MBR_ACT_REALM != null}" class="datagrid-content">
+                    <div th:if="${memberinfo.MBR_ACT_REALM != null and memberinfo.MBR_ACT_REALM != ''}" class="datagrid-content">
                       [[${memberinfo.REALM_IDK}]]
                     </div>
-                    <div th:if="${memberinfo.MBR_ACT_REALM == null}" class="datagrid-content">-
+                    <div th:unless="${memberinfo.MBR_ACT_REALM != null and memberinfo.MBR_ACT_REALM != ''}" class="datagrid-content">-
                     </div>
                   </div>
                   <div class="datagrid-item">
@@ -111,19 +111,19 @@
                     <div class="datagrid-content" th:if="${socialinfo != null}">
                       <a th:href="${socialinfo.YT_ADDR}" target="_blank">
                         <img th:src="@{/image/youtube_icon.png}" alt="youtube" width="20px"
-                             class="social_icon" th:if="${socialinfo.YT_ADDR != null}">
+                             class="social_icon" th:if="${socialinfo.YT_ADDR != ''}">
                       </a>
                       <a th:href="${socialinfo.INSTA_ADDR}" target="_blank">
                         <img th:src="@{/image/instagram_icon.png}" alt="instagram" width="20px"
-                             class="social_icon" th:if="${socialinfo.INSTA_ADDR != null}">
+                             class="social_icon" th:if="${socialinfo.INSTA_ADDR != ''}">
                       </a>
                       <a th:href="${socialinfo.SC_ADDR}" target="_blank">
                         <img th:src="@{/image/soundcloud_icon.png}" alt="soundcloud" width="20px"
-                             class="social_icon" th:if="${socialinfo.SC_ADDR != null}">
+                             class="social_icon" th:if="${socialinfo.SC_ADDR != ''}">
                       </a>
                       <a th:href="${socialinfo.SPOTI_ADDR}" target="_blank">
                         <img th:src="@{/image/spotify_icon.png}" alt="spotify" width="20px"
-                             class="social_icon" th:if="${socialinfo.SPOTI_ADDR != null}">
+                             class="social_icon" th:if="${socialinfo.SPOTI_ADDR != ''}">
                       </a>
                     </div>
                     <div class="datagrid-content" th:unless="${socialinfo != null}">
