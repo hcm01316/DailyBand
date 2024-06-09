@@ -6,21 +6,7 @@
   <title>관리자-회원관리</title>
   <!-- DataTables CSS -->
   <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-  <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <body>
-<div th:if="${message}">
-  <script th:inline="javascript">
-    Swal.fire({
-      icon: [[${status}]] === 'success' ? 'success' : 'error',
-      title: [[${status}]] === 'success' ? '성공' : '실패',
-      text: [[${message}]],
-      confirmButtonText: '확인'
-    });
-  </script>
-</div>
 <div class="page">
   <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
   <th:block th:replace="~{dailyband/header :: headerFragment}"/>
@@ -49,12 +35,12 @@
                 <h3>회원 정보 조회</h3>
               </div>
               <div class="card-body">
-                  <table id="mbr_table" class="table table-vcenter card-table table-bordered" style="width:100%">
+                  <table id="mbr_table" class="table table-vcenter card-table" style="width:100%">
                     <thead>
-                    <tr>
+                    <tr style="background: #f6f8fb">
                       <th>아이디</th>
                       <th>이메일</th>
-                      <th>밴드 팀명</th>
+                      <th>참여 밴드</th>
                       <th>닉네임</th>
                       <th>성별</th>
                       <th>나이</th>
@@ -66,14 +52,12 @@
                     <tbody>
                     <tr th:each="m : ${memberlist}">
                       <td>
-                        <th:block th:if="${m['MBR_ID'] != username}">
                         <span class="avatar avatar-sm"
                               th:style="|background-image: url('${m['MBR_PROFL_PHOTO']}');| "></span>
+                        <th:block th:if="${m['MBR_ID'] != username}">
                         <a th:href="@{../member/info(id=${m.MBR_ID})}">[[${m['MBR_ID']}]]</a>
                         </th:block>
                         <th:block th:if="${m.MBR_ID == username}">
-                        <span class="avatar avatar-sm"
-                              th:style="|background-image: url('${m.MBR_PROFL_PHOTO}');| "></span>
                           <a th:href="@{../member/myprofile}">[[${m['MBR_ID']}]]</a>
                         </th:block>
                       </td>
@@ -81,8 +65,8 @@
                       <td>[[${m['BAND_NM']}]]</td>
                       <td>[[${m['MBR_NCNM']}]]</td>
                       <td>[[${m['MBR_GENDER']}]]</td>
-                      <td th:if="${m['MBR_AGE'] != 0}">[[${m['MBR_AGE']}]]세</td>
-                      <td th:if="${m['MBR_AGE'] == 0}"></td>
+                      <td th:if="${m['MBR_AGE'] != 0 and m['MBR_AGE'] != null}">[[${m['MBR_AGE']}]]세</td>
+                      <td th:unless="${m['MBR_AGE'] != 0 and m['MBR_AGE'] != null}"></td>
                       <td class="text-end" sec:authorize="hasAnyRole('ROLE_ADMIN')">
                         <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_MEMBER'}">회원</a>
                         <a href="#" class="btn dropdown-toggle" data-bs-toggle="dropdown" th:if="${m.MBR_TY == 'ROLE_MANAGER'}">매니저</a>
@@ -106,7 +90,7 @@
                           <a class="dropdown-item" th:href="@{changeStatus(id=${m.MBR_ID}, newStatus=1)}">비활성화</a>
                         </div>
                       </td>
-                      <td>[[${m['REG_DT']}]]</td>
+                      <td th:text="${#strings.substring(m['REG_DT'], 0, 19)}">[[${m['REG_DT']}]]</td>
                     </tr>
                     </tbody>
                   </table>
@@ -122,6 +106,17 @@
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+<div th:if="${message}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: [[${status}]] === 'success' ? 'success' : 'error',
+      title: [[${status}]] === 'success' ? '성공' : '실패',
+      text: [[${message}]],
+      confirmButtonText: '확인',
+      heightAuto: false
+    });
+  </script>
+</div>
 <script>
   $('#mbr_table').DataTable({
     responsive: true,
