@@ -1,6 +1,7 @@
 package com.bnd.dailyband.mybatis.mapper;
 
 import com.bnd.dailyband.domain.Calendar;
+import com.bnd.dailyband.domain.Rboard;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface CalendarMapper {
     List<Calendar> getAllCalendars(int bbs_sn);
     void deleteCalendar(int cal_id);
     void updateCalendar(Calendar calendar);
+    Rboard bandck (String id);
 }
