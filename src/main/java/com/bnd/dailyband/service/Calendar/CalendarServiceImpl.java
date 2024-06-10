@@ -1,6 +1,7 @@
 package com.bnd.dailyband.service.Calendar;
 
 import com.bnd.dailyband.domain.Calendar;
+import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.mybatis.mapper.CalendarMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,12 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     public void updateCalendar(Calendar calendar) {
         calendarMapper.updateCalendar(calendar);
+    }
+
+    @Override
+    public Rboard bandck(String id) {
+        return calendarMapper.bandck(id);
+
     }
 
 }

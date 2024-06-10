@@ -8,8 +8,16 @@
     </insert>
 
     <select id="getAllCalendars" resultType="com.bnd.dailyband.domain.Calendar">
-        SELECT * FROM CALENDAR WHERE bbs_sn = #{bbs_sn}
+        SELECT c.*
+        FROM CALENDAR c
+                 INNER JOIN BAND_PRPT_INFO b ON c.bbs_sn = b.BBS_SN
+        WHERE c.bbs_sn = #{bbs_sn} AND b.MBR_PRPT_STTUS IN (1, 2)
     </select>
+
+    <select id="bandck" resultType="Rboard">
+        select BBS_SN from BAND_PRPT_INFO where MBR_PRPT_STTUS IN (1,2) and MBR_ID = #{id}
+    </select>
+
 
     <delete id="deleteCalendar">
         DELETE FROM CALENDAR WHERE cal_id = #{cal_id}

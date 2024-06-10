@@ -70,6 +70,38 @@
             </div>
         </div>
         <div class="page-body">
+            <th:block th:if="${isband} == 0">
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <circle cx="12" cy="12" r="9"/>
+                            <line x1="9" y1="10" x2="9.01" y2="10"/>
+                            <line x1="15" y1="10" x2="15.01" y2="10"/>
+                            <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0"/>
+                        </svg>
+                    </div>
+                    <p class="empty-title">가입한 밴드가 없습니다.</p>
+                    <p class="empty-subtitle text-secondary">
+                        밴드원 모집에서 새로운 밴드를 만들거나 가입하세요.
+                    </p>
+                    <div class="empty-action">
+                        <a th:href="@{/rboard/list}" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <circle cx="10" cy="10" r="7"/>
+                                <line x1="21" y1="21" x2="15" y2="15"/>
+                            </svg>
+                            밴드가입 및 생성
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+            <th:block th:if="${isband} != 0">
             <div class="container-xl">
                 <div id="yrModal" style="display:none;">
                     <div id="modalContent">
@@ -98,6 +130,7 @@
                     <div id='calendar'></div>
                 </div>
             </div>
+            </th:block>
         </div>
         <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
     </div>
@@ -106,7 +139,7 @@
     let token = $("meta[name='_csrf']").attr("content");
     let header = $("meta[name='_csrf_header']").attr("content");
 
-    const bbsSn = [[${bbsSn}]]
+    const bandck = [[${bandck}]]
 
     let calendar = {}
 
@@ -122,12 +155,15 @@
         const YrModal = document.querySelector("#yrModal");
 
         let respondata = [];
+        const bbsSn = [[${bbsSn}]]
 
         function getlist(){
+
             $.ajax({
                 url:"select",
                 method : "GET",
                 async : false,
+                data : {bbsSn : bbsSn},
                 success : function (rdata){
 
                     respondata = rdata;
@@ -203,6 +239,7 @@
                 }
             })
         }
+        if(bandck != -1)
         getlist();
 
 
@@ -232,6 +269,11 @@
             if (!mySchTitle.value) {
                 alert("제목을 입력하세요.");
                 mySchTitle.focus();
+                return;
+            }
+
+            if (!mySchAllday.checked && (!mySchStartTime.value || !mySchEndTime.value)) {
+                alert("시작시간과 종료시간을 선택하세요.");
                 return;
             }
 
