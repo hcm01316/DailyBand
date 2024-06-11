@@ -5,6 +5,7 @@ import com.bnd.dailyband.domain.MailVO;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.service.member.MemberService;
+import com.bnd.dailyband.service.notify.SseService;
 import com.bnd.dailyband.service.s3upload.ImageUploadService;
 import com.bnd.dailyband.task.SendMail;
 import jakarta.servlet.http.Cookie;
@@ -39,15 +40,18 @@ public class MemberController {
 	private PasswordEncoder passwordEncoder;
 	private SendMail sendMail;
 	private ImageUploadService imageUploadService;
+	private SseService sseService;
 
 	@Autowired
 	public MemberController(MemberService memberService,
 							PasswordEncoder passwordEncoder,
-							SendMail sendMail,ImageUploadService imageUploadService) {
+							SendMail sendMail,ImageUploadService imageUploadService,
+							SseService sseService) {
 		this.memberService=memberService;
 		this.passwordEncoder=passwordEncoder;
 		this.sendMail = sendMail;
 		this.imageUploadService= imageUploadService;
+		this.sseService=sseService;
 	}
 
 	@ModelAttribute
@@ -132,6 +136,7 @@ public class MemberController {
 		// 내용 삽입이 된 경우
 		if (result == 1) {
 			rattr.addFlashAttribute("result", "joinSuccess");
+			sseService.sendNotification("admin", member.getUsername() + "님 회원가입                                        ~");
 			return "redirect:join2";
 		}else {
 			model.addAttribute("url", request.getRequestURL());
