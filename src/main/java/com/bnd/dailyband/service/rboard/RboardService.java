@@ -81,5 +81,5 @@ public interface RboardService {
 
     public int updateRboard(Rboard rboard);
 
-
+    public String getleader(int num);
 }

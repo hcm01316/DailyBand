@@ -160,5 +160,10 @@
 		where BBS_SN = #{BBS_SN}
 	</update>
 
+	<select id="getleader" resultType="String">
+		select MBR_ID from BAND_PRPT_INFO
+		where BBS_SN = #{num} and MBR_PRPT_STTUS =2
+	</select>
+
 </mapper>
 

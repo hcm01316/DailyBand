@@ -164,6 +164,10 @@ public class RboardServiceImpl implements RboardService {
         return dao.updateRboard(rboard);
     }
 
+    @Override
+    public String getleader(int num) {
+        return dao.getleader(num);
+    }
 
 
 }
