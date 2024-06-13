@@ -1,6 +1,7 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.*;
+import com.bnd.dailyband.service.notify.SseService;
 import com.bnd.dailyband.service.rboard.RboardService;
 import com.bnd.dailyband.service.s3upload.ImageUploadService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,18 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -38,12 +36,14 @@ public class RboardController {
 
 	private RboardService rboardService;
 	private ImageUploadService imageUploadService;
+	private SseService sseService;
 
 	@Autowired
-	public RboardController(RboardService rboardService, ImageUploadService imageUploadService)
+	public RboardController(RboardService rboardService, ImageUploadService imageUploadService, SseService sseService)
 	{
 		this.rboardService = rboardService;
 		this.imageUploadService = imageUploadService;
+		this.sseService = sseService;
 	}
 
 	@ModelAttribute
@@ -224,9 +224,12 @@ public class RboardController {
 
 		String id = userPrincipal.getName();
 		int isjoin = rboardService.isjoin(id);
+		String leader = rboardService.getleader(num);
+
 
 		if (isjoin == 0) {
 			rboardService.join(id,num);
+			sseService.sendNotification(leader, id + "님이 가입 신청하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("message", "가입 신청이 성공적으로 완료되었습니다.");
 			redirect.addFlashAttribute("status", "success");
 		}

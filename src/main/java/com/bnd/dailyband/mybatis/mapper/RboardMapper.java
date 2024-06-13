@@ -96,4 +96,6 @@ public interface RboardMapper  {
     public void teamstopen(int num);
 
     public int updateRboard(Rboard rboard);
+
+    public String getleader(int num);
 }

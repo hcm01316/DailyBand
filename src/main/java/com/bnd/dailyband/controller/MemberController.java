@@ -133,10 +133,11 @@ public class MemberController {
 
 		int result = memberService.insert(member);
 
+
 		// 내용 삽입이 된 경우
 		if (result == 1) {
 			rattr.addFlashAttribute("result", "joinSuccess");
-			sseService.sendNotification("admin", member.getUsername() + "님 회원가입                                        ~");
+
 			return "redirect:join2";
 		}else {
 			model.addAttribute("url", request.getRequestURL());

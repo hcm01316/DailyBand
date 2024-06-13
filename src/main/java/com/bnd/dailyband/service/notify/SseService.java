@@ -6,7 +6,7 @@ public interface SseService {
 
     public SseEmitter createEmitter(String userId);
 
-    public void sendNotification(String userId, String message);
-
+    // 사용자에게 알림보내기
+    public void sendNotification(String userId, String message, String url, int message_cat);
 
 }

@@ -1,10 +1,14 @@
 package com.bnd.dailyband.service.notify;
 
+import com.bnd.dailyband.domain.Notification;
+import com.bnd.dailyband.mybatis.mapper.NotificationMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +18,12 @@ public class SseServiceImpl implements SseService {
 
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private NotificationMapper dao;
+
+    @Autowired
+    public SseServiceImpl(NotificationMapper dao) {
+        this.dao = dao;
+    }
 
     // private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;  //60분
     /*
@@ -36,6 +46,7 @@ public class SseServiceImpl implements SseService {
             this.emitters.remove(userId)
         );
 
+        List<String> list =  dao.getList(userId);
 
         //503에러를 방지하기 위한 더미 이벤트 전송
         try {
@@ -52,11 +63,16 @@ public class SseServiceImpl implements SseService {
     }
 
     //특정 사용자에게 알림을 보내는 메서드입니다.
-    public void sendNotification(String userId, String message) {
+    public void sendNotification(String userId, String message, String url, int message_cat) {
         //userId를 사용하여 this.emitters 맵에서 해당 사용자에 대한 SseEmitter를 가져옵니다.
         SseEmitter emitter = this.emitters.get(userId);
+        //alarm테이블에 데이터 삽입 insert (데이터를 하나르 넣고 시작)
 
+        Notification notification = new Notification(userId, message, url, message_cat);
 
+        dao.insert(notification);
+
+        List<String> list =  dao.getList(userId);
         if (emitter != null) {
             try {
                 //알림은 emitter.send() 메서드를 사용하여 전송됩니다.

@@ -15,6 +15,7 @@
 		<mapper resource="com/bnd/dailyband/mybatis/mapper/rboard.xml"/>
 		<mapper resource="com/bnd/dailyband/mybatis/mapper/admin.xml"/>
 		<mapper resource="com/bnd/dailyband/mybatis/mapper/chat.xml"/>
+		<mapper resource="com/bnd/dailyband/mybatis/mapper/notification.xml"/>
 	</mappers>
 
 

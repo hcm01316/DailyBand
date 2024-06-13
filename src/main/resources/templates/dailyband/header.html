@@ -16,20 +16,21 @@
       })
 
 
-
+      const contextpath = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
       $("#login").click(function () {
-        window.location.href = '/dailyband/member/login';
+        window.location.href = contextpath + '/member/login';
       });
 
 
-    let eventSource = new EventSource("sse"); //http://localhost:9000/dailyband/sse
+    let eventSource = new EventSource(contextpath + "/sse"); //http://localhost:9000/dailyband/sse
 
     eventSource.addEventListener('notification',  function(event) {
+    console.log(event.data);
 
-
-      console.log(event.data);
-
-      let output = `
+      let count = 0
+       if(event.data != "") {
+         count++;
+         let output = `
       <div class="list-group-item" style="width: 487px">
                     <div class="row align-items-center">
                       <div class="col-auto"><span
@@ -55,8 +56,12 @@
                       </div>
                     </div>
                   </div>`
-      $(".list-group-flush").html(output)
+         $(".list-group-flush").html(output)
+         $(".badge.bg-red").html(count)
+       }
     });
+
+
     });
   </script>
 
@@ -100,7 +105,7 @@
             <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">Last updates</h3>
+                  <h3 class="card-title">알림</h3>
                 </div>
                 <div class="list-group list-group-flush list-group-hoverable">
 
@@ -110,9 +115,9 @@
                       <div class="col-auto"><span
                               class="status-dot status-dot-animated bg-red d-block"></span></div>
                       <div class="col text-truncate">
-                        <a href="#" class="text-body d-block">Example 1</a>
+                        <a href="#" class="text-body d-block"></a>
                         <div class="d-block text-muted text-truncate mt-n1">
-                          Change deprecated html tags to text decoration classes (#29604)
+
                         </div>
                       </div>
                       <div class="col-auto">

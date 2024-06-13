@@ -1,6 +1,7 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.Member;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +17,9 @@ public class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
 	@RequestMapping("/main")
-	public String main(Model model) {
+	public String main(Model model, HttpServletRequest request) {
+		model.addAttribute("contextpath", request.getContextPath());
+
 		return "/dailyband/main";
 	}
 
