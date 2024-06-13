@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="docFormFragment">
+  <head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <title></title>
+    <style>
+      .m-list {
+        max-height: 200px; /* 원하는 높이로 설정 */
+        overflow-y: auto;
+      }
+
+      #m-list-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      #m-list-table th, #m-list-table td {
+        padding: 10px; /* 셀 간격 설정 */
+        text-align: left; /* 텍스트 정렬 */
+      }
+
+      .selected-list {
+        margin-top: 20px;
+      }
+
+      /* 기본 스타일 */
+      .tag {
+        background-color: #eceffd;
+        border-radius: 3px;
+        padding: 10px 10px;
+        margin: 5px;
+        font-size: 14px;
+        position: relative;
+      }
+
+    </style>
+  </head>
+  <body>
+  <div class="modal fade" id="modal-scrollable" tabindex="-1" role="dialog" aria-hidden="true"
+       th:fragment="docFormFragment">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="m-search">
+            <div class="mb-3">
+              <div class="row g-2">
+                <div class="col">
+                  <input type="text" class="form-control" id="s-keyword" placeholder="닉네임을 입력하세요.">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="m-list">
+            <table id="m-list-table" class="table table-vcenter table-hover">
+              <thead>
+              <tr style="background: #f6f8fb">
+                <th>닉네임</th>
+                <th>권한</th>
+              </tr>
+              </thead>
+              <tbody class="cursor-pointer">
+              <!-- AJAX로 채워질 부분 -->
+              </tbody>
+            </table>
+          </div>
+          <div class="selected-list" id="selected-list">
+            <!-- 선택된 결재자 표시 영역 -->
+          </div>
+          <div class="m-select">
+            <hr>
+            <strong id="s-text"></strong><br>
+            <div id="s-list"></div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-end">
+          <button type="button" class="btn me-auto" data-bs-dismiss="modal">취소</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirm">확인
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </body>
+  <script th:src="@{/js/apvModalStyle.js}" charset="utf-8"></script>
+</th:block>
+</html>

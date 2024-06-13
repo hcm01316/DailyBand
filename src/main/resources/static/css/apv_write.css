@@ -1,0 +1,167 @@
+@charset "UTF-8";
+#h-title {
+  margin: 30px 0;
+  text-align: center;
+}
+#table {
+  margin: 0 auto;
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.tr-s {
+  height: 23px;
+}
+.tr-m {
+  height: 46px;
+}
+#table td {
+  border: 1px solid black;
+  font-size: 14.5px;
+}
+.td-1 {
+  text-align: center;
+  background-color: #f0f0f0;
+  width: 150px;
+  letter-spacing: 5px;
+  text-indent: 5px;
+  font-weight: bold;
+}
+.td-2 {
+  text-align: center;
+  width: 250px;
+}
+.td-3 {
+  text-align: center;
+  letter-spacing: 15px;
+  width: 50px;
+  font-weight: bold;
+}
+.td-4 {
+  text-align: center;
+  width: 135px;
+  letter-spacing: 15px;
+  text-indent: 15px;
+}
+.td-5 {
+  text-align: center;
+  letter-spacing: 5px;
+  text-indent: 5px;
+}
+.td-6 {
+  text-align: center;
+}
+.s-refList{
+  display: inline-flex;
+  padding-left: 10px;
+  width: 730px;
+}
+.td-btn {
+  width: 50px;
+}
+.td-content {
+  text-align: center;
+  background-color: rgb(240, 240, 240);
+  letter-spacing: 50px;
+  text-indent: 50px;
+}
+img { /* 승인/반려 이미지 */
+  margin-top: 10px;
+}
+.btn-select-app, .btn-select-ref {
+  border: none;
+  background-color: #eceffd;
+}
+.btn-select-app {
+  font-size: 15px;
+  padding: 10px 25px;
+  border-radius: 20px;
+}
+.btn-select-ref {
+  padding: 7px 10px 10px 10px;
+  border-radius: 4px;
+}
+.i-title {
+  height: 43px;
+  width: 775px;
+  border: none;
+  padding-left: 10px;
+  font-size: 14.5px;
+}
+.div-span {
+  margin: 30px 50px 0 50px;
+}
+
+.div-btn, .div-btn2 {
+  margin: 30px 50px 50px 50px;
+}
+.div-btn {
+  float: right;
+}
+.div-btn input, .div-btn2 input:not(.i-left) {
+  border: 1px solid rgb(51, 51, 51);
+  border-radius: 4px;
+  font-size: 14.5px;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+.div-btn-right {
+  float: right;
+}
+
+/* 문서 상세 보기 */
+.td-content-val {
+  height: 190px;
+}
+.indent {
+  text-indent: 15px;
+}
+.div-rej {
+  display: flex;
+  vertical-align: middle;
+  margin-bottom: 30px;
+}
+
+.div-rej span:not(.div-rejReason) {
+  margin-right: 5px;
+}
+
+#rej-icon {
+  color: rgb(192, 57, 43);
+}
+.div-rejReason {
+  margin-left: 15px;
+}
+
+.form-check-inline {
+  background-color: transparent;
+}
+#formRadios {
+  align-self: flex-start; /* 왼쪽 정렬 */
+  margin-bottom: 20px; /* 테이블과의 간격 */
+}
+
+.text-center {
+  text-align: center; /* 수평 중앙 정렬 */
+  vertical-align: middle; /* 수직 중앙 정렬 */
+}
+
+.approval-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.signatory-info {
+  flex-grow: 1;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 수평 가운데 정렬 */
+}
+
+.btn-select-ref .icon {
+  margin: 0 !important;
+}

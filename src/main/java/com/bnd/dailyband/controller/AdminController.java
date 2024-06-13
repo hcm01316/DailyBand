@@ -1,9 +1,15 @@
 package com.bnd.dailyband.controller;
 
+import com.bnd.dailyband.domain.Approval;
+import com.bnd.dailyband.domain.ApvDoc;
+import com.bnd.dailyband.domain.ApvRef;
 import com.bnd.dailyband.domain.Bandhr;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.rboard.RboardService;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +17,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -43,11 +54,16 @@ public class AdminController {
     }
   }
 
+  //관리 navbar classappend
+  private void addAdminAttributes(ModelAndView mv) {
+    mv.addObject("current", "admin");
+    mv.addObject("current_show", "admin");
+  }
+
   //회원 관리
   @RequestMapping("/mbrmgmt")
   public ModelAndView memberList(ModelAndView mv) {
-    mv.addObject("current", "admin");
-    mv.addObject("current_show", "admin");
+    addAdminAttributes(mv);
     mv.addObject("current_drop", "adminMbrMgmt");
 
     List<Map<String, Object>> mlist = adminService.getMemberList();
@@ -59,15 +75,16 @@ public class AdminController {
 
   //회원 관리 - 회원 권한 변경
   @RequestMapping("/changeRole")
-  public String changeRole(RedirectAttributes redirect, @RequestParam String id, @RequestParam String role) {
+  public String changeRole(RedirectAttributes redirect, @RequestParam String id,
+      @RequestParam String role) {
     logger.info("아이디 : " + id + " / 새 권한 : " + role);
 
-    int result = adminService.changeType(id,role);
+    int result = adminService.changeType(id, role);
 
     if (result == 0) {
       redirect.addFlashAttribute("message", "회원 권한 변경에 실패하였습니다.");
       redirect.addFlashAttribute("status", "error");
-    } else{
+    } else {
       redirect.addFlashAttribute("message", id + "님의 권한 변경을 완료하였습니다.");
       redirect.addFlashAttribute("status", "success");
     }
@@ -77,10 +94,11 @@ public class AdminController {
 
   //회원 관리 - 회원 상태 변경
   @RequestMapping("/changeStatus")
-  public String changeStatus(RedirectAttributes redirect, @RequestParam String id, @RequestParam int newStatus) {
-    logger.info("회원 아이디: "+ id + "/ 선택한 회원 상태 : "+ newStatus);
+  public String changeStatus(RedirectAttributes redirect, @RequestParam String id,
+      @RequestParam int newStatus) {
+    logger.info("회원 아이디: " + id + "/ 선택한 회원 상태 : " + newStatus);
 
-    int result = adminService.changeStatus(id,newStatus);
+    int result = adminService.changeStatus(id, newStatus);
 
     if (result == 0) {
       redirect.addFlashAttribute("message", "회원 상태 변경에 실패하였습니다.");
@@ -94,9 +112,8 @@ public class AdminController {
 
   //대시보드
   @RequestMapping("/dashboard")
-  public ModelAndView dashboard (ModelAndView mv) {
-    mv.addObject("current", "admin");
-    mv.addObject("current_show", "admin");
+  public ModelAndView dashboard(ModelAndView mv) {
+    addAdminAttributes(mv);
     mv.addObject("current_drop", "adminDashboard");
 
     int TotalMbrCnt = adminService.getTotalMbrCount();
@@ -134,11 +151,10 @@ public class AdminController {
   //밴드원 모집 관리
   @RequestMapping("/rboardmgmt")
   public ModelAndView rboardMgmt(ModelAndView mv) {
-    mv.addObject("current", "admin");
-    mv.addObject("current_show", "admin");
+    addAdminAttributes(mv);
     mv.addObject("current_drop", "adminRboardMgmt");
 
-    List<Map<String, Object>> rList= adminService.getRboardList();
+    List<Map<String, Object>> rList = adminService.getRboardList();
 
     Map<Integer, List<Bandhr>> participantsMap = new HashMap<>();
     Map<Integer, List<Bandhr>> joinListMap = new HashMap<>();
@@ -219,15 +235,152 @@ public class AdminController {
     StringBuilder realm = new StringBuilder();
     for (String id : ids) {
       switch (id) {
-        case "R01": realm.append("기타/베이스 "); break;
-        case "R02": realm.append("드럼 "); break;
-        case "R03": realm.append("키보드 "); break;
-        case "R04": realm.append("보컬 "); break;
-        case "R05": realm.append("그 외 "); break;
-        default: realm.append(id).append(" ");
+        case "R01":
+          realm.append("기타/베이스 ");
+          break;
+        case "R02":
+          realm.append("드럼 ");
+          break;
+        case "R03":
+          realm.append("키보드 ");
+          break;
+        case "R04":
+          realm.append("보컬 ");
+          break;
+        case "R05":
+          realm.append("그 외 ");
+          break;
+        default:
+          realm.append(id).append(" ");
       }
     }
     return realm.toString().trim();
   }
 
+
+  //기안 문서
+  @RequestMapping("/apv/draftList")
+  public ModelAndView draftList(ModelAndView mv,
+      @CurrentSecurityContext SecurityContext userPrincipal) {
+    addAdminAttributes(mv);
+    mv.addObject("current_drop_show", "adminApv");
+    mv.addObject("current_drop", "draftList");
+
+    String id = userPrincipal.getAuthentication().getName();
+
+    List<ApvDoc> alist = adminService.getApvDraftList(id);
+
+    mv.setViewName("admin/approval/draft_list");
+    mv.addObject("draftList", alist);
+    return mv;
+  }
+
+  //기안 문서 작성 페이지
+  @RequestMapping("/apv/docWrite")
+  public ModelAndView docWrite(ModelAndView mv,
+      @CurrentSecurityContext SecurityContext userPrincipal) {
+    addAdminAttributes(mv);
+    mv.addObject("current_drop_show", "adminApv");
+    mv.addObject("current_drop", "draftList");
+
+    String id = userPrincipal.getAuthentication().getName();
+
+    Date currentTime = new Date();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    //logger.info(sdf.format(currentTime));
+
+    List<Map<String, Object>> forms = new ArrayList<>();
+
+    Map<String, Object> form1 = new HashMap<>();
+    form1.put("formNo", 0);
+    form1.put("formName", "기안서");
+    forms.add(form1);
+
+    Map<String, Object> form2 = new HashMap<>();
+    form2.put("formNo", 1);
+    form2.put("formName", "품의서");
+    forms.add(form2);
+
+    Map<String, Object> form3 = new HashMap<>();
+    form3.put("formNo", 2);
+    form3.put("formName", "지출 결의서");
+    forms.add(form3);
+
+    mv.addObject("forms", forms);
+    mv.addObject("currentTime", sdf.format(currentTime));
+    mv.addObject("mbrId", id);
+
+    mv.setViewName("admin/approval/doc_write");
+
+    return mv;
+
+  }
+
+  //전자결재 결재자, 참조자 선택 모달
+  @ResponseBody
+  @RequestMapping(value = "/apv/mbrlist", method = RequestMethod.GET)
+  public List<Member> modalMbrList(@CurrentSecurityContext SecurityContext userPrincipal) {
+
+    String id = userPrincipal.getAuthentication().getName();
+    List<Member> members = adminService.getApvMbrList(id);
+
+    sanitizeMemberList(members);
+
+    return members;
+  }
+
+  @ResponseBody
+  @RequestMapping(value = "/apv/mbrSearch", method = RequestMethod.GET)
+  public List<Member> modalMbrSearch(
+      @RequestParam("searchKeyword") String searchKeyword,
+      @CurrentSecurityContext SecurityContext userPrincipal) {
+    String id = userPrincipal.getAuthentication().getName();
+
+    List<Member> mSearchList = adminService.getApvMbrNcnmSearch(id, searchKeyword);
+
+    sanitizeMemberList(mSearchList);
+
+    return mSearchList;
+
+  }
+
+  //지역,장르,분야 null 처리
+  private void sanitizeMemberList(List<Member> members) {
+    for (Member member : members) {
+      if (member.getMBR_ACT_REALM() == null) {
+        member.setMBR_ACT_REALM("");
+      }
+      if (member.getMBR_PREFER_AREA() == null) {
+        member.setMBR_PREFER_AREA("");
+      }
+      if (member.getMBR_PREFER_GENRE() == null) {
+        member.setMBR_PREFER_GENRE("");
+      }
+    }
+  }
+
+  //결재문서, 임시 저장
+  @RequestMapping(value = "/apv/add{Param}", method = RequestMethod.POST)
+  public ModelAndView apvAdd(ModelAndView mv,
+      @ModelAttribute Approval apv, @ModelAttribute ApvDoc apvDoc,
+      @ModelAttribute ApvRef ref,
+      @RequestParam(value = "apvMbrId", required = false) String apvMbrId,
+      @RequestParam(value = "refMbrId", required = false) String refMbrId,
+      @PathVariable("Param") String param,
+      @CurrentSecurityContext SecurityContext userPrincipal) {
+
+    String id = userPrincipal.getAuthentication().getName();
+    boolean result = adminService.processApproval(apv, apvDoc, ref, apvMbrId, refMbrId, param, id);
+    logger.info("apvMbrId: " + apvMbrId);
+    logger.info("apvDoc: " + apvDoc);
+
+    if (!result) {
+      mv.addObject("message", "문서 처리에 실패하였습니다.");
+    } else if (param.equals("Doc")) {
+      mv.addObject("message", "결재 요청 완료");
+    }
+
+    mv.setViewName("redirect:./draftList");
+    return mv;
+  }
 }
