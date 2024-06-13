@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>전자결재 - 기안 문서함</title>
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              기안 문서함
+            </h2>
+          </div>
+          <div class="col-auto ms-auto d-print-none">
+            <div class="btn-list" id="app-btn">
+              <a th:href="@{./docWrite}" class="btn btn-indigo d-none d-sm-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="icon icon-tabler icons-tabler-outline icon-tabler-pencil">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/>
+                  <path d="M13.5 6.5l4 4"/>
+                </svg>
+                기안하기
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="col-md-12 col-xl-12">
+          <div class="mb-3">
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-1"
+                     autocomplete="off" checked data-status="all">
+              <label for="btn-radio-basic-1" type="button" class="btn">전체</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-2"
+                     autocomplete="off" data-status="대기">
+              <label for="btn-radio-basic-2" type="button" class="btn">대기</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-3"
+                     autocomplete="off" data-status="진행">
+              <label for="btn-radio-basic-3" type="button" class="btn">진행</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-4"
+                     autocomplete="off" data-status="완료">
+              <label for="btn-radio-basic-4" type="button" class="btn">완료</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-5"
+                     autocomplete="off" data-status="반려">
+              <label for="btn-radio-basic-5" type="button" class="btn">반려</label>
+            </div>
+          </div>
+        </div>
+        <div class="row row-cards">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <table id="draft_table" class="table table-vcenter card-table" style="width:100%">
+                  <thead>
+                  <tr style="background: #f6f8fb">
+                    <th>문서번호</th>
+                    <th>문서양식</th>
+                    <th>제목</th>
+                    <th>작성일자</th>
+                    <th>진행상태</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="d : ${draftList}">
+                    <td>[[${d.DOC_SN}]]</td>
+                    <td th:switch="${d.DOC_FORM_TY}">
+                      <span th:case="0">기안서</span>
+                      <span th:case="1">품의서</span>
+                      <span th:case="2">지출 결의서</span>
+                    </td>
+                    <td>[[${d.DOC_SJ}]]</td>
+                    <td th:text="${#strings.substring(d.DOC_WRT_DT,0 ,10)}">[[${d.DOC_WRT_DT}]]</td>
+                    <td th:switch="${d.DOC_STTUS}">
+                      <span th:case="0" class="status status-green">대기</span>
+                      <span th:case="1" class="status status-blue">진행</span>
+                      <span th:case="2" class="status status-gray-500">완료</span>
+                      <span th:case="3" class="status status-red">반려</span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  $('#draft_table').DataTable({
+    responsive: true,
+    order: false, // 초기 정렬 비활성화
+    language: {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다",
+      "info": "_START_ - _END_ (총 _TOTAL_건)",
+      "infoEmpty": "0건",
+      "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩 중...",
+      "processing": "처리 중...",
+      "search": "검색:",
+      "zeroRecords": "검색된 문서가 없습니다",
+      "aria": {
+        "sortAscending": ": 오름차순 정렬",
+        "sortDescending": ": 내림차순 정렬"
+      }
+    },
+    lengthMenu: [10, 20, 30, 50, {label: '전체', value: -1}]
+  });
+
+  // 라디오 버튼 클릭 이벤트 설정
+  $('input[name="btn-radio-basic"]').change(function () {
+    var status = $(this).data('status');
+    filterTable(status);
+  });
+
+  // 초기 필터링 적용
+  filterTable('all'); // 초기에 '전체' 상태로 필터링을 적용
+
+  function filterTable(status) {
+    var rows = document.querySelectorAll('#draft_table tbody tr');
+    rows.forEach(function (row) {
+      var statusCell = row.querySelector('td:nth-child(5) span');
+      if (status === 'all' || statusCell.textContent.trim() === status) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  // 페이지가 로드될 때 실행되는 이벤트 리스너 추가
+  document.addEventListener('DOMContentLoaded', function () {
+    var radioButtons = document.querySelectorAll('input[name="btn-radio-basic"]');
+    radioButtons.forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        var status = this.getAttribute('data-status');
+        filterTable(status);
+      });
+    });
+  });
+</script>
+</body>
+</html>

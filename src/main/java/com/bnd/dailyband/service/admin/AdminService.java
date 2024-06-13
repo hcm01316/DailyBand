@@ -1,7 +1,9 @@
 package com.bnd.dailyband.service.admin;
 
+import com.bnd.dailyband.domain.Approval;
+import com.bnd.dailyband.domain.ApvDoc;
+import com.bnd.dailyband.domain.ApvRef;
 import com.bnd.dailyband.domain.Member;
-import com.bnd.dailyband.domain.Rboard;
 import java.util.List;
 import java.util.Map;
 
@@ -56,4 +58,22 @@ public interface AdminService {
 
   //밴드원 모집 조회
   List<Map<String, Object>> getRboardList();
+
+  List<ApvDoc> getApvDraftList(String id);
+
+  List<Member> getApvMbrList(String id);
+
+  List<Member> getApvMbrNcnmSearch(String id, String searchKeyword);
+
+  // 기안서 작성
+  int insertDoc(ApvDoc apvDoc);
+
+  // 결재자 등록
+  int insertApv(Approval apv);
+
+  // 참조자 등록
+  int insertRef(ApvRef ref);
+
+  boolean processApproval(Approval apv, ApvDoc apvDoc, ApvRef ref, String apvMbrId, String refMbrId, String param, String userId);
+
 }

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>전자결재 - 기안 작성</title>
+  <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+  <link rel="stylesheet" th:href="@{/css/apv_write.css}">
+  <script th:src="@{/js/UploadAdapter.js}" charset="utf-8"></script>
+  <style>
+    .ck-editor__editable[role="textbox"] {
+      /* Editing area */
+      min-height: 300px;
+    }
+
+    .ck-content .image {
+      /* Block images */
+      max-width: 70%;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              기안 작성
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="col-12">
+          <div class="card" th:fragment="docFormFragment">
+            <div class="card-body">
+              <h1 id="h-title">기안서</h1>
+              <form id="form" th:action="@{./addDoc}" method="post" enctype="multipart/form-data"
+                    onsubmit="return nullChk()">
+                <div class="mb-3" id="formRadios">
+                  <div>
+                    <th:block th:each="form, iterStat : ${forms}">
+                      <label class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="DOC_FORM_TY"
+                               th:value="${form.formNo}"
+                               onclick="updateHiddenFormNo(this)"
+                               th:checked="${iterStat.index == 0}">
+                        <span class="form-check-label" th:text="${form.formName}"></span>
+                      </label>
+                    </th:block>
+                  </div>
+                </div>
+                <input type="hidden" id="hiddenDOC_FORM_TY" name='DOC_FORM_TY' readonly>
+                <input type="hidden" id="num-app" name="apvMbrId" readonly>
+                <input type="hidden" id="num-ref" name="refMbrId" readonly>
+                <table id="table">
+                  <tr class="tr-s">
+                    <td class="td-1" rowspan="2">문서번호</td>
+                    <td class="td-2" rowspan="2"></td>
+                    <td class="td-3" rowspan="6" style="writing-mode: vertical-rl;">결재</td>
+                    <td class="td-4">권한</td>
+                    <td class="td-4" id="r-app0"></td>
+                    <td class="td-4" id="r-app1"></td>
+                    <td class="td-4" id="r-app2" colspan="2"></td>
+                  </tr>
+                  <tr class="tr-s">
+                    <td rowspan="4"></td>
+                    <td rowspan="4" class="text-center">
+                      <button type="button" data-bs-toggle="modal"
+                              data-bs-target="#modal-scrollable"
+                              class="btn-select-app" onclick="appBtn('app');">선택
+                      </button>
+                    </td>
+                    <td rowspan="4"></td>
+                    <td rowspan="4" colspan="2"></td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td class="td-1">기안일자</td>
+                    <td class="td-2">[[${currentTime}]]
+                      <input type="hidden" th:value="${currentTime}" name="DOC_WRT_DT" readonly>
+                    </td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td class="td-1">권한</td>
+                    <td class="td-2" th:switch="${#authentication.principal.MBR_TY}">
+                      <span th:case="'ROLE_ADMIN'">관리자</span>
+                      <span th:case="'ROLE_MANAGER'">매니저</span>
+                    </td>
+                  </tr>
+                  <tr class="tr-s">
+                    <td class="td-1" rowspan="2">기안자</td>
+                    <td class="td-5" rowspan="2" sec:authentication="principal.MBR_NCNM">
+                      <input type="hidden" th:value="${#authentication.principal.id}" name="MBR_ID"
+                             readonly></td>
+                  </tr>
+                  <tr class="tr-s">
+                    <td class="td-5" sec:authentication="principal.MBR_NCNM"></td>
+                    <td class="td-5" id="name-app0"></td>
+                    <td class="td-5" id="name-app1"></td>
+                    <td class="td-5" id="name-app2" colspan="2"></td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td class="td-1">참조자</td>
+                    <td colspan="6" style="border-right: none;">
+                      <span class="s-refList" id="ref-list"></span>
+                    </td>
+                    <td class="td-btn" style="border-left: none;">
+                      <button type="button"
+                              class="btn-select-ref" data-bs-toggle="modal"
+                              data-bs-target="#modal-scrollable" onclick="appBtn('ref');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M12 5l0 14"/>
+                          <path d="M5 12l14 0"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr id="tr-title" class="tr-m">
+                    <td class="td-1">제목</td>
+                    <td colspan="7"><input type="text" name="DOC_SJ" id="td-title" class="i-title">
+                    </td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td colspan="8" class="td-content">내용</td>
+                  </tr>
+                  <tr>
+                    <td colspan="8">
+                      <textarea id="editor" name="DOC_CN"></textarea>
+                    </td>
+                  </tr>
+                </table>
+                <div class="div-btn">
+                  <a href="#" class="btn btn-primary i-left" onclick="docSave()">결재 요청</a>
+                  <a href="#" class="btn btn-secondary" onclick="temSave()">임시 저장</a>
+                  <a href="./draftList" class="btn btn-danger">취소</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <script>
+          function updateHiddenFormNo(radioElement) {
+            var hiddenFormNo = document.getElementById('hiddenDOC_FORM_TY');
+            hiddenFormNo.value = radioElement.value;
+
+            // 선택된 옵션의 텍스트를 가져와서 제목 변경
+            var selectedText = radioElement.nextElementSibling.innerText;
+            document.getElementById('h-title').innerText = selectedText;
+          }
+
+          // CKEditor 초기화
+          ClassicEditor
+          .create(document.querySelector('#editor'), {
+            language: 'ko',
+            height: '500px',
+            extraPlugins: [MyCustomUploadAdapterPlugin]
+          })
+          .catch(error => {
+            console.error(error);
+          });
+
+          // 결재 요청 확인창
+          function docSave() {
+            var result = confirm("결재 요청하시겠습니까?");
+            if (result === true) {
+              $("#form").submit();
+            }
+          }
+
+          // 유효성 체크
+          function nullChk() {
+            if ($("#td-title").val() == "") {
+              alert("제목을 입력해주세요.");
+              $("#tr-title").focus();
+              return false;
+            } else if ($("#num-app").val() == "") {
+              alert("결재자를 선택해주세요.");
+              return false;
+            }
+          }
+
+          // 임시 저장
+          function temSave() {
+            $("#form").attr("action", "./addTemp");
+            $("#form").submit();
+          }
+        </script>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<th:block th:replace="~{admin/approval/apv_modal}"/>
+</body>
+</html>

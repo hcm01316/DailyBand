@@ -1,7 +1,9 @@
 package com.bnd.dailyband.service.admin;
 
+import com.bnd.dailyband.domain.Approval;
+import com.bnd.dailyband.domain.ApvDoc;
+import com.bnd.dailyband.domain.ApvRef;
 import com.bnd.dailyband.domain.Member;
-import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.mybatis.mapper.AdminMapper;
 import java.util.HashMap;
 import java.util.List;
@@ -122,5 +124,78 @@ public class AdminServiceImpl implements AdminService{
     return adao.getRboardList();
   }
 
+  //기안 문서 리스트
+  @Override
+  public List<ApvDoc> getApvDraftList(String id) {
+    return adao.getApvDraftList(id);
+  }
+
+  @Override
+  public List<Member> getApvMbrList(String id) {
+    return adao.getApvMbrList(id);
+  }
+
+  @Override
+  public List<Member> getApvMbrNcnmSearch(String id, String searchKeyword) {
+    return adao.getApvMbrNcnmSearch(id, searchKeyword);
+  }
+
+
+  @Override
+  public int insertDoc(ApvDoc apvDoc) {
+    return adao.insertDoc(apvDoc);
+  }
+
+  @Override
+  public int insertApv(Approval apv) {
+    return adao.insertApv(apv);
+  }
+
+  @Override
+  public int insertRef(ApvRef ref) {
+    return adao.insertRef(ref);
+  }
+  @Override
+  public boolean processApproval(Approval apv, ApvDoc apvDoc, ApvRef ref, String apvMbrId, String refMbrId, String param, String userId) {
+    apvDoc.setMBR_ID(userId);
+    if (param.equals("Doc")) {
+      apvDoc.setDOC_STTUS(0); // 대기
+    } else if (param.equals("Temp")) {
+      apvDoc.setDOC_STTUS(4); // 임시
+    }
+
+    int docResult = insertDoc(apvDoc);
+    if (docResult < 1) {
+      return false;
+    }
+
+    if (apvMbrId != null && !apvMbrId.isEmpty()) {
+      String[] apvArray = apvMbrId.split(",");
+      for (int i = 0; i < apvArray.length; i++) {
+        apv.setDOC_SN(apvDoc.getDOC_SN());
+        apv.setMBR_ID(apvArray[i]);
+        apv.setAPV_LEV(i + 1);
+        apv.setAPV_STTUS(param.equals("Temp") ? 4 : (i == 0 ? 0 : 1));
+        int apvResult = insertApv(apv);
+        if (apvResult < 1) {
+          return false;
+        }
+      }
+    }
+    if (refMbrId != null && !refMbrId.isEmpty()) {
+      String[] refArray = refMbrId.split(",");
+      for (String refMemberId : refArray) {
+        ref.setDOC_SN(apvDoc.getDOC_SN());
+        ref.setMBR_ID(refMemberId);
+        ref.setREF_STTUS(param.equals("Temp") ? 1 : 0);
+        int refResult = insertRef(ref);
+        if (refResult < 1) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
 
 }

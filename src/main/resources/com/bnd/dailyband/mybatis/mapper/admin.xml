@@ -6,31 +6,38 @@
 
   <!-- 회원 목록 -->
   <select id="getMemberList" resultType="map">
-    select m.*, r.BAND_TEAM_NM as BAND_NM from MBR_INFO m
-    left join RCRIT_BBS r
-    on m.MBR_ID = r.MBR_ID
+    select m.*, r.BAND_TEAM_NM as BAND_NM
+    from MBR_INFO m
+           left join RCRIT_BBS r
+                     on m.MBR_ID = r.MBR_ID
     where m.MBR_ID != 'admin'
     group by m.MBR_ID;
   </select>
 
   <!-- 회원 권한 변경 -->
   <update id="changeType">
-    update MBR_INFO set MBR_TY = #{role} where MBR_ID = #{id}
+    update MBR_INFO
+    set MBR_TY = #{role}
+    where MBR_ID = #{id}
   </update>
 
   <!-- 회원 상태 변경 -->
   <update id="changeStatus">
-    update MBR_INFO set MBR_STTUS = #{newStatus} where MBR_ID = #{id}
+    update MBR_INFO
+    set MBR_STTUS = #{newStatus}
+    where MBR_ID = #{id}
   </update>
 
   <!-- 전체 회원 수 -->
   <select id="getTotalMbrCount">
-    select count(*) from MBR_INFO;
+    select count(*)
+    from MBR_INFO;
   </select>
 
   <!-- 일일 가입자 수-->
   <select id="getTodayMbrCount">
-    select count(*) from MBR_INFO
+    select count(*)
+    from MBR_INFO
     where date_format(REG_DT, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d');
   </select>
 
@@ -42,12 +49,15 @@
 
   <!-- 전체 방문 수-->
   <select id="getVisitCount" resultType="int">
-    select COUNT(*) from VISIT_INFO
+    select COUNT(*)
+    from VISIT_INFO
   </select>
 
   <!-- 일일 방문 수-->
   <select id="getTodayVisitCount" resultType="int">
-    SELECT COUNT(*) FROM VISIT_INFO WHERE DATE(VISIT_DT) = CURDATE()
+    SELECT COUNT(*)
+    FROM VISIT_INFO
+    WHERE DATE(VISIT_DT) = CURDATE()
   </select>
 
   <!-- 지역별 회원 선호 지역 -->
@@ -98,14 +108,16 @@
 
   <!-- 일별 가입자 수 -->
   <select id="getDayRegCnt" resultType="map">
-    select DATE(REG_DT) as date, count(*) as cnt from MBR_INFO
+    select DATE(REG_DT) as date, count(*) as cnt
+    from MBR_INFO
     group by DATE(REG_DT)
     order by date;
   </select>
 
   <!-- 일별 방문 수-->
   <select id="getDayVisitCnt" resultType="map">
-    select DATE(VISIT_DT) as date, count(*) as cnt from VISIT_INFO
+    select DATE(VISIT_DT) as date, count(*) as cnt
+    from VISIT_INFO
     group by DATE(VISIT_DT)
     order by date;
   </select>
@@ -113,20 +125,77 @@
   <!-- 밴드원 모집 조회-->
   <select id="getRboardList" resultType="map">
     select rb.*,
-           COALESCE(prpt.PRPT_STTUS, 0) as PRPT_STTUS,
+           COALESCE(prpt.PRPT_STTUS, 0)   as PRPT_STTUS,
            COALESCE(joined.JOIN_STTUS, 0) as JOIN_STTUS
     FROM RCRIT_BBS rb
-           left outer join (
-      select bpi.BBS_SN, COUNT(bpi.BBS_SN) as PRPT_STTUS
-      from BAND_PRPT_INFO bpi
-      where bpi.MBR_PRPT_STTUS in (1, 2)
-      group by bpi.BBS_SN
-    ) prpt on rb.BBS_SN = prpt.BBS_SN
-           left outer join (
-      select bpi.BBS_SN, COUNT(bpi.BBS_SN) as JOIN_STTUS
-      from BAND_PRPT_INFO bpi
-      where bpi.MBR_PRPT_STTUS = 0
-      group by bpi.BBS_SN
-    ) joined on rb.BBS_SN = joined.BBS_SN;
+           left outer join (select bpi.BBS_SN, COUNT(bpi.BBS_SN) as PRPT_STTUS
+                            from BAND_PRPT_INFO bpi
+                            where bpi.MBR_PRPT_STTUS in (1, 2)
+                            group by bpi.BBS_SN) prpt on rb.BBS_SN = prpt.BBS_SN
+           left outer join (select bpi.BBS_SN, COUNT(bpi.BBS_SN) as JOIN_STTUS
+                            from BAND_PRPT_INFO bpi
+                            where bpi.MBR_PRPT_STTUS = 0
+                            group by bpi.BBS_SN) joined on rb.BBS_SN = joined.BBS_SN;
+  </select>
+
+  <!-- 기안 문서리스트 -->
+  <select id="getApvDraftList" resultType="ApvDoc">
+    select *
+    from APV_DOC
+    where MBR_ID = #{id}
+    order by DOC_WRT_DT desc;
+  </select>
+
+  <!-- 전자결재 결재자, 참조자 회원 리스트  -->
+  <select id="getApvMbrList" resultType="Member">
+    select MBR_ID, MBR_NCNM, MBR_TY
+    from MBR_INFO
+    where MBR_ID != #{id}
+      and MBR_TY in ('ROLE_ADMIN', 'ROLE_MANAGER')
+  </select>
+
+  <!-- 기안 문서 작성 -->
+  <insert id="insertDoc">
+    insert into APV_DOC (DOC_FORM_TY, MBR_ID, DOC_SJ, DOC_CN, DOC_STTUS)
+    values (#{DOC_FORM_TY}, #{MBR_ID}, #{DOC_SJ}, #{DOC_CN}, #{DOC_STTUS})
+  </insert>
+
+  <!-- 결재자 등록 -->
+  <insert id="insertApv" parameterType="map">
+    insert into APPROVAL (MBR_ID, DOC_SN, APV_LEV, APV_STTUS)
+    values (#{MBR_ID},
+    <choose>
+      <when test="DOC_SN == 0">(select MAX(DOC_SN) from APV_DOC)
+      </when>
+      <otherwise>
+        #{DOC_SN}
+      </otherwise>
+    </choose>
+    ,#{APV_LEV}
+    ,#{APV_STTUS}
+    )
+  </insert>
+
+  <!-- 참조자 등록 -->
+  <insert id="insertRef" parameterType="map">
+    insert into APV_REF (MBR_ID, DOC_SN, REF_STTUS)
+    values (#{MBR_ID},
+    <choose>
+      <when test="DOC_SN == 0">(select MAX(DOC_SN) from APV_DOC)
+      </when>
+      <otherwise>
+        #{DOC_SN}
+      </otherwise>
+    </choose>
+    ,#{REF_STTUS}
+    )
+  </insert>
+
+  <select id="getApvMbrNcnmSearch" resultType="Member">
+    select MBR_ID, MBR_NCNM, MBR_TY
+    from MBR_INFO
+    where MBR_ID != #{id}
+      and MBR_TY in ('ROLE_ADMIN', 'ROLE_MANAGER')
+      and MBR_NCNM like CONCAT('%',#{searchKeyword},'%')
   </select>
 </mapper>
