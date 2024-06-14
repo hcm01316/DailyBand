@@ -1,94 +1,5 @@
 let option = 1; //선택한 등록순과 최신순을 수정, 삭제, 추가 후에도 유지되도록 하기위한 변수로 사용됩니다.
 
-
-function likePost() {
-    var bbs_sn = $("#BBS_SN").val(); // hidden input에서 값을 가져옴
-    var action = "like"; // 기본적으로 추천 동작
-
-    // 추천 버튼 요소 가져오기
-    var likeButton = $(".btn-like");
-    
-    // 현재 추천 여부 확인
-    var isLiked = likeButton.hasClass("liked");
-    
-    // 이미 추천한 경우, 추천을 취소하고 서버에 요청을 보냄
-    if (isLiked) {
-        action = "notLike"; // 취소 동작으로 변경
-    }
-
-    // 추천 버튼 비활성화
-    likeButton.prop("disabled", true);
-
-    // 서버에 추천 또는 취소 요청 보내기
-    $.ajax({
-        url: "BoardLike.bo",
-        type: "POST",
-        data: {
-            bbs_sn: bbs_sn,
-            action: action
-        },
-        success: function(response) {
-            if (response === "Success") {
-                var likeCount = $("#LikeCount"); // 추천수를 표시할 요소 가져오기
-                var currentCount = parseInt(likeCount.text());
-
-                // 클릭 토글링
-                if (isLiked) {
-                    likeButton.removeClass("liked");
-                    likeCount.text(currentCount - 1); // 추천수 감소
-                } else {
-                    likeButton.addClass("liked");
-                    likeCount.text(currentCount + 1); // 추천수 증가
-                }
-            } else {
-                console.error("Failed to toggle like status.");
-            }
-        },
-        complete: function() {
-            // 요청 완료 후 추천 버튼 활성화
-            likeButton.prop("disabled", false);
-        }
-    });
-}
-
-function dislikePost() {
-    var bbs_sn = $("#BBS_SN").val(); // hidden input에서 값을 가져옴
-    var action = "notLike"; // 기본적으로 비추천 동작
-
-    // 비추천 버튼 요소 가져오기
-    var dislikeButton = $(".btn-dislike");
-    
-    // 비추천 상태에 따라 액션 변경
-    if (dislikeButton.hasClass("disliked")) {
-        action = "like";
-    }
-
-    $.ajax({
-        url: "BoardLikeAction",
-        type: "POST",
-        data: {
-            bbs_sn: bbs_sn,
-            action: action
-        },
-        success: function(response) {
-            if (response === "Success") {
-                var dislikeCount = $("#NotLikeCount"); // 비추천수를 표시할 요소 가져오기
-
-                // 클릭 토글링
-                if (action === "notLike") {
-                    dislikeButton.addClass("disliked");
-                    dislikeCount.text(parseInt(dislikeCount.text()) + 1); // 비추천수 증가
-                } else {
-                    dislikeButton.removeClass("disliked");
-                    dislikeCount.text(parseInt(dislikeCount.text()) - 1); // 비추천수 감소
-                }
-            } else {
-                console.error("Failed to toggle dislike status.");
-            }
-        }
-    });
-}
-
 function getList(state) {//현재 선택한 댓글 정렬방식을 저장합니다. 1=>등록순, 2=>최신순
 	console.log(state)
 	option = state;
@@ -420,12 +331,4 @@ $(function() {
 	})//답글쓰기 클릭 후 계속 누르는 것을 방지하기 위한 작업
 
 })//ready
-
-
-
-
-
-
-
-
 

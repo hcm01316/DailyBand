@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <script th:src = "@{/js/UploadAdapter.js}" charset="utf-8"></script>
+    <style>
+        #container {
+            width: 1000px;
+            margin: 20px auto;
+        }
+        .ck-editor__editable[role="textbox"] {
+            /* Editing area */
+            min-height: 200px;
+        }
+        .ck-content .image {
+            /* Block images */
+            max-width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+    <title>음악게시글 작성</title>
+    <script>
+        function checkOnlyOne(checkbox, groupName) {
+            var checkboxes = document.getElementsByName(groupName);
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            게시글 작성
+                        </h2>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            <div class = "container">
+                <form th:action="@{/gboard/add}" method="post" name = boardform>
+                    <input type ="hidden" name ="MBR_ID" th:value="${#authentication.principal.username}">
+                    <div class="mb-3">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" id="BBS_SJ"  name="BBS_SJ" placeholder="제목을 입력하세요." />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">장르</label>
+                        <div class="form-selectgroup form-selectgroup-pills">
+                            <label class="form-selectgroup-item" th:each="item, iterStat : ${Genrelist}">
+                                <input type="checkbox" name="GENRE_ID" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'GENRE_ID')" />
+                                <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea id="editor"  name="BBS_CN"></textarea>
+                        <script th:inline="javascript">
+                            ClassicEditor
+                                .create(document.querySelector('#editor'), {
+                                    language:'ko',
+                                    extraPlugins: [MyCustomUploadAdapterPlugin]
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                });
+                        </script>
+                    </div>
+                    <input type="submit" class="btn" value="글쓰기"/>
+                    <a th:href="@{/gboard/music/list}" onclick="return confirm('정말 취소 하겠습니까?')" class="btn">
+                        취소
+                    </a>
+                </form>
+
+            </div>
+            <div class="container-xl">
+
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+<script th:inline="javascript"  charset="utf-8">
+    $(document).ready(function() {
+
+        function checkOnlyOne(checkbox, groupName) {
+            var checkboxes = document.getElementsByName(groupName);
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
+        $("form[name=boardform]").submit(function () {
+
+            if ($.trim($("#BBS_SJ").val()) == "") {
+                alert("제목을 입력하세요");
+                $("#board_subject").focus();
+                return false;
+            }
+
+            if ($("input[name='GENRE_ID']:checked").length == 0) {
+                alert("장르를 선택하세요");
+                // 체크박스 그룹 중 첫 번째 체크박스로 포커스 이동
+                $("input[name='GENRE_ID']").first().focus();
+                return false;
+            }
+
+            const editorData = ClassicEditor.instances.editor.getData();
+            if ($.trim(editorData) == "") {
+                alert("내용을 입력하세요");
+                $("#editor").focus();
+                return false;
+            }
+        });// submit end
+    }); // ready() end
+</script>
+</body>
+</html>

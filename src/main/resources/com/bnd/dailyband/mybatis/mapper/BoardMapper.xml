@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bnd.dailyband.mybatis.mapper.BoardMapper">
+
+    <select id="getBoardList" resultType="board">
+        SELECT *
+        FROM (
+                 SELECT ROW_NUMBER() OVER (ORDER BY b.BBS_SN DESC) AS rnum,
+                         b.*,
+                        COALESCE(c.cnt, 0) AS cnt,
+                        m.MBR_NCNM,
+                        m.MBR_PROFL_PHOTO,
+                        COALESCE(bc.comment_count, 0) AS comment_count,
+                        band.CTGRY_NM
+                 FROM GNRL_BBS b
+                          LEFT OUTER JOIN (
+                     SELECT BBS_SN, COUNT(*) AS cnt
+                     FROM BBS_CMNT
+                     GROUP BY BBS_SN
+                 ) c ON b.BBS_SN = c.BBS_SN
+                          LEFT OUTER JOIN MBR_INFO m ON b.MBR_ID = m.MBR_ID
+                          LEFT OUTER JOIN (
+                     SELECT BBS_SN, COUNT(*) AS comment_count
+                     FROM BBS_CMNT
+                     GROUP BY BBS_SN
+                 ) bc ON b.BBS_SN = bc.BBS_SN
+                          LEFT OUTER JOIN BAND_CTGRY band ON b.GENRE_ID = band.CTGRY_ID
+             ) AS result
+        WHERE rnum BETWEEN #{start} AND #{end};
+    </select>
+
+
+
+    <select id="getBoardListCount" resultType="int">
+        SELECT COUNT(*)
+        FROM GNRL_BBS
+    </select>
+
+    <select id="getCtgryList" resultType="Ctgry">
+        select CTGRY_NM,CTGRY_ID from BAND_CTGRY where CTGRY_TY = #{type}
+    </select>
+
+    <insert id="insertBoard" parameterType="Board">
+        INSERT INTO GNRL_BBS (BBS_TY_ID, MBR_ID, BBS_SJ, BBS_CN, BBS_REMD_CNT, BBS_NREMD_CNT, BBS_READ_CNT, GENRE_ID)
+        VALUES ('BBS01',#{MBR_ID}, #{BBS_SJ}, #{BBS_CN}, 0, 0, 0, #{GENRE_ID})
+    </insert>
+
+    <select id="getBoardById" resultType="com.bnd.dailyband.domain.Board">
+        SELECT b.*, m.MBR_NCNM, m.MBR_PROFL_PHOTO, band.CTGRY_NM
+        FROM GNRL_BBS b
+                 LEFT OUTER JOIN MBR_INFO m ON b.MBR_ID = m.MBR_ID
+                 LEFT OUTER JOIN BAND_CTGRY band ON b.GENRE_ID = band.CTGRY_ID
+        WHERE b.BBS_SN = #{id}
+    </select>
+
+    <update id="increaseReadCount">
+        UPDATE GNRL_BBS SET BBS_READ_CNT = BBS_READ_CNT + 1 WHERE BBS_SN = #{id}
+    </update>
+
+    <update id="increaseLikes" parameterType="int">
+        UPDATE GNRL_BBS
+        SET BBS_REMD_CNT = BBS_REMD_CNT + 1
+        WHERE BBS_SN = #{id}
+    </update>
+
+    <update id="increaseDislikes" parameterType="int">
+        UPDATE GNRL_BBS
+        SET BBS_NREMD_CNT = BBS_NREMD_CNT + 1
+        WHERE BBS_SN = #{id}
+    </update>
+
+    <select id="getLikes" resultType="int" parameterType="int">
+        SELECT BBS_REMD_CNT
+        FROM GNRL_BBS
+        WHERE BBS_SN = #{id}
+    </select>
+
+    <select id="getDislikes" resultType="int" parameterType="int">
+        SELECT BBS_NREMD_CNT
+        FROM GNRL_BBS
+        WHERE BBS_SN = #{id}
+    </select>
+
+    <delete id="deleteBoard">
+        DELETE FROM GNRL_BBS WHERE BBS_SN = #{id}
+    </delete>
+
+    <update id="updateBoard" parameterType="Board">
+        UPDATE GNRL_BBS
+        SET BBS_SJ = #{updatedBoard.BBS_SJ},
+            BBS_CN = #{updatedBoard.BBS_CN},
+            GENRE_ID = #{updatedBoard.GENRE_ID}
+        WHERE BBS_SN = #{id}
+    </update>
+
+</mapper>
