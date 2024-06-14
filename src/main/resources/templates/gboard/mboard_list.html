@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>음악 게시판</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        select.form-control {
+            width: auto;
+            margin-bottom: 2em;
+            display: inline-block;
+        }
+        .rows {
+            text-align: right;
+        }
+        .gray {
+            color: gray;
+        }
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(1),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(2),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(3),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(4),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(5),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(6) {
+            text-align: center;
+        }
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(1) {
+            width: 8%;
+        }
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(2),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(3),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(4),
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(5) {
+            width: 16.6%;
+        }
+        body > div > table > thead > tr:nth-child(2) > th:nth-child(6) {
+            width: 17%;
+        }
+        tbody tr:nth-child(even) {
+            background-color: transparent;
+        }
+        .float-right {
+            background-color: #7C87FF;
+            color: white;
+        }
+        .select {
+            color: #7C87FF;
+            font-weight: bold;
+        }
+        .float-right {
+            background-color: #7C87FF;
+            color: white;
+            position: absolute;
+            top: 70px;
+            right: 60px;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <!-- Navbar -->
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            음악 게시판
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" th:if="${listcount > 0}">
+            <table class="table table">
+                <thead>
+                <tr>
+                    <th style="text-align: center; font-size: larger;">장르</th>
+                    <th style="font-size: larger;">제목</th>
+                    <th style="font-size: larger;">작성자</th>
+                    <th style="font-size: larger;">작성일</th>
+                    <th style="text-align: center; font-size: larger;">조회수</th>
+                    <th style="text-align: center; font-size: larger;">추천수</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="b, numStat : ${boardlist}">
+                    <td style="text-align: center; width: 13%;" th:text="${b.CTGRY_NM}"></td>
+                    <td>
+                        <div>
+                            <a th:href="@{'/gboard/music/detail/' + ${b.BBS_SN}}">
+                                <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
+                            </a>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div>
+                            <img th:src="${b.MBR_PROFL_PHOTO}" style="width: 30px; height: 30px;" alt="프로필 사진">
+                            <span th:text="${b.MBR_NCNM}"></span>
+                        </div>
+                    </td>
+                    <td><div th:text="${#dates.format(b.REG_DT, 'YYYY-MM-dd')}"></div></td>
+                    <td style="text-align: center;"><div th:text="${b.BBS_READ_CNT}"></div></td>
+                    <td style="text-align: center;"><div th:text="${b.BBS_REMD_CNT}"></div></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="center-black">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:if="${page <= 1}">
+                        <a class="page-link gray">이전&nbsp;</a>
+                    </li>
+                    <li class="page-item" th:if="${page > 1}">
+                        <a th:href="@{'/gboard/music/list?page=' + ${page - 1}}" class="page-link">이전&nbsp;</a>
+                    </li>
+                    <li class="page-item" th:each="a : ${#numbers.sequence(startpage, endpage)}">
+                        <a th:href="@{'/gboard/music/list?page=' + ${a}}" th:class="${a == page} ? 'page-link active' : 'page-link'" th:text="${a}"></a>
+                    </li>
+                    <li class="page-item" th:if="${page >= maxpage}">
+                        <a class="page-link gray">&nbsp;다음</a>
+                    </li>
+                    <li class="page-item" th:if="${page < maxpage}">
+                        <a th:href="@{'/gboard/music/list?page=' + ${page+1}}" class="page-link">&nbsp;다음</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div th:if="${listcount == 0}">
+            <h3 style="text-align: center;">등록된 글이 없습니다.</h3>
+        </div>
+        <a th:href="@{/gboard/music/write}" class="btn btn-indigo float-right" aria-label="Button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 class="icon icon-tabler icons-tabler-outline icon-tabler-pencil">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/>
+                <path d="M13.5 6.5l4 4"/>
+            </svg>
+            글쓰기
+        </a>
+        <div class="page-body">
+            <div class="container-xl">
+                <!-- Content here -->
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+
+</body>
+</html>
