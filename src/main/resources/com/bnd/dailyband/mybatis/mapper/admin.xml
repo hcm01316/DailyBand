@@ -6,12 +6,23 @@
 
   <!-- 회원 목록 -->
   <select id="getMemberList" resultType="map">
-    select m.*, r.BAND_TEAM_NM as BAND_NM
-    from MBR_INFO m
-           left join RCRIT_BBS r
-                     on m.MBR_ID = r.MBR_ID
-    where m.MBR_ID != 'admin'
-    group by m.MBR_ID;
+    SELECT m.*,
+           CASE
+             WHEN bpi.MBR_PRPT_STTUS IN (1, 2) THEN
+               COALESCE(r.BAND_TEAM_NM,
+                        (SELECT rb2.BAND_TEAM_NM
+                         FROM RCRIT_BBS rb2
+                         WHERE rb2.BBS_SN = bpi.BBS_SN
+                           AND rb2.BAND_TEAM_NM IS NOT NULL
+                         LIMIT 1))
+             END AS BAND_NM
+    FROM MBR_INFO m
+           LEFT JOIN
+         BAND_PRPT_INFO bpi ON m.MBR_ID = bpi.MBR_ID
+           LEFT JOIN
+         RCRIT_BBS r ON m.MBR_ID = r.MBR_ID
+    WHERE m.MBR_ID != 'admin'
+    GROUP BY m.MBR_ID, bpi.MBR_PRPT_STTUS;
   </select>
 
   <!-- 회원 권한 변경 -->
