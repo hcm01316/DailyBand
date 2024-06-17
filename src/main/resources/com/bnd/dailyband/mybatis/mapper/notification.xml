@@ -4,18 +4,38 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.NotificationMapper">
 
+
+    <!-- 특정사용자에게 알림 -->
     <insert id="insert">
-        INSERT INTO NOTIFICATION (TARGET_MBR_ID, MESSAGE, CHECK_READ, SEND_TIME, PASSING_URL, MESSAGE_CAT)
-        VALUES (#{TARGET_MBR_ID}, #{MESSAGE}, 0, now(), #{PASSING_URL}, #{MESSAGE_CAT})
+        <selectKey resultType ="int" order="BEFORE"
+                   keyProperty="NOTIFY_ID">
+        select COALESCE(max(NOTIFY_ID),0)+1 from NOTIFICATION
+        </selectKey>
+
+        INSERT INTO NOTIFICATION (NOTIFY_ID, TARGET_MBR_ID, MESSAGE, CHECK_READ, SEND_TIME, PASSING_URL, MESSAGE_CAT)
+                        VALUES (#{NOTIFY_ID}, #{TARGET_MBR_ID}, #{MESSAGE}, 0, now(), #{PASSING_URL}, #{MESSAGE_CAT})
     </insert>
 
-    <select id="getList">
-        SELECT TARGET_MBR_ID, MESSAGE, PASSING_URL, MESSAGE_CAT
+    <!-- 알림의 리스트 불러오기 -->
+    <select id="getList" resultType="notification">
+        SELECT NOTIFY_ID, TARGET_MBR_ID, MESSAGE, MESSAGE_CAT, PASSING_URL
         FROM NOTIFICATION
-                 left join BAND_PRPT_INFO ON BAND_PRPT_INFO.MBR_ID = NOTIFICATION.TARGET_MBR_ID
         WHERE TARGET_MBR_ID = #{userId}
           AND CHECK_READ = 0
     </select>
+
+    <!-- 알림 읽는 유무 -->
+    <update id="update">
+        UPDATE NOTIFICATION
+        set CHECK_READ = 1
+        where NOTIFY_ID = #{notify_id}
+        AND CHECK_READ != 1
+    </update>
+
+    <delete id ="delete">
+    delete from NOTIFICATION
+    where NOTIFY_ID = #{num}
+    </delete>
 
 
 

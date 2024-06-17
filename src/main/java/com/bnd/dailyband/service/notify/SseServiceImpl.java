@@ -20,6 +20,9 @@ public class SseServiceImpl implements SseService {
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
     private NotificationMapper dao;
 
+
+
+
     @Autowired
     public SseServiceImpl(NotificationMapper dao) {
         this.dao = dao;
@@ -46,19 +49,27 @@ public class SseServiceImpl implements SseService {
             this.emitters.remove(userId)
         );
 
-        List<String> list =  dao.getList(userId);
+        List<Notification> list =  dao.getList(userId);
 
         //503에러를 방지하기 위한 더미 이벤트 전송
         try {
             //알림은 emitter.send() 메서드를 사용하여 전송됩니다.
             //SseEmitter.event().name("notification").data(message)를 사용하여 이름이 "notification"이고
             //데이터가 message인 이벤트를 생성하고 전송합니다.
-
+            if(list.size() == 0 ) {
                 emitter.send(SseEmitter.event().name("notification").data(""));
+            }else {  //로그인 했을 때 읽지 않은 알림을 보냅니다.
+                for(Notification notification : list)
+                    emitter.send(SseEmitter.event().name("notification").data(notification.getMESSAGE() + "&url=" + notification.getPASSING_URL() + "&cat=" + notification.getMESSAGE_CAT() + "&num=" + notification.getNOTIFY_ID()));
+            }
         } catch (IOException e) {
             //전송 중 예외가 발생하면(IOException), 해당 emitter를 에러 상태로 완료합니다.
             emitter.completeWithError(e);
         }
+
+
+
+
         return emitter;
     }
 
@@ -72,17 +83,21 @@ public class SseServiceImpl implements SseService {
 
         dao.insert(notification);
 
-        List<String> list =  dao.getList(userId);
         if (emitter != null) {
             try {
                 //알림은 emitter.send() 메서드를 사용하여 전송됩니다.
                 //SseEmitter.event().name("notification").data(message)를 사용하여 이름이 "notification"이고
                 //데이터가 message인 이벤트를 생성하고 전송합니다.
-                    emitter.send(SseEmitter.event().name("notification").data(message));
+                    emitter.send(SseEmitter.event().name("notification").data(message + "&url=" + url + "&cat=" + message_cat + "&num=" + notification.getNOTIFY_ID()));
             } catch (IOException e) {
                 //전송 중 예외가 발생하면(IOException), 해당 emitter를 에러 상태로 완료합니다.
                 emitter.completeWithError(e);
             }
         }
+    }
+
+    @Override
+    public void delete(int num) {
+        dao.delete(num);
     }
 }

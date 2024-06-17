@@ -23,22 +23,38 @@
 
 
     let eventSource = new EventSource(contextpath + "/sse"); //http://localhost:9000/dailyband/sse
-
-    eventSource.addEventListener('notification',  function(event) {
-    console.log(event.data);
-
+    let output = "";
       let count = 0
+    eventSource.addEventListener('notification',  function(event) {
+      console.log(event.data);
+      if(event.data == ""){
+        $(".list-group-item").remove();
+      }
+
        if(event.data != "") {
+         const datas = event.data.split("&")
+         const content = datas[0]
+         const url = datas[1].substring(4)
+         const cat = datas[2].substring(4)
+         const category = ['공지사항', '커뮤니티', '밴드모집', '밴드일정', '합주실', '관리자']
+         const num = datas[3].substring(4)
+         console.log(datas)
+         console.log(content)
+         console.log(num)
+         console.log(cat)
+         console.log(url)
+
          count++;
-         let output = `
-      <div class="list-group-item" style="width: 487px">
+         output += `
+      <div class="list-group-item" style="width: 487px" data-url = ${url}
+      data-num = ${num}>
                     <div class="row align-items-center">
                       <div class="col-auto"><span
                           class="status-dot status-dot-animated bg-red d-block"></span></div>
                       <div class="col text-truncate">
-                        <a href="#" class="text-body d-block">회원가입</a>
+                        <a href="#" class="text-body d-block" >${category[cat]}</a>
                         <div class="d-block text-muted text-truncate mt-n1">
-                          ${event.data}
+                          ${content}
                         </div>
                       </div>
                       <div class="col-auto">
@@ -57,10 +73,47 @@
                     </div>
                   </div>`
          $(".list-group-flush").html(output)
-         $(".badge.bg-red").html(count)
-       }
-    });
 
+         // 알림 클릭 이벤트 처리
+         $(".badge.bg-red").html(count).css("display", 'block')
+
+
+       }// if(event.data != "") {
+    });//    eventSource.addEventListener('notification',  function(event) {
+      // 알림 클릭 이벤트 처리
+      $(".list-group").on('click', '.list-group-item', function (event){
+        event.preventDefault();
+        let num = $(this).data("num");
+        let url = $(this).data("url");
+        $(this).remove()
+        console.log("remove");
+        passingUrl(num, url);
+
+      });
+
+
+      let token = $("meta[name='_csrf']").attr("content");
+      let header = $("meta[name='_csrf_header']").attr("content");
+
+      function passingUrl(num, url){
+        $.ajax({
+          url: contextpath + "/delete",
+          method : "Delete",
+          async : false,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader(header, token);
+          },
+          data : {num: num },
+          success : function (response){
+            console.log("check", response);
+            //window.location.href = contextpath + '/calendar/bandcal'
+            window.location.href = contextpath + '/' + url
+          },
+          error: function (error){
+            console.error("error", error);
+          }
+        });
+      }
 
     });
   </script>
@@ -102,7 +155,7 @@
               </svg>
               <span class="badge bg-red"></span>
             </a>
-            <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
+            <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card dropdown-menu-scrollable" style="scrollbar-width: none">
               <div class="card">
                 <div class="card-header">
                   <h3 class="card-title">알림</h3>
