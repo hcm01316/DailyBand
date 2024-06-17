@@ -4,12 +4,56 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.ChatMapper">
     <insert id="chatinsert">
-        insert into CHAT_MSG(MBR_ID,BBS_SN,MSG_CN)
+        insert into CHAT_MSG(MBR_ID,CHAT_ROOM_ID,MSG_CN)
         values (#{id},#{num},#{cn})
     </insert>
 
-    <select id="myprofl" resultType="string">
-        select MBR_PROFL_PHOTO from MBR_INFO
-        where MBR_ID = #{id}
+    <select id="chatlist" resultType="Chatlist">
+        select SNDNG_DT, CHAT_MSG.MBR_ID, MSG_CN,MBR_NCNM,MBR_PROFL_PHOTO
+            FROM CHAT_MSG LEFT JOIN MBR_INFO ON CHAT_MSG.MBR_ID = MBR_INFO.MBR_ID WHERE CHAT_ROOM_ID = #{num} order by
+            SNDNG_DT
     </select>
+
+    <select id="myprofl" resultType="string">
+        select MBR_PROFL_PHOTO from MBR_INFO where MBR_ID = #{id}
+    </select>
+
+    <select id="ChatRoomList"  resultType="ChatRoom">
+        select CHAT_HC,CHAT_NM,CHAT_TYPE,CHAT_ROOM.CHAT_ROOM_ID from CHAT_ROOM left join CHAT_MAPPING on CHAT_MAPPING.CHAT_ROOM_ID = CHAT_ROOM.CHAT_ROOM_ID where MBR_ID = #{id}
+    </select>
+
+    <insert id="ChatJoin">
+        insert into CHAT_MAPPING (MBR_ID,CHAT_ROOM_ID)
+        values (#{id},#{num})
+    </insert>
+
+    <delete id="ChatExit">
+        delete from CHAT_MAPPING
+        where MBR_ID = #{id} and CHAT_ROOM_ID = #{num}
+    </delete>
+
+    <delete id="ChatRoomDelete">
+        delete from CHAT_ROOM
+        where CHAT_ROOM_ID = #{num}
+    </delete>
+
+    <select id="IsChat" resultType="int">
+        SELECT COALESCE(
+                       (SELECT cr.CHAT_ROOM_ID
+                        FROM CHAT_MAPPING cm1
+                                 JOIN CHAT_MAPPING cm2 ON cm1.CHAT_ROOM_ID = cm2.CHAT_ROOM_ID
+                                 JOIN CHAT_ROOM cr ON cm1.CHAT_ROOM_ID = cr.CHAT_ROOM_ID
+                        WHERE cm1.MBR_ID = #{id}
+                          AND cm2.MBR_ID = #{myid}
+                          AND cr.CHAT_TYPE = 2), 0) AS CHAT_ROOM_ID;
+    </select>
+
+    <select id="MyName" resultType="String">
+        select MBR_NCNM from MBR_INFO where MBR_ID = #{id}
+    </select>
+
+    <insert id="ChatCreate">
+        insert into CHAT_ROOM (CHAT_HC,CHAT_NM,CHAT_TYPE)
+        values (2,CONCAT(#{name}, '-', #{myname}),2)
+    </insert>
 </mapper>

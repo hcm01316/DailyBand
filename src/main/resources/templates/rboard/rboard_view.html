@@ -56,10 +56,16 @@
         <div style=" margin-left: 10px; margin-top: 15px;" th:utext="${rboarddata.BBS_CN}"></div>
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 10px; margin-right: 180px;">
-        <th:block th:if="${rboarddata.RCRIT_STTUS_CD} == 1">
-          <a th:href="@{/rboard/join(num=${rboarddata.BBS_SN})}" class="btn" id="rjoin"
+        <th:block th:if="${rboarddata.RCRIT_STTUS_CD} == 1 and ${joinck} != 0 and ${joinck} != 2">
+          <a th:href="@{/rboard/join(num=${rboarddata.BBS_SN})}" class="btn btn-outline-primary" id="rjoin"
              style="margin-right: 10px;">
             가입신청
+          </a>
+        </th:block>
+        <th:block th:if="${joinck} == 0 ">
+          <a th:href="@{/rboard/joincancel(num=${rboarddata.BBS_SN})}" class="btn btn-outline-warning" id="rjoincancel"
+             style="margin-right: 10px;">
+            가입취소
           </a>
         </th:block>
         <th:block th:if="${rboarddata.MBR_ID} == ${#authentication.principal.username}">
@@ -67,7 +73,7 @@
              style="margin-right: 10px;">
             수정
           </a>
-          <a href="#" class="btn" th:data-bbs-sn="${rboarddata.BBS_SN}"
+          <a href="#" class="btn btn-outline-danger" th:data-bbs-sn="${rboarddata.BBS_SN}" th:data-chat-num="${MyBandChat}"
              style="margin-right: 10px;" onclick="confirmDelete(this); return false;">
             삭제
           </a>

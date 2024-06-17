@@ -131,11 +131,11 @@
 
 	<select id="bandacceptcnt" resultType="int">
 		select (
-				select count(*)
-				from RCRIT_BBS left outer join BAND_PRPT_INFO
+				   select count(*)
+				   from RCRIT_BBS left outer join BAND_PRPT_INFO
 												  on BAND_PRPT_INFO.BBS_SN = RCRIT_BBS.BBS_SN
-				where RCRIT_BBS.BBS_SN = #{num}
-				and MBR_PRPT_STTUS = 1) as MPS_CNT
+				   where RCRIT_BBS.BBS_SN = #{num}
+					 and MBR_PRPT_STTUS = 1) as MPS_CNT
 		from RCRIT_BBS
 		where RCRIT_BBS.BBS_SN = #{num}
 	</select>
@@ -160,10 +160,39 @@
 		where BBS_SN = #{BBS_SN}
 	</update>
 
-	<select id="getleader" resultType="String">
-		select MBR_ID from BAND_PRPT_INFO
-		where BBS_SN = #{num} and MBR_PRPT_STTUS =2
+	<insert id="BandChatRoomCreate">
+		insert into CHAT_ROOM (CHAT_HC,CHAT_NM,CHAT_TYPE)
+		values (#{hc},#{chatname},3)
+	</insert>
+
+	<select id="getChatNum" resultType="int">
+		select max(CHAT_ROOM_ID) from CHAT_ROOM
 	</select>
 
-</mapper>
+	<select id="BandTeamName" resultType="String">
+		select BAND_TEAM_NM from RCRIT_BBS where BBS_SN = #{num}
+	</select>
 
+	<select id="MyBandChat" resultType="int">
+		select COALESCE(
+					   (select CHAT_ROOM_ID from CHAT_ROOM where CHAT_NM = #{name})
+				   ,0) as CHAT_ROOM_ID;
+	</select>
+
+	<insert id="BandChatJoin">
+		insert into CHAT_MAPPING (MBR_ID,CHAT_ROOM_ID)
+		values (#{id},#{chat})
+	</insert>
+
+	<select id="JoinCk" resultType="int">
+		select COALESCE(
+					   (select MBR_PRPT_STTUS from BAND_PRPT_INFO
+						where BBS_SN = #{num} and MBR_ID = #{id})
+				   ,-1) as MBR_PRPT_STTUS;
+	</select>
+
+	<delete id="JoinCancel">
+		delete from BAND_PRPT_INFO
+		where BBS_SN = #{num} and MBR_ID = #{id}
+	</delete>
+</mapper>

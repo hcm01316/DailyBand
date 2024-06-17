@@ -165,10 +165,39 @@ public class RboardServiceImpl implements RboardService {
     }
 
     @Override
-    public String getleader(int num) {
-        return dao.getleader(num);
+    public void BandChatRoomCreate(String chatname, int hc) {
+        dao.BandChatRoomCreate(chatname,hc);
+    }
+
+    @Override
+    public int getChatNum() {
+        return dao.getChatNum();
+    }
+
+    @Override
+    public String BandTeamName(int num) {
+        return dao.BandTeamName(num);
+    }
+
+    @Override
+    public int MyBandChat(String name) {
+        return dao.MyBandChat(name);
+    }
+
+    @Override
+    public void BandChatJoin(int chat,String id) {
+        dao.BandChatJoin(chat,id);
+    }
+
+    @Override
+    public int JoinCk(int num, String id) {
+        return dao.JoinCk(num,id);
+    }
+
+    @Override
+    public int JoinCancel(int num, String id) {
+        return dao.JoinCancel(num,id);
     }
 
 
 }
-

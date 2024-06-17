@@ -39,7 +39,7 @@
                         <h2 style="display:inline;" class="page-title">
                             밴드원 모집 리스트
                         </h2>
-                        <th:block th:if="${isband} == 0" sec:authorize="isAuthenticated()">
+                        <th:block th:if="${isband == 0} or ${listcount == 0}" sec:authorize="isAuthenticated()">
 
                                 <a th:href="@{/rboard/write}" class="btn btn-indigo" aria-label="Button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -61,6 +61,7 @@
 
         <div class="page-body">
             <div class="container-xl">
+                <div th:if="${listcount} != 0">
                 <div class="row row-cards">
                         <th:block th:with="num=${listcount - (page - 1) * limit}">
                                 <div class="col-md-4" th:each="item,iterStat : ${rboardlist}">
@@ -110,7 +111,7 @@
                                     </div>
                                 </div>
                         </th:block>
-            </div>
+                </div>
                 <div class="center-block ">
                     <ul class="pagination justify-content-center" style="margin-top: 10px">
                         <li class="page-item" th:if="${page <= 1}">
@@ -137,6 +138,10 @@
                             <a th:href="@{'list?page=' + ${page + 1}}" class="page-link">&nbsp;다음</a>
                         </li>
                     </ul>
+                    </div>
+                </div>
+                <div th:if="${listcount} == 0">
+                <h1>등록된 게시글이 없습니다.</h1>
                 </div>
         </div>
     </div>
