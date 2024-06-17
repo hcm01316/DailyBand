@@ -145,17 +145,17 @@
                       </td>
                       <td>
                         <th:block th:if="${leaderck} == 2 and ${item.MBR_ID} == ${id}">
-                          <a class="btn btn-red" href="#" th:data-bbs-sn="${item.BBS_SN}"
+                          <a class="btn btn-red" href="#" th:data-bbs-sn="${item.BBS_SN}" th:data-chat-num="${MyBandChat}"
                              onclick="confirmBreakup(this); return false;">해체</a>
                         </th:block>
                         <th:block th:if="${leaderck} == 2 and ${item.MBR_ID} != ${id}">
                           <a class="btn btn-red" href="#" th:data-mbr-id="${item.MBR_ID}"
-                             th:data-bbs-sn="${item.BBS_SN}"
+                             th:data-bbs-sn="${item.BBS_SN}" th:data-chat-num="${MyBandChat}"
                              onclick="confirmResign(this); return false;">강퇴</a>
                         </th:block>
                         <th:block th:if="${leaderck} == 1 and ${item.MBR_ID} == ${id} ">
                           <a class="btn btn-red" href="#" th:data-mbr-id="${item.MBR_ID}"
-                             th:data-bbs-sn="${item.BBS_SN}"
+                             th:data-bbs-sn="${item.BBS_SN}" th:data-chat-num="${MyBandChat}"
                              onclick="confirmLeave(this); return false;">탈퇴</a>
                         </th:block>
                       </td>
@@ -243,7 +243,7 @@
                         </td>
                         <td>
                           <a class="btn btn-lime" href="#" th:data-mbr-id="${item.MBR_ID}"
-                             th:data-bbs-sn="${item.BBS_SN}"
+                             th:data-bbs-sn="${item.BBS_SN}" th:data-chat-num="${MyBandChat}"
                              onclick="confirmAccept(this); return false;">수락</a>
                           <a class="btn btn-red" href="#" th:data-mbr-id="${item.MBR_ID}"
                              th:data-bbs-sn="${item.BBS_SN}"

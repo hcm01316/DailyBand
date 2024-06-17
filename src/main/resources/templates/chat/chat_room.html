@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script th:src="@{/js/jquery-3.7.1.js}"></script>
-    <script th:src ="@{/js/chat.js}" charset="utf-8"></script>
-
+    <script th:src="@{/js/chat.js}"></script>
     <style>
         #send1 {
             display: none;
@@ -39,70 +38,40 @@
                                 <div class="card-header d-none d-md-block">
                                     <div class="input-icon">
                       <span class="input-icon-addon">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24h24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
                       </span>
                                         <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search"/>
                                     </div>
                                 </div>
-                                <input type="hidden" id = "myid" th:value="${username}">
+                                <input type="hidden" id="myid" th:value="${username}">
                                 <div class="card-body p-0 scrollable" style="max-height: 35rem">
                                     <div class="nav flex-column nav-pills" role="tablist">
-                                        <a th:each="chat : ${chats}" th:href="'#' + ${chat.id}" class="nav-link text-start mw-100 p-3" data-bs-toggle="pill" role="tab">
-                                            <div class="row align-items-center flex-fill">
-                                                <div class="col-auto">
-                                                    <span class="avatar" th:style="'background-image: url(' + ${chat.avatarUrl} + ')'"></span>
+                                        <th:block th:if="${Chatroom} != null">
+                                            <a th:each="chat : ${Chatroom}" th:href="'/dailyband/room/' + ${chat.CHAT_ROOM_ID} + '/messages'" class="nav-link text-start mw-100 p-3" th:attr="data-chatroom-id=${chat.CHAT_ROOM_ID}" data-bs-toggle="pill" role="tab">
+                                                <div class="row align-items-center flex-fill">
+                                                    <div class="col-auto">
+                                                    </div>
+                                                    <div class="col text-body">
+                                                        <div th:if="${chat.CHAT_TYPE} == 2 ">
+                                                            <div th:each="name : ${#strings.setSplit(chat.CHAT_NM, '-')}">
+                                                                <div th:if="${name} != ${myname}" th:text="${name}"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div th:if="${chat.CHAT_TYPE} == 3 ">
+                                                            <div th:text="${chat.CHAT_NM}"></div>
+                                                        </div>
+                                                        <div class="text-secondary text-truncate w-100"></div>
+                                                    </div>
                                                 </div>
-                                                <div class="col text-body">
-                                                    <div th:text="${chat.name}">User Name</div>
-                                                    <div class="text-secondary text-truncate w-100" th:text="${chat.lastMessage}">Last message...</div>
-                                                </div>
-                                            </div>
-                                        </a>
+                                            </a>
+                                        </th:block>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-lg-7 col-xl-9 d-flex flex-column">
-                                <div class="card-body scrollable" style="height: 35rem">
+                                <div class="card-body scrollable" style="height: 35rem" id="formme">
                                     <div class="chat">
-                                        <div class="chat-bubbles" id = "showme">
-                                            <div th:each="message : ${messages}" class="chat-item">
-                                                <div th:if="${message.sender == 'me'}" class="row align-items-end justify-content-end">
-                                                    <div class="col col-lg-6">
-                                                        <div class="chat-bubble chat-bubble-me">
-                                                            <div class="chat-bubble-title">
-                                                                <div class="row">
-                                                                    <div class="col chat-bubble-author" th:text="${message.author}">Author</div>
-                                                                    <div class="col-auto chat-bubble-date" th:text="${message.time}">Time</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="chat-bubble-body">
-                                                                <p th:text="${message.text}">Message text...</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                            <span class="avatar" th:style="'background-image: url(' + ${message.avatarUrl} + ')'"></span>
-                                                    </div>
-                                                </div>
-                                                <div th:if="${message.sender != 'me'}" class="row align-items-end">
-                                                    <div class="col-auto"><span class="avatar" th:style="'background-image: url(' + ${message.avatarUrl} + ')'"></span>
-                                                    </div>
-                                                    <div class="col col-lg-6">
-                                                        <div class="chat-bubble">
-                                                            <div class="chat-bubble-title">
-                                                                <div class="row">
-                                                                    <div class="col chat-bubble-author" th:text="${me.DSPT_MBR_NAME}"></div><!-- 닉네임-->
-                                                                    <!--<div class="col-auto chat-bubble-date" th:text="${message.time}"></div> 시간
-                                                                    -->
-                                                                </div>
-                                                            </div>
-                                                            <div class="chat-bubble-body">
-                                                                <p th:text="${me.MSG_CN}"></p> <!-- 내용 -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="chat-bubbles" id="showme">
                                         </div>
                                     </div>
                                 </div>
@@ -110,12 +79,12 @@
                                     <div class="input-group input-group-flat" style="width: 100%;">
                                         <form style="width: 100%;">
                                             <input type="hidden" id="MBR_NCNM" th:value="${#authentication.principal.MBR_NCNM}">
-                                            <input type="hidden" id="BBS_SN" th:value="2">
+                                            <input type="hidden" id="CHAT_ROOM_ID">
                                             <input type="text" class="form-control" id="MSG_CN" autocomplete="off" placeholder="Type message" style="width: 100%;">
                                             <button id="send1" class="btn btn-default" type="submit">Send</button>
                                         </form>
                                     </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

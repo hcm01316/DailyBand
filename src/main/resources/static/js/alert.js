@@ -25,13 +25,14 @@ function redirectToUrl(url) {
 // 밴드 해체
 function confirmBreakup(data) {
   var num = data.getAttribute('data-bbs-sn');
+  var chat = data.getAttribute('data-chat-num');
   showConfirmationDialog(
       '정말 밴드를 해체 하시겠습니까?',
       '이 작업은 되돌릴 수 없습니다.',
       'warning',
       '해체',
       '취소',
-      () => redirectToUrl(`./breakup?num=${num}`)
+      () => redirectToUrl(`./breakup?num=${num}&chat=${chat}`)
   );
 }
 
@@ -39,6 +40,7 @@ function confirmBreakup(data) {
 function confirmResign(data) {
   var id = data.getAttribute('data-mbr-id');
   var num = data.getAttribute('data-bbs-sn');
+  var chat = data.getAttribute('data-chat-num');
   console.log(id);
   console.log(num);
   showConfirmationDialog(
@@ -47,7 +49,7 @@ function confirmResign(data) {
       'warning',
       '강퇴',
       '취소',
-      () => redirectToUrl(`../rboard/resign?id=${id}&num=${num}`)
+      () => redirectToUrl(`../rboard/resign?id=${id}&num=${num}&chat=${chat}`)
   );
 }
 
@@ -55,13 +57,14 @@ function confirmResign(data) {
 function confirmLeave(data) {
   var id = data.getAttribute('data-mbr-id');
   var num = data.getAttribute('data-bbs-sn');
+  var chat = data.getAttribute('data-chat-num');
   showConfirmationDialog(
       '정말 밴드를 탈퇴 하시겠습니까?',
       '탈퇴 시 복구할 수 없습니다.',
       'warning',
       '탈퇴',
       '취소',
-      () => redirectToUrl(`./leave?id=${id}&num=${num}`)
+      () => redirectToUrl(`./leave?id=${id}&num=${num}&chat=${chat}`)
   );
 }
 
@@ -69,13 +72,14 @@ function confirmLeave(data) {
 function confirmAccept(data) {
   var id = data.getAttribute('data-mbr-id');
   var num = data.getAttribute('data-bbs-sn');
+  var chat = data.getAttribute('data-chat-num');
   showConfirmationDialog(
       '정말 수락 하시겠습니까?',
       '',
       'question',
       '수락',
       '취소',
-      () => redirectToUrl(`../rboard/accept?id=${id}&num=${num}`)
+      () => redirectToUrl(`../rboard/accept?id=${id}&num=${num}&chat=${chat}`)
   );
 }
 
@@ -96,12 +100,13 @@ function confirmRefuse(data) {
 // 밴드원 모집 게시글 삭제
 function confirmDelete(data) {
   var num = data.getAttribute('data-bbs-sn');
+  var chat = data.getAttribute('data-chat-num');
   showConfirmationDialog(
       '정말 삭제 하시겠습니까?',
-      '삭제 시 복구할 수 업습니다.',
+      '삭제 시 복구할 수 없습니다.',
       'warning',
       '삭제',
       '취소',
-      () => redirectToUrl(`../rboard/delete?num=${num}`)
+      () => redirectToUrl(`../rboard/delete?num=${num}&chat=${chat}`)
   );
 }

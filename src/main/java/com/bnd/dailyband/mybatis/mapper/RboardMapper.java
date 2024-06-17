@@ -97,5 +97,19 @@ public interface RboardMapper  {
 
     public int updateRboard(Rboard rboard);
 
-    public String getleader(int num);
+    public void BandChatRoomCreate(String chatname,int hc);
+
+    public int getChatNum();
+
+    public String BandTeamName(int num);
+
+    public int MyBandChat(String name);
+
+    public void BandChatJoin(int chat,String id);
+
+    public void ChatLeave(int chat, String id);
+
+    public int JoinCk(int num, String id);
+
+    public int JoinCancel(int num, String id);
 }

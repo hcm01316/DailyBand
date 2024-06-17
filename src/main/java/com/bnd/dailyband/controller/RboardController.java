@@ -1,7 +1,7 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.*;
-import com.bnd.dailyband.service.notify.SseService;
+import com.bnd.dailyband.service.chat.ChatService;
 import com.bnd.dailyband.service.rboard.RboardService;
 import com.bnd.dailyband.service.s3upload.ImageUploadService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,15 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -36,14 +39,15 @@ public class RboardController {
 
 	private RboardService rboardService;
 	private ImageUploadService imageUploadService;
-	private SseService sseService;
+	private ChatService chatService;
+
 
 	@Autowired
-	public RboardController(RboardService rboardService, ImageUploadService imageUploadService, SseService sseService)
+	public RboardController(RboardService rboardService, ImageUploadService imageUploadService, ChatService chatService)
 	{
 		this.rboardService = rboardService;
 		this.imageUploadService = imageUploadService;
-		this.sseService = sseService;
+		this.chatService = chatService;
 	}
 
 	@ModelAttribute
@@ -58,7 +62,7 @@ public class RboardController {
 	@GetMapping("/detail")
 	public ModelAndView Detail(
 			int num, ModelAndView mv,
-			HttpServletRequest request, @RequestHeader(value ="referer", required= false)String beforeURL) {
+			HttpServletRequest request, @RequestHeader(value ="referer", required= false)String beforeURL,@CurrentSecurityContext SecurityContext userPrincipal) {
 
 		logger.info("regerer:" + beforeURL);
 		if(beforeURL!=null && beforeURL.endsWith("list")) {
@@ -66,7 +70,8 @@ public class RboardController {
 		}
 
 		Rboard rboard = rboardService.getDetail(num);
-
+		String id = userPrincipal.getAuthentication().getName();
+		int joinck = rboardService.JoinCk(num,id);
 		int cnt = rboardService.bandacceptcnt(num);
 		// board= null; //error 페이지 이동 확인 하고자 임의로 저장합니다.
 		if (rboard == null) {
@@ -77,10 +82,13 @@ public class RboardController {
 		}
 		else {
 			logger.info("상세보기 성공");
+			int MyBandChat = rboardService.MyBandChat(rboard.getBAND_TEAM_NM());
+			mv.addObject("MyBandChat",MyBandChat);
 			mv.setViewName("rboard/rboard_view");
 			mv.addObject("current","rBoard");
 			mv.addObject("rboarddata", rboard);
 			mv.addObject("cnt", cnt);
+			mv.addObject("joinck",joinck);
 		}
 		return mv;
 	}
@@ -113,12 +121,17 @@ public class RboardController {
 		}
 
 		String id = rboard.getMBR_ID();
-
+		int hc = rboard.getRCRIT_NOPE()+1;
+		String chatname = rboard.getBAND_TEAM_NM();
 		rboard.setRCRIT_REALM_ID(trealm);
 		rboardService.insertRboard(rboard);
 
 		int num = rboardService.getaddnum();
 		rboardService.insertBand(id,num);
+		rboardService.BandChatRoomCreate(chatname,hc);
+
+		int chatnum = rboardService.getChatNum();// 채팅방 생성
+		chatService.ChatJoin(id,chatnum); // 리더 채팅방 가입
 
 		logger.info(rboard.toString()); // selectKey로 정의한 BOARD_NUM 값 확인해 봅시다.
 		return "redirect:list";
@@ -127,11 +140,10 @@ public class RboardController {
 
 	@RequestMapping ("/bandHR")
 	public ModelAndView mgmtlist(ModelAndView mv, HttpServletRequest request,
-			@CurrentSecurityContext SecurityContext userPrincipal) {
+								 @CurrentSecurityContext SecurityContext userPrincipal) {
 
 		String id = userPrincipal.getAuthentication().getName();
 		mv.addObject("id", id);
-
 		int bandck = rboardService.bandck(id);
 		mv.addObject("bandck", bandck);
 		mv.addObject("current","bandHR");
@@ -141,10 +153,15 @@ public class RboardController {
 		}
 		if (bandck != -1)
 		{
+			int myband = rboardService.myband(id);
+			String TeamName =rboardService.BandTeamName(myband);
+			System.out.println(bandck);
+			int MyBandChat = rboardService.MyBandChat(TeamName);
+			mv.addObject("MyBandChat", MyBandChat);
+			System.out.println(MyBandChat);
 			int leaderck = rboardService.leaderck(id);
 			mv.addObject("leaderck",leaderck);
 			List<Bandhr> bandlist = new ArrayList<Bandhr>();
-			int myband = rboardService.myband(id);
 			bandlist = rboardService.getbandList(myband);
 			mv.addObject("bandlist", bandlist);
 			List<Bandhr> joinlist = new ArrayList<Bandhr>();
@@ -159,7 +176,7 @@ public class RboardController {
 
 	@RequestMapping(value= "/list", method=RequestMethod.GET)
 	public ModelAndView boardList(@RequestParam(value="page",defaultValue="1") int page, ModelAndView mv,
-			@CurrentSecurityContext SecurityContext userPrincipal) {
+								  @CurrentSecurityContext SecurityContext userPrincipal) {
 
 		String id = userPrincipal.getAuthentication().getName();
 		int limit = 6; // 한 화면에 출력할 로우 갯수
@@ -224,12 +241,9 @@ public class RboardController {
 
 		String id = userPrincipal.getName();
 		int isjoin = rboardService.isjoin(id);
-		String leader = rboardService.getleader(num);
-
 
 		if (isjoin == 0) {
 			rboardService.join(id,num);
-			sseService.sendNotification(leader, id + "님이 가입 신청하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("message", "가입 신청이 성공적으로 완료되었습니다.");
 			redirect.addFlashAttribute("status", "success");
 		}
@@ -243,8 +257,28 @@ public class RboardController {
 		return mv;
 	}
 
+	@RequestMapping ("/joincancel")
+	public ModelAndView joincancel(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal, RedirectAttributes redirect) {
+
+		String id = userPrincipal.getName();
+		int joincancel = rboardService.JoinCancel(num,id);
+
+		if (joincancel == 1) {
+			redirect.addFlashAttribute("message", "가입 취소가 성공적으로 완료되었습니다.");
+			redirect.addFlashAttribute("status", "success");
+		}
+
+		if (joincancel == 0) {
+			redirect.addFlashAttribute("message", "가입 취소에 실패 했습니다.");
+			redirect.addFlashAttribute("status", "error");
+		}
+		mv.addObject("num", num);
+		mv.setViewName("redirect:detail");
+		return mv;
+	}
+
 	@RequestMapping ("/resign")
-	public ModelAndView resign(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+	public ModelAndView resign(ModelAndView mv, HttpServletRequest request,String id, int num, RedirectAttributes redirect,int chat) {
 
 		int resign = rboardService.resign(id,num);
 
@@ -263,6 +297,7 @@ public class RboardController {
 
 		if (resign == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 강퇴 하였습니다.");
+			chatService.ChatExit(id,chat);
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:" + request.getHeader("Referer"));
@@ -270,7 +305,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/accept")
-	public String accept(HttpServletRequest request,String id, int num, RedirectAttributes redirect) {
+	public String accept(HttpServletRequest request,String id, int num, RedirectAttributes redirect,int chat) {
 
 		int accept = rboardService.bandaccept(id,num);
 
@@ -283,6 +318,7 @@ public class RboardController {
 			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
 			redirect.addFlashAttribute("status", "success");
 
+			rboardService.BandChatJoin(chat,id);
 			int cnt = rboardService.bandacceptcnt(num);
 			logger.info("cnt : "+cnt);
 			int nope = rboardService.getrenope(num);
@@ -317,7 +353,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/breakup")
-	public ModelAndView breakup(ModelAndView mv, HttpServletRequest request,RedirectAttributes redirect,Principal userPrincipal) {
+	public ModelAndView breakup(ModelAndView mv, HttpServletRequest request,RedirectAttributes redirect,Principal userPrincipal,int chat) {
 
 		String id = userPrincipal.getName();
 
@@ -331,6 +367,7 @@ public class RboardController {
 
 		if (breakup == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 해체 하였습니다.");
+			chatService.ChatRoomDelete(chat);
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");
@@ -357,7 +394,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/delete")
-	public ModelAndView delete(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect) {
+	public ModelAndView delete(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,int chat) {
 
 		int delete = rboardService.breakup(num);
 
@@ -368,6 +405,7 @@ public class RboardController {
 
 		if (delete == 1) {
 			redirect.addFlashAttribute("message", "게시글 삭제에 성공 하였습니다.");
+			chatService.ChatRoomDelete(chat);
 			redirect.addFlashAttribute("status", "success");
 		}
 
@@ -381,7 +419,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/leave")
-	public ModelAndView leave(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,Principal userPrincipal) {
+	public ModelAndView leave(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,Principal userPrincipal,int chat) {
 
 		String id = userPrincipal.getName();
 		int leave = rboardService.leave(id,num);
@@ -401,6 +439,7 @@ public class RboardController {
 
 		if (leave  == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 탈퇴 했습니다.");
+			chatService.ChatExit(id,chat);
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");
