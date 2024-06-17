@@ -9,5 +9,9 @@ import java.util.List;
 public interface NotificationMapper {
     public int insert(Notification notification);
 
-    List<String> getList(String notification);
+    List<Notification> getList(String userId);
+
+    public String update(Notification notification);
+
+    void delete(int num);
 }
