@@ -71,8 +71,10 @@ $(document).ready(function() {
 
     function  initializeStompClient(chatRoomid) {
 
+        console.log(location.host);
+        var url  = location.host
         stompClient = new StompJs.Client({
-            brokerURL: 'ws://localhost:9000/dailyband/gs-guide-websocket',
+            brokerURL: `ws://${url}/dailyband/gs-guide-websocket`,
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,

@@ -199,5 +199,15 @@ public class RboardServiceImpl implements RboardService {
         return dao.JoinCancel(num,id);
     }
 
+    @Override
+    public String getleader(int num) {
+        return dao.getleader(num);
+    }
+
+    @Override
+    public List<String> bandlist(int num) {
+        return dao.bandlist(num);
+    }
+
 
 }

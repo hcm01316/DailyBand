@@ -42,7 +42,6 @@
 		insert into RCRIT_BBS (MBR_ID,RCRIT_REALM_ID,RCRIT_GENRE_ID,RCRIT_AREA_ID,BAND_TEAM_NM,BBS_CN,RCRIT_NOPE)
 		VALUES (#{MBR_ID},#{RCRIT_REALM_ID},#{RCRIT_GENRE_ID},#{RCRIT_AREA_ID},#{BAND_TEAM_NM},#{BBS_CN},#{RCRIT_NOPE})
 	</insert>
-
 	<update id="setReadCountUpdate" >
 		update RCRIT_BBS
 		set BBS_READ_CNT = BBS_READ_CNT+1
@@ -195,4 +194,12 @@
 		delete from BAND_PRPT_INFO
 		where BBS_SN = #{num} and MBR_ID = #{id}
 	</delete>
+
+	<select id="getleader" resultType="String">
+		select MBR_ID from RCRIT_BBS where BBS_SN = #{num}
+	</select>
+
+	<select id="bandlist" resultType="String">
+		select MBR_ID from BAND_PRPT_INFO where BBS_SN = #{num}
+	</select>
 </mapper>
