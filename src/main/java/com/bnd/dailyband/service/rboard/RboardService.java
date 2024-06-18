@@ -94,4 +94,8 @@ public interface RboardService {
     public int JoinCk(int num, String id);
 
     public int JoinCancel(int num, String id);
+
+    public String getleader(int num);
+
+    public List<String> bandlist(int num);
 }

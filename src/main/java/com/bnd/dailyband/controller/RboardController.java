@@ -2,6 +2,7 @@ package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.*;
 import com.bnd.dailyband.service.chat.ChatService;
+import com.bnd.dailyband.service.notify.SseService;
 import com.bnd.dailyband.service.rboard.RboardService;
 import com.bnd.dailyband.service.s3upload.ImageUploadService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,14 +41,15 @@ public class RboardController {
 	private RboardService rboardService;
 	private ImageUploadService imageUploadService;
 	private ChatService chatService;
-
+	private SseService sseService;
 
 	@Autowired
-	public RboardController(RboardService rboardService, ImageUploadService imageUploadService, ChatService chatService)
+	public RboardController(RboardService rboardService, ImageUploadService imageUploadService, ChatService chatService, SseService sseService)
 	{
 		this.rboardService = rboardService;
 		this.imageUploadService = imageUploadService;
 		this.chatService = chatService;
+		this.sseService = sseService;
 	}
 
 	@ModelAttribute
@@ -245,6 +247,8 @@ public class RboardController {
 		if (isjoin == 0) {
 			rboardService.join(id,num);
 			redirect.addFlashAttribute("message", "가입 신청이 성공적으로 완료되었습니다.");
+			String leader = rboardService.getleader(num);
+			sseService.sendNotification(leader, id + "님이 가입 신청하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 
@@ -265,6 +269,8 @@ public class RboardController {
 
 		if (joincancel == 1) {
 			redirect.addFlashAttribute("message", "가입 취소가 성공적으로 완료되었습니다.");
+			String leader = rboardService.getleader(num);
+			sseService.sendNotification(leader, id + "님이 가입 신청을 취소 하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 
@@ -298,6 +304,8 @@ public class RboardController {
 		if (resign == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 강퇴 하였습니다.");
 			chatService.ChatExit(id,chat);
+			String TeamName = rboardService.BandTeamName(num);
+			sseService.sendNotification(id, TeamName + "에서 강퇴 당했습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:" + request.getHeader("Referer"));
@@ -316,6 +324,8 @@ public class RboardController {
 
 		if (accept == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 수락 하였습니다.");
+			String TeamName = rboardService.BandTeamName(num);
+			sseService.sendNotification(id, TeamName + " 가입 승인 되었습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 
 			rboardService.BandChatJoin(chat,id);
@@ -347,6 +357,8 @@ public class RboardController {
 
 		if (refuse == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 거절 하였습니다.");
+			String TeamName = rboardService.BandTeamName(num);
+			sseService.sendNotification(id, TeamName + " 가입 거절 되었습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 		return "redirect:" + request.getHeader("Referer");
@@ -358,6 +370,12 @@ public class RboardController {
 		String id = userPrincipal.getName();
 
 		int myband = rboardService.myband(id);
+
+		List<String> bandlist = rboardService.bandlist(myband);
+		String TeamName = rboardService.BandTeamName(myband);
+
+
+
 		int breakup = rboardService.breakup(myband);
 
 		if (breakup == 0) {
@@ -368,6 +386,9 @@ public class RboardController {
 		if (breakup == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 해체 하였습니다.");
 			chatService.ChatRoomDelete(chat);
+			for (String MBR_ID : bandlist) {
+				sseService.sendNotification(MBR_ID, TeamName + " 가 해체 되었습니다.", "rboard/bandHR", 2);
+			}
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");
@@ -396,7 +417,10 @@ public class RboardController {
 	@RequestMapping ("/delete")
 	public ModelAndView delete(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,int chat) {
 
+		List<String> bandlist = rboardService.bandlist(num);
+		String TeamName = rboardService.BandTeamName(num);
 		int delete = rboardService.breakup(num);
+
 
 		if (delete == 0) {
 			redirect.addFlashAttribute("message", "게시글 삭제에 실패 했습니다.");
@@ -406,6 +430,9 @@ public class RboardController {
 		if (delete == 1) {
 			redirect.addFlashAttribute("message", "게시글 삭제에 성공 하였습니다.");
 			chatService.ChatRoomDelete(chat);
+			for (String MBR_ID : bandlist) {
+				sseService.sendNotification(MBR_ID, TeamName + " 가 해체 되었습니다.", "rboard/bandHR", 2);
+			}
 			redirect.addFlashAttribute("status", "success");
 		}
 
@@ -440,6 +467,9 @@ public class RboardController {
 		if (leave  == 1) {
 			redirect.addFlashAttribute("message", "성공적으로 탈퇴 했습니다.");
 			chatService.ChatExit(id,chat);
+			String TeamName = rboardService.BandTeamName(num);
+			String leader = rboardService.getleader(num);
+			sseService.sendNotification(leader, id + "님이 " + TeamName + "를 탈퇴 하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");

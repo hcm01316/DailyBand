@@ -20,7 +20,7 @@ public class HomeController {
 	public String main(Model model, HttpServletRequest request) {
 		model.addAttribute("contextpath", request.getContextPath());
 
-		return "/dailyband/main";
+		return "dailyband/main";
 	}
 
 	@ModelAttribute
