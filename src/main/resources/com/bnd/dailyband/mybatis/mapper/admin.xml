@@ -6,12 +6,23 @@
 
   <!-- 회원 목록 -->
   <select id="getMemberList" resultType="map">
-    select m.*, r.BAND_TEAM_NM as BAND_NM
-    from MBR_INFO m
-           left join RCRIT_BBS r
-                     on m.MBR_ID = r.MBR_ID
-    where m.MBR_ID != 'admin'
-    group by m.MBR_ID;
+    SELECT m.*,
+           CASE
+             WHEN bpi.MBR_PRPT_STTUS IN (1, 2) THEN
+               COALESCE(r.BAND_TEAM_NM,
+                        (SELECT rb2.BAND_TEAM_NM
+                         FROM RCRIT_BBS rb2
+                         WHERE rb2.BBS_SN = bpi.BBS_SN
+                           AND rb2.BAND_TEAM_NM IS NOT NULL
+                         LIMIT 1))
+             END AS BAND_NM
+    FROM MBR_INFO m
+           LEFT JOIN
+         BAND_PRPT_INFO bpi ON m.MBR_ID = bpi.MBR_ID
+           LEFT JOIN
+         RCRIT_BBS r ON m.MBR_ID = r.MBR_ID
+    WHERE m.MBR_ID != 'admin'
+    GROUP BY m.MBR_ID, bpi.MBR_PRPT_STTUS;
   </select>
 
   <!-- 회원 권한 변경 -->
@@ -138,12 +149,89 @@
                             group by bpi.BBS_SN) joined on rb.BBS_SN = joined.BBS_SN;
   </select>
 
-  <!-- 기안 문서리스트 -->
+  <!-- 기안 문서 리스트 -->
   <select id="getApvDraftList" resultType="ApvDoc">
-    select *
+    select DOC_SN,
+           DOC_FORM_TY,
+           MBR_ID,
+           DOC_SJ,
+           DOC_CN,
+           DOC_STTUS,
+           DOC_WRT_DT
     from APV_DOC
     where MBR_ID = #{id}
-    order by DOC_WRT_DT desc;
+      and DOC_STTUS != '4'
+    order by DOC_SN desc
+  </select>
+
+  <!-- 임시 문서 리스트 -->
+<select id="getApvTempList" resultType="ApvDoc">
+  select DOC_SN,
+         DOC_FORM_TY,
+         MBR_ID,
+         DOC_SJ,
+         DOC_CN,
+         DOC_STTUS,
+         DOC_WRT_DT
+  from APV_DOC
+  where MBR_ID = #{id}
+    and DOC_STTUS = '4'
+  order by DOC_SN desc
+</select>
+
+  <!-- 결재 문서 리스트 -->
+  <select id="getApvList" resultType="ApvDoc">
+    select doc.DOC_SN,
+    doc.DOC_FORM_TY,
+    doc.DOC_SJ,
+    doc.DOC_CN,
+    doc.DOC_WRT_DT,
+    doc.MBR_ID,
+    m.MBR_NCNM,
+    APV_STTUS,
+    doc.DOC_STTUS
+    from APV_DOC doc
+    join APPROVAL apv
+    on doc.DOC_SN = apv.DOC_SN
+    join MBR_INFO m
+    on doc.MBR_ID = m.MBR_ID
+    where apv.MBR_ID = #{id}
+    <choose>
+      <when test="docSttus.toString() == '5'">
+        and DOC_STTUS = #{docSttus}
+      </when>
+      <otherwise>
+        and DOC_STTUS != '4'
+      </otherwise>
+    </choose>
+    order by doc.DOC_SN desc
+  </select>
+
+  <!-- 참조 문서 리스트 -->
+  <select id="getApvRefList" resultType="ApvDoc">
+    select doc.DOC_SN,
+    DOC_FORM_TY,
+    DOC_SJ,
+    DOC_CN,
+    DOC_WRT_DT,
+    doc.MBR_ID,
+    m.MBR_NCNM,
+    REF_STTUS,
+    DOC_STTUS
+    from APV_DOC doc
+    join APV_REF ref
+    on doc.DOC_SN = ref.DOC_SN
+    join MBR_INFO m
+    on doc.MBR_ID = m.MBR_ID
+    where ref.MBR_ID = #{id}
+    <choose>
+      <when test="docSttus.toString() == '5'">
+        and DOC_STTUS = #{docSttus}
+      </when>
+      <otherwise>
+        and DOC_STTUS != '4'
+      </otherwise>
+    </choose>
   </select>
 
   <!-- 전자결재 결재자, 참조자 회원 리스트  -->
@@ -191,6 +279,7 @@
     )
   </insert>
 
+  <!-- 결재자/참조자 선택 모달창 닉네임 검색 -->
   <select id="getApvMbrNcnmSearch" resultType="Member">
     select MBR_ID, MBR_NCNM, MBR_TY
     from MBR_INFO
@@ -198,4 +287,116 @@
       and MBR_TY in ('ROLE_ADMIN', 'ROLE_MANAGER')
       and MBR_NCNM like CONCAT('%',#{searchKeyword},'%')
   </select>
+
+  <!-- 문서 조회 -->
+  <select id="getDocDetail">
+    select DOC_SN,
+           DOC_FORM_TY,
+           ad.MBR_ID,
+           m.MBR_NCNM,
+           m.MBR_TY,
+           DOC_SJ,
+           DOC_CN,
+           DOC_STTUS,
+           DOC_WRT_DT
+    from APV_DOC ad
+           join MBR_INFO m on ad.MBR_ID = m.MBR_ID
+    where DOC_SN = #{docSn}
+  </select>
+
+  <!-- 문서 조회(결재자) -->
+  <select id="getApvDetail">
+    select APV_SN,
+           DOC_SN,
+           apv.MBR_ID,
+           m.MBR_NCNM,
+           m.MBR_TY,
+           APV_LEV,
+           APV_STTUS,
+           REJ_RSN,
+           APV_DT,
+           apv.REG_DT
+    from APPROVAL apv
+           join MBR_INFO m on apv.MBR_ID = m.MBR_ID
+    where DOC_SN = #{DOC_SN}
+    order by APV_LEV
+  </select>
+
+  <!-- 문서 조회(참조자) -->
+  <select id="getRefDetail">
+    select REF_SN, ref.MBR_ID, m.MBR_NCNM, m.MBR_TY, DOC_SN, REF_STTUS, REF_REG_DT
+    from APV_REF ref
+           join MBR_INFO m
+                on ref.MBR_ID = m.MBR_ID
+    where DOC_SN = #{docSn}
+    order by REF_SN
+  </select>
+
+  <!-- 문서 삭제(상신 취소) -->
+  <delete id="deleteDoc">
+    delete from APV_DOC where DOC_SN = #{docSn}
+  </delete>
+
+  <!-- 임시 저장 문서 수정 -->
+  <update id="modifyDoc">
+    update APV_DOC set DOC_SJ = #{DOC_SJ},
+                       DOC_CN = #{DOC_CN},
+                       DOC_STTUS = #{DOC_STTUS},
+                       DOC_WRT_DT = #{DOC_WRT_DT},
+                       DOC_MDF_DT = now()
+    where DOC_SN = #{DOC_SN}
+  </update>
+
+  <!-- 결재자 삭제 -->
+  <delete id="deleteApv">
+    delete from APPROVAL where DOC_SN = #{docSn}
+  </delete>
+
+  <!-- 결재자 상태 변경 (temp - 대기/예정) -->
+  <update id="modifyApv">
+    update APPROVAL set APV_STTUS = #{APV_STTUS}
+    where DOC_SN = #{DOC_SN}
+    and  MBR_ID = #{MBR_ID}
+    and APV_LEV = #{APV_LEV}
+  </update>
+
+  <!-- 참조자 삭제 -->
+  <delete id="deleteRef">
+    delete from APV_REF where DOC_SN = #{docSn}
+  </delete>
+
+  <!-- 참조자 상태 변경 (temp - 참조) -->
+  <update id="modifyRef">
+    update APV_REF set REF_STTUS = #{REF_STTUS}
+    where DOC_SN = #{DOC_SN}
+  </update>
+
+  <!-- 결재자 결재 상태 -->
+  <select id="getApvStatusList">
+    select * from APPROVAL where DOC_SN = #{docSn}
+    and APV_STTUS = 1
+    order by APV_LEV
+  </select>
+
+  <!-- 다음 결재자 상태 변경 -->
+  <update id="modifyApvNext">
+    update APPROVAL set APV_STTUS = 0
+    where APV_SN = #{apvSn}
+  </update>
+
+  <!-- 결재 상태 수정 -->
+  <update id="modifyApvStatus">
+    update APPROVAL set APV_STTUS = #{APV_STTUS}, APV_DT = #{APV_DT}
+    <if test="REJ_RSN != null">
+      , REJ_RSN = #{REJ_RSN}
+    </if>
+    where DOC_SN = #{DOC_SN}
+    and MBR_ID = #{MBR_ID}
+  </update>
+
+  <!-- 문서 상태 수정 -->
+  <update id="modifyDocStatus">
+    update APV_DOC set DOC_STTUS = #{DOC_STTUS}
+    where DOC_SN = #{DOC_SN}
+  </update>
 </mapper>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <th:block th:if="${type == 'temp'}">
+    <title>전자결재 - 임시 저장 수정</title>
+  </th:block>
+  <th:block th:if="${type == 'rej'}">
+    <title>전자결재 - 반려 문서 재상신</title>
+  </th:block>
+  <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+  <link rel="stylesheet" th:href="@{/css/apv_write.css}">
+  <script th:src="@{/js/UploadAdapter.js}" charset="utf-8"></script>
+  <style>
+    .ck-editor__editable[role="textbox"] {
+      /* Editing area */
+      min-height: 300px;
+    }
+
+    .ck-content .image {
+      /* Block images */
+      max-width: 70%;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <th:block th:if="${type == 'temp'}">
+              <h2 class="page-title">
+                임시 저장 문서 수정
+              </h2>
+            </th:block>
+            <th:block th:if="${type == 'rej'}">
+              <h2 class="page-title">
+                반려 문서 수정
+              </h2>
+            </th:block>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h1 id="h-title">
+                <td th:switch="${apvDoc.DOC_FORM_TY}">
+                  <span th:case="0">기안서</span>
+                  <span th:case="1">품의서</span>
+                  <span th:case="2">지출 결의서</span>
+                </td>
+              </h1>
+              <form id="form" th:action="@{updateDoc}" method="post" onsubmit="return nullChk()">
+                <input type="hidden" id="num-app" name="apvMbrId" value="apvMbrId" readonly>
+                <input type="hidden" id="num-ref" name="refMbrId" value="refMbrId" readonly>
+                <table id="table">
+                  <tr class="tr-s">
+                    <td class="td-1" rowspan="2">문서번호</td>
+                    <th:block th:if="${type == 'temp'}">
+                      <td class="td-2" rowspan="2">[[${apvDoc.DOC_SN}]]</td>
+                      <input type="hidden" name="DOC_SN" th:value="${apvDoc.DOC_SN}" readonly>
+                    </th:block>
+                    <th:block th:if="${type == 'rej'}">
+                      <td class="td-2" rowspan="2">
+                        <input type="hidden" name="DOC_SN" th:value="${apvDoc.DOC_SN}" readonly>
+                      </td>
+                    </th:block>
+                    <td class="td-3" rowspan="6" style="writing-mode: vertical-rl;">결재</td>
+                    <td class="td-4">권한</td>
+                    <td class="td-4" id="r-app0">
+                      <span th:if="${#lists.size(apvList) > 0}">
+                        <span th:if="${apvList[0].MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                        <span th:if="${apvList[0].MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      </span>
+                    </td>
+                    <td class="td-4" id="r-app1">
+                      <span th:if="${#lists.size(apvList) > 1}">
+                        <span th:if="${apvList[1].MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                        <span th:if="${apvList[1].MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      </span>
+                    </td>
+                    <td class="td-4" id="r-app2" colspan="2">
+                      <span th:if="${#lists.size(apvList) > 2}">
+                        <span th:if="${apvList[2].MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                        <span th:if="${apvList[2].MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr class="tr-s">
+                    <td rowspan="4"></td>
+                    <td rowspan="4" class="text-center">
+                      <button type="button" data-bs-toggle="modal"
+                              data-bs-target="#modal-scrollable"
+                              class="btn-select-app" onclick="appBtn('app');">선택
+                      </button>
+                    </td>
+                    <td rowspan="4"></td>
+                    <td rowspan="4" colspan="2"></td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td class="td-1">기안일자</td>
+                    <td class="td-2">[[${#strings.substring(currentTime,0 ,10)}]]
+                      <input type="hidden" th:value="${#strings.substring(currentTime,0 ,10)}" name="DOC_WRT_DT" readonly>
+                    </td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td class="td-1">권한</td>
+                    <td class="td-2" th:switch="${#authentication.principal.MBR_TY}">
+                      <span th:case="'ROLE_ADMIN'">관리자</span>
+                      <span th:case="'ROLE_MANAGER'">매니저</span>
+                    </td>
+                  </tr>
+                  <tr class="tr-s">
+                    <td class="td-1" rowspan="2">기안자</td>
+                    <td class="td-5" rowspan="2" sec:authentication="principal.MBR_NCNM">
+                      <input type="hidden" th:value="${#authentication.principal.id}" name="MBR_ID"
+                             readonly></td>
+                  </tr>
+                  <tr class="tr-s">
+                    <td class="td-5" sec:authentication="principal.MBR_NCNM"></td>
+                    <td class="td-5" id="name-app0"
+                        th:text="${#lists.size(apvList) > 0} ? ${apvList[0].MBR_NCNM} : ''"></td>
+                    <td class="td-5" id="name-app1"
+                        th:text="${#lists.size(apvList) > 1} ? ${apvList[1].MBR_NCNM} : ''"></td>
+                    <td class="td-5" id="name-app2" colspan="2"
+                        th:text="${#lists.size(apvList) > 2} ? ${apvList[2].MBR_NCNM} : ''"></td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td class="td-1">참조자</td>
+                    <td colspan="6" class="indent" style="border-right: none; ">
+                      <span id="ref-list">
+                        <th:block th:each="ref, stat : ${refList}">
+                      [[${ref.MBR_NCNM}]]
+                      <span th:if="${ref.MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                      <span th:if="${ref.MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      <span th:unless="${stat.last}">,</span>
+                    </th:block>
+                      </span>
+                    </td>
+                    <td class="td-btn" style="border-left: none;">
+                      <button type="button"
+                              class="btn-select-ref" data-bs-toggle="modal"
+                              data-bs-target="#modal-scrollable" onclick="appBtn('ref');">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M12 5l0 14"/>
+                          <path d="M5 12l14 0"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr id="tr-title" class="tr-m">
+                    <td class="td-1">제목</td>
+                    <td colspan="7">
+                      <input type="text" name="DOC_SJ" id="td-title" th:value="${apvDoc.DOC_SJ}"
+                             class="i-title">
+                    </td>
+                  </tr>
+                  <tr class="tr-m">
+                    <td colspan="8" class="td-content">내용</td>
+                  </tr>
+                  <tr>
+                    <td colspan="8">
+                      <textarea id="editor" name="DOC_CN">[[${apvDoc.DOC_CN}]]</textarea>
+                    </td>
+                  </tr>
+                </table>
+                <th:block th:if="${type == 'temp'}">
+                  <div class="div-btn2">
+                    <div class="div-btn-right">
+                      <a href="#" class="btn btn-primary i-left" onclick="docSave()">결재 요청</a>
+                      <input type="button" class="btn btn-secondary" value="임시 저장" onclick="tempSave()">
+                      <input type="button" class="btn btn-danger" value="삭제" id="btn-cancel">
+                      <input type="button" class="btn" value="취소" onclick="location.href='./tempList'">
+                    </div>
+                  </div>
+                </th:block>
+                <th:block th:if="${type == 'rej'}">
+                  <div class="div-btn">
+                  <input type="button" value="결재 요청" class="btn btn-primary i-left" onclick="docSave()">
+                  <input type="button" value="임시 저장" class="btn btn-secondary" onclick="rejTempSave()">
+                  <input type="button" class="btn" value="취소" onclick="location.href='./draftList'">
+                  </div>
+                </th:block>
+              </form>
+            </div>
+          </div>
+        </div>
+        <script th:inline="javascript">
+          var type = /*[[${type}]]*/ 'defaultType';
+          var docSn = /*[[${apvDoc.DOC_SN}]]*/ '';
+
+          console.log("doc_update (type) = " + type);
+          console.log("doc_update (docSn) = " + docSn);
+
+          // CKEditor 초기화
+          ClassicEditor
+          .create(document.querySelector('#editor'), {
+            language: 'ko',
+            extraPlugins: [MyCustomUploadAdapterPlugin]
+          })
+          .catch(error => {
+            console.error(error);
+          });
+
+          // 결재 요청 확인창
+          function docSave() {
+            var result = confirm("결재 요청하시겠습니까?");
+            if (result === true) {
+              $("#form").submit();
+            }
+          }
+
+          // 유효성 체크
+          function nullChk() {
+            if ($("#td-title").val() == "") {
+              alert("제목을 입력해주세요.");
+              $("#tr-title").focus();
+              return false;
+            } else if ($("#num-app").val() == "") {
+              alert("결재자를 선택해주세요.");
+              return false;
+            }
+          }
+
+          // 임시 저장
+          function tempSave() {
+            $("#form").attr("action", "updateTemp");
+            $("#form").submit();
+          }
+
+          // 반려 문서 임시 저장
+          function rejTempSave() {
+            $("#form").attr("action", "addRejTemp");
+            $("#form").submit();
+          }
+
+
+          $("#btn-cancel").click(function () {
+            var result = confirm("정말로 삭제하시겠습니까?");
+            if (result == true) {
+              location.href = './docDelete?type=' + type + '&docSn=' + docSn
+            }
+          });
+
+
+          // 반려 문서 재상신
+          if(type == "rej") {
+            $("#form").attr("action", "addRejDoc");
+            $("#form").submit();
+          }
+        </script>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<th:block th:replace="~{admin/apv/apv_modal}"/>
+</body>
+</html>

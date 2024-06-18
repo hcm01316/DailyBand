@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>전자결재 - 참조 문서함</title>
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              참조 문서함
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="col-md-12 col-xl-12">
+          <div class="mb-3">
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-1"
+                     autocomplete="off" checked data-status="all">
+              <label for="btn-radio-basic-1" type="button" class="btn">전체</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-2"
+                     autocomplete="off" data-status="대기">
+              <label for="btn-radio-basic-2" type="button" class="btn">대기</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-3"
+                     autocomplete="off" data-status="진행">
+              <label for="btn-radio-basic-3" type="button" class="btn">진행</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-4"
+                     autocomplete="off" data-status="완료">
+              <label for="btn-radio-basic-4" type="button" class="btn">완료</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-5"
+                     autocomplete="off" data-status="반려">
+              <label for="btn-radio-basic-5" type="button" class="btn">반려</label>
+            </div>
+          </div>
+        </div>
+        <div class="row row-cards">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <table id="ref_table" class="table table-vcenter card-table" style="width:100%">
+                  <thead>
+                  <tr style="background: #f6f8fb">
+                    <th>문서양식</th>
+                    <th>제목</th>
+                    <th>기안자</th>
+                    <th>작성일자</th>
+                    <th>진행상태
+                      <span class="form-help" data-bs-toggle="popover" data-bs-placement="right"
+                            data-bs-title="결재 진행 상태"
+                            data-bs-html="true"
+                            data-bs-content="<p class='status status-green'>대기</p> : 결재 차례인 경우<br>
+                            <p class='status status-blue'>진행</p> : 다음 결재자가 있는 경우<br>
+                            <p class='status status-gray-500'>완료</p> : 결재자가 모두 승인한 경우<br>
+                            <p class='status status-red'>반려</p> : 결재문서가 반려된 경우">?
+                      </span>
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="r : ${apvDoc}">
+                    <td th:switch="${r.DOC_FORM_TY}">
+                      <span th:case="0">기안서</span>
+                      <span th:case="1">품의서</span>
+                      <span th:case="2">지출 결의서</span>
+                    </td>
+                    <th:block
+                        th:with="rDetail=@{./docDetail(type=${type}, docSttus=${r.DOC_STTUS}, docSn=${r.DOC_SN})}">
+                      <td><a th:href="${rDetail}">[[${r.DOC_SJ}]]</a></td>
+                    </th:block>
+                    <td>
+                      <th:block th:if="${r.MBR_ID != username}">
+                        <a th:href="@{/member/info(id=${r.MBR_ID})}">[[${r.MBR_NCNM}]]</a>
+                      </th:block>
+                    </td>
+                    <td th:text="${#strings.substring(r.DOC_WRT_DT,0 ,10)}"></td>
+                    <td th:switch="${r.DOC_STTUS}">
+                      <span th:case="0" class="status status-green">대기</span>
+                      <span th:case="1" class="status status-blue">진행</span>
+                      <span th:case="2" class="status status-gray-500">완료</span>
+                      <span th:case="3" class="status status-red">반려</span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  $('#ref_table').DataTable({
+    responsive: true,
+    order: false, // 초기 정렬 비활성화
+    language: {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다",
+      "info": "_START_ - _END_ (총 _TOTAL_건)",
+      "infoEmpty": "0건",
+      "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩 중...",
+      "processing": "처리 중...",
+      "search": "검색:",
+      "zeroRecords": "검색된 문서가 없습니다",
+      "aria": {
+        "sortAscending": ": 오름차순 정렬",
+        "sortDescending": ": 내림차순 정렬"
+      }
+    },
+    lengthMenu: [10, 20, 30, 50, {label: '전체', value: -1}]
+  });
+
+  // 라디오 버튼 클릭 이벤트 설정
+  $('input[name="btn-radio-basic"]').change(function () {
+    var status = $(this).data('status');
+    filterTable(status);
+  });
+
+  // 초기 필터링 적용
+  filterTable('all'); // 초기에 '전체' 상태로 필터링을 적용
+
+  function filterTable(status) {
+    var rows = document.querySelectorAll('#ref_table tbody tr');
+    rows.forEach(function (row) {
+      var statusCell = row.querySelector('td:nth-child(5) span');
+      if (status === 'all' || statusCell.textContent.trim() === status) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  $(document).ready(function () {
+    // 라디오 버튼 이벤트 리스너 추가
+    var radioButtons = document.querySelectorAll('input[name="btn-radio-basic"]');
+    radioButtons.forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        var status = this.getAttribute('data-status');
+        filterTable(status);
+      });
+    });
+
+    // Popover 초기화
+    var popoverTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl, {
+        trigger: 'hover focus'
+      });
+    });
+
+  });
+</script>
+</body>
+</html>

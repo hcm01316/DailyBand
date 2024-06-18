@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>전자결재 -  임시 저장함</title>
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              임시 저장함
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page body -->
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="row row-cards">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <table id="temp_table" class="table table-vcenter card-table" style="width:100%">
+                  <thead>
+                  <tr style="background: #f6f8fb">
+                    <th>문서양식</th>
+                    <th>제목</th>
+                    <th>작성일자</th>
+                    <th>진행상태</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="t : ${apvDoc}">
+                    <td th:switch="${t.DOC_FORM_TY}">
+                      <span th:case="0">기안서</span>
+                      <span th:case="1">품의서</span>
+                      <span th:case="2">지출 결의서</span>
+                    </td>
+                    <th:block th:with="tDetail=@{./docDetail(type=${type}, docSttus=${t.DOC_STTUS}, docSn=${t.DOC_SN})}">
+                      <td><a th:href="${tDetail}">[[${t.DOC_SJ}]]</a></td>
+                    </th:block>
+                    <td th:text="${#strings.substring(t.DOC_WRT_DT,0 ,10)}"></td>
+                    <td>
+                      <span th:if="${t.DOC_STTUS == '4'}" class="status status-yellow">임시</span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<div th:if="${message}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: [[${status}]] === 'success' ? 'success' : 'error',
+      title: [[${status}]] === 'success' ? '성공' : '실패',
+      text: [[${message}]],
+      confirmButtonText: '확인',
+      heightAuto: false
+    });
+  </script>
+</div>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  $('#temp_table').DataTable({
+    responsive: true,
+    order: false, // 초기 정렬 비활성화
+    language: {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다",
+      "info": "_START_ - _END_ (총 _TOTAL_건)",
+      "infoEmpty": "0건",
+      "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩 중...",
+      "processing": "처리 중...",
+      "search": "검색:",
+      "zeroRecords": "검색된 문서가 없습니다",
+      "aria": {
+        "sortAscending": ": 오름차순 정렬",
+        "sortDescending": ": 내림차순 정렬"
+      }
+    },
+    lengthMenu: [10, 20, 30, 50, {label: '전체', value: -1}]
+  });
+
+</script>
+</body>
+</html>

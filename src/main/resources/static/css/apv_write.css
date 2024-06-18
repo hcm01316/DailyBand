@@ -63,9 +63,11 @@
   background-color: rgb(240, 240, 240);
   letter-spacing: 50px;
   text-indent: 50px;
+  font-weight: bold;
 }
 img { /* 승인/반려 이미지 */
   margin-top: 10px;
+  width: 60px;
 }
 .btn-select-app, .btn-select-ref {
   border: none;
@@ -98,7 +100,6 @@ img { /* 승인/반려 이미지 */
   float: right;
 }
 .div-btn input, .div-btn2 input:not(.i-left) {
-  border: 1px solid rgb(51, 51, 51);
   border-radius: 4px;
   font-size: 14.5px;
   cursor: pointer;
@@ -112,6 +113,7 @@ img { /* 승인/반려 이미지 */
 /* 문서 상세 보기 */
 .td-content-val {
   height: 190px;
+  padding: 15px;
 }
 .indent {
   text-indent: 15px;
@@ -165,3 +167,4 @@ img { /* 승인/반려 이미지 */
 .btn-select-ref .icon {
   margin: 0 !important;
 }
+

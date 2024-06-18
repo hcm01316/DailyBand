@@ -2,7 +2,9 @@ package com.bnd.dailyband.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @Getter
 @Setter
 public class ApvRef {
@@ -15,4 +17,5 @@ public class ApvRef {
   private int REF_STTUS;
   private int DOC_STTUS;
   private String REF_REG_DT;
+
 }

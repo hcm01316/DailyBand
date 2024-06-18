@@ -40,11 +40,10 @@
     <div class="page-body">
       <div class="container-xl">
         <div class="col-12">
-          <div class="card" th:fragment="docFormFragment">
+          <div class="card">
             <div class="card-body">
               <h1 id="h-title">기안서</h1>
-              <form id="form" th:action="@{./addDoc}" method="post" enctype="multipart/form-data"
-                    onsubmit="return nullChk()">
+              <form id="form" th:action="@{addDoc}" method="post" onsubmit="return nullChk()">
                 <div class="mb-3" id="formRadios">
                   <div>
                     <th:block th:each="form, iterStat : ${forms}">
@@ -84,8 +83,8 @@
                   </tr>
                   <tr class="tr-m">
                     <td class="td-1">기안일자</td>
-                    <td class="td-2">[[${currentTime}]]
-                      <input type="hidden" th:value="${currentTime}" name="DOC_WRT_DT" readonly>
+                    <td class="td-2">[[${#strings.substring(currentTime,0 ,10)}]]
+                      <input type="hidden" th:value="${#strings.substring(currentTime,0 ,10)}" name="DOC_WRT_DT" readonly>
                     </td>
                   </tr>
                   <tr class="tr-m">
@@ -144,7 +143,7 @@
                 <div class="div-btn">
                   <a href="#" class="btn btn-primary i-left" onclick="docSave()">결재 요청</a>
                   <a href="#" class="btn btn-secondary" onclick="temSave()">임시 저장</a>
-                  <a href="./draftList" class="btn btn-danger">취소</a>
+                  <a href="./draftList" class="btn">취소</a>
                 </div>
               </form>
             </div>
@@ -202,6 +201,17 @@
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
   </div>
 </div>
-<th:block th:replace="~{admin/approval/apv_modal}"/>
+<th:block th:replace="~{admin/apv/apv_modal}"/>
+<div th:if="${message}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: [[${status}]] === 'success' ? 'success' : 'error',
+      title: [[${status}]] === 'success' ? '성공' : '실패',
+      text: [[${message}]],
+      confirmButtonText: '확인',
+      heightAuto: false
+    });
+  </script>
+</div>
 </body>
 </html>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>전자결재 - 기안 문서함</title>
+  <title>전자결재 - 결재 문서함</title>
   <!-- DataTables CSS -->
   <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 </head>
@@ -17,23 +17,8 @@
         <div class="row g-2 align-items-center">
           <div class="col">
             <h2 class="page-title">
-              기안 문서함
+              결재 문서함
             </h2>
-          </div>
-          <div class="col-auto ms-auto d-print-none">
-            <div class="btn-list" id="app-btn">
-              <a th:href="@{./docWrite}" class="btn btn-indigo d-none d-sm-inline-block">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round"
-                     class="icon icon-tabler icons-tabler-outline icon-tabler-pencil">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/>
-                  <path d="M13.5 6.5l4 4"/>
-                </svg>
-                기안하기
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -51,14 +36,17 @@
                      autocomplete="off" data-status="대기">
               <label for="btn-radio-basic-2" type="button" class="btn">대기</label>
               <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-3"
-                     autocomplete="off" data-status="진행">
-              <label for="btn-radio-basic-3" type="button" class="btn">진행</label>
+                     autocomplete="off" data-status="예정">
+              <label for="btn-radio-basic-3" type="button" class="btn">예정</label>
               <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-4"
-                     autocomplete="off" data-status="완료">
-              <label for="btn-radio-basic-4" type="button" class="btn">완료</label>
+                     autocomplete="off" data-status="진행">
+              <label for="btn-radio-basic-4" type="button" class="btn">진행</label>
               <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-5"
+                     autocomplete="off" data-status="완료">
+              <label for="btn-radio-basic-5" type="button" class="btn">완료</label>
+              <input type="radio" class="btn-check" name="btn-radio-basic" id="btn-radio-basic-6"
                      autocomplete="off" data-status="반려">
-              <label for="btn-radio-basic-5" type="button" class="btn">반려</label>
+              <label for="btn-radio-basic-6" type="button" class="btn">반려</label>
             </div>
           </div>
         </div>
@@ -66,32 +54,64 @@
           <div class="col-12">
             <div class="card">
               <div class="card-body">
-                <table id="draft_table" class="table table-vcenter card-table" style="width:100%">
+                <table id="apv_table" class="table table-vcenter card-table" style="width:100%">
                   <thead>
                   <tr style="background: #f6f8fb">
-                    <th>문서번호</th>
                     <th>문서양식</th>
                     <th>제목</th>
+                    <th>기안자</th>
                     <th>작성일자</th>
-                    <th>진행상태</th>
+                    <th>진행상태
+                      <span class="form-help" data-bs-toggle="popover" data-bs-placement="right"
+                            data-bs-title="결재 진행 상태" data-bs-trigger="hover focus"
+                            data-bs-html="true"
+                            data-bs-content="<p class='status status-green'>대기</p> : 결재 차례인 경우<br>
+                            <p class='status status-purple'>예정</p> : 결재 차례가 아닌 경우<br>
+                            <p class='status status-blue'>진행</p> : 다음 결재자가 있는 경우<br>
+                            <p class='status status-gray-500'>완료</p> : 결재자가 모두 승인한 경우<br>
+                            <p class='status status-red'>반려</p> : 결재문서가 반려된 경우">?
+                      </span>
+                    </th>
                   </tr>
                   </thead>
                   <tbody>
-                  <tr th:each="d : ${draftList}">
-                    <td>[[${d.DOC_SN}]]</td>
-                    <td th:switch="${d.DOC_FORM_TY}">
+                  <tr th:each="a : ${apvDoc}">
+                    <td th:switch="${a.DOC_FORM_TY}">
                       <span th:case="0">기안서</span>
                       <span th:case="1">품의서</span>
                       <span th:case="2">지출 결의서</span>
                     </td>
-                    <td>[[${d.DOC_SJ}]]</td>
-                    <td th:text="${#strings.substring(d.DOC_WRT_DT,0 ,10)}">[[${d.DOC_WRT_DT}]]</td>
-                    <td th:switch="${d.DOC_STTUS}">
-                      <span th:case="0" class="status status-green">대기</span>
-                      <span th:case="1" class="status status-blue">진행</span>
-                      <span th:case="2" class="status status-gray-500">완료</span>
-                      <span th:case="3" class="status status-red">반려</span>
+                    <th:block
+                        th:with="aDetail=@{./docDetail(type=${type}, docSttus=${a.APV_STTUS}, docSn=${a.DOC_SN})}">
+                      <td><a th:href="${aDetail}">[[${a.DOC_SJ}]]</a></td>
+                    </th:block>
+                    <td>
+                      <th:block th:if="${a.MBR_ID != username}">
+                        <a th:href="@{/member/info(id=${a.MBR_ID})}">[[${a.MBR_NCNM}]]</a>
+                      </th:block>
                     </td>
+                    <td th:text="${#strings.substring(a.DOC_WRT_DT,0 ,10)}"></td>
+                    <th:block th:if="${a.APV_STTUS == 0}">
+                      <td><span class="status status-green">대기</span></td>
+                    </th:block>
+                    <th:block th:if="${a.APV_STTUS == 1 && a.DOC_STTUS != '3'}">
+                      <td><span class="status status-purple">예정</span></td>
+                    </th:block>
+                    <th:block th:if="${a.APV_STTUS == 1 && a.DOC_STTUS == '3'}">
+                      <td><span class="status status-red">반려</span></td>
+                    </th:block>
+                    <th:block th:if="${a.APV_STTUS == 3 && a.DOC_STTUS == '1'}">
+                      <td><span class="status status-blue">진행</span></td>
+                    </th:block>
+                    <th:block th:if="${a.APV_STTUS == 3 && a.DOC_STTUS == '2'}">
+                      <td><span class="status status-gray-500">완료</span></td>
+                    </th:block>
+                    <th:block th:if="${a.APV_STTUS == 3 && a.DOC_STTUS == '3'}">
+                      <td><span class="status status-red">반려</span></td>
+                    </th:block>
+                    <th:block th:if="${a.APV_STTUS == 4}">
+                      <td><span class="status status-red">반려</span></td>
+                    </th:block>
                   </tr>
                   </tbody>
                 </table>
@@ -104,11 +124,22 @@
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
   </div>
 </div>
+<div th:if="${message}">
+  <script th:inline="javascript">
+    Swal.fire({
+      icon: [[${status}]] === 'success' ? 'success' : 'error',
+      title: [[${status}]] === 'success' ? '성공' : '실패',
+      text: [[${message}]],
+      confirmButtonText: '확인',
+      heightAuto: false
+    });
+  </script>
+</div>
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
 <script>
-  $('#draft_table').DataTable({
+  $('#apv_table').DataTable({
     responsive: true,
     order: false, // 초기 정렬 비활성화
     language: {
@@ -142,7 +173,7 @@
   filterTable('all'); // 초기에 '전체' 상태로 필터링을 적용
 
   function filterTable(status) {
-    var rows = document.querySelectorAll('#draft_table tbody tr');
+    var rows = document.querySelectorAll('#apv_table tbody tr');
     rows.forEach(function (row) {
       var statusCell = row.querySelector('td:nth-child(5) span');
       if (status === 'all' || statusCell.textContent.trim() === status) {
@@ -153,8 +184,8 @@
     });
   }
 
-  // 페이지가 로드될 때 실행되는 이벤트 리스너 추가
-  document.addEventListener('DOMContentLoaded', function () {
+  $(document).ready(function () {
+    // 라디오 버튼 이벤트 리스너 추가
     var radioButtons = document.querySelectorAll('input[name="btn-radio-basic"]');
     radioButtons.forEach(function (radio) {
       radio.addEventListener('change', function () {
@@ -162,6 +193,14 @@
         filterTable(status);
       });
     });
+
+    // Popover 초기화
+    var popoverTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl);
+    });
+
   });
 </script>
 </body>
