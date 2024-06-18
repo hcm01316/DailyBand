@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공간 소개</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        .floor-plan, .details {
+            flex: 1;
+            margin: 10px;
+        }
+        .floor-plan img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .details {
+            max-width: 600px;
+        }
+        .details h2 {
+            margin-top: 0;
+        }
+        .details img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .room-info, .reservation-info {
+            margin-top: 20px;
+        }
+        .room-info p, .reservation-info p {
+            margin: 10px 0;
+        }
+        .room-info strong, .reservation-info strong {
+            color: #333;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button-group button.active {
+            background-color: #007BFF;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <!-- Navbar -->
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            합주실
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Page body -->
+        <div class="page-body">
+            <div class="container-xl">
+                <!-- Content here -->
+                <div class="container" style="margin-right: 130px">
+                    <div class="floor-plan">
+                        <img id = "roomImage" src="../image/bandroom1.png" style="height: 600px" width="444px">
+                    </div>
+                    <div class="details">
+                        <div class="button-group">
+                            <button id="whiteBtn" class="active" onclick="showRoom('white')" >WHITE</button>
+                            <button id="purpleBtn" onclick="showRoom('purple')">PURPLE</button>
+                            <button id="redBtn" onclick="showRoom('red')">RED</button>
+                            <button id="blueBtn" onclick="showRoom('blue')">BLUE</button>
+                        </div>
+                        <div id="whiteRoom" class="room-info">
+                            <h2>WHITE 룸</h2>
+                            <p>화이트룸 (권장 사용 인원: 36명) / 평상 시 공용 라운지 룸으로 사용 / 단체 예약의 경우 디스코드 운영팀에게 문의</p>
+                        </div>
+                        <div id="purpleRoom" class="room-info hidden">
+                            <h2>PURPLE 룸</h2>
+                            <p>퍼플룸 (권장 사용 인원: 6명) / 개인 학습 및 소규모 스터디에 적합 / 예약 시 담당자에게 문의</p>
+                        </div>
+                        <div id="redRoom" class="room-info hidden">
+                            <h2>RED 룸</h2>
+                            <p>레드룸 (권장 사용 인원: 4명) / 4인 테이블 배치 / 화이트보드 존재<br>
+                                블루 룸과 동시에 예약 시 폴딩도어를 접어서 6~8명 규모의 스터디도 가능합니다.<br>
+                                Physical LAB에서 다루는 임베디드 장비가 존재하므로 룸 이용 간 장비를 함부로 조작하거나 이동시키지 않도록 주의 부탁드립니다.</p>
+                        </div>
+                        <div id="blueRoom" class="room-info hidden">
+                            <h2>BLUE 룸</h2>
+                            <p>블루룸 (권장 사용 인원: 8명) / 회의 및 팀 프로젝트에 적합 / 예약 시 담당자에게 문의</p>
+                        </div>
+                        <div class="reservation-info">
+                            <h2>예약 안내</h2>
+                            <p>레드룸과 블루룸은 동시에 사용 가능합니다(6인 이상 8인 이하)<br>
+                                화이트룸은 오픈라운지로, 자유롭게(단, 반드시 컴퓨터 공부) 이용하실 수 있습니다.<br>
+                                예약 횟수는 제한하지 않습니다.<br>
+                                화이트룸 대관 시 문의 주시기 바랍니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+<script th:inline="javascript">
+    var currentRoomIndex = 0;
+    var roomImages = [
+        "../image/bandroom1.png",
+        "../image/bandroom2.jpg",
+        "../image/bandroom3.jpeg",
+        "../image/bandroom4.jpg"
+    ];
+    function showRoom(room) {
+        const rooms = ['white', 'purple', 'red', 'blue'];
+        rooms.forEach(r => {
+            document.getElementById(r + 'Room').classList.add('hidden');
+            document.getElementById(r + 'Btn').classList.remove('active');
+        });
+        document.getElementById(room + 'Room').classList.remove('hidden');
+        document.getElementById(room + 'Btn').classList.add('active');
+
+        // 해당 방에 맞는 사진을 표시합니다.
+        switch (room) {
+            case 'white':
+                showPhoto(0); // bandroom1.png
+                break;
+            case 'purple':
+                showPhoto(1); // bandroom2.png
+                break;
+            case 'red':
+                showPhoto(2); // bandroom3.png
+                break;
+            case 'blue':
+                showPhoto(3); // bandroom4.png
+                break;
+            default:
+                showPhoto(0); // 기본은 bandroom1.png
+        }
+    }
+
+    function showPhoto(index) {
+        var roomImage = document.getElementById('roomImage');
+        roomImage.src = roomImages[index];
+        currentRoomIndex = index;
+
+    }
+</script>
+</body>
+</html>
