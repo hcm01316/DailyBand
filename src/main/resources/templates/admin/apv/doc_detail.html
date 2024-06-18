@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>전자결재 - 문서 상세 조회</title>
+  <link rel="stylesheet" th:href="@{/css/apv_write.css}">
+</head>
+<body>
+<div class="page">
+  <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+  <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+  <div class="page-wrapper">
+    <!-- Page header -->
+    <div class="page-header d-print-none">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">
+              문서 상세 조회
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h1 id="h-title" th:switch="${apvDoc.DOC_FORM_TY}">
+                <span th:case="0">기안서</span>
+                <span th:case="1">품의서</span>
+                <span th:case="2">지출 결의서</span>
+              </h1>
+              <table id="table">
+                <tr class="tr-s">
+                  <td class="td-1" rowspan="2">문서번호</td>
+                  <td class="td-2" rowspan="2">[[${apvDoc.DOC_SN}]]</td>
+                  <td class="td-3" rowspan="6" style="writing-mode: vertical-rl;">결재</td>
+                  <td class="td-4">권한</td>
+                  <td class="td-4" id="r-app0">
+                      <span th:if="${#lists.size(apvList) > 0}">
+                        <span th:if="${apvList[0].MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                        <span th:if="${apvList[0].MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      </span>
+                  </td>
+                  <td class="td-4" id="r-app1">
+                      <span th:if="${#lists.size(apvList) > 1}">
+                        <span th:if="${apvList[1].MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                        <span th:if="${apvList[1].MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      </span>
+                  </td>
+                  <td class="td-4" id="r-app2" colspan="2">
+                      <span th:if="${#lists.size(apvList) > 2}">
+                        <span th:if="${apvList[2].MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                        <span th:if="${apvList[2].MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      </span>
+                  </td>
+                </tr>
+                </tr>
+                <tr class="tr-s">
+                  <td class="td-6" rowspan="3" style="border-bottom: none;">
+                    <img alt="승인" th:src="@{/image/approval_apv.png}">
+                  </td>
+                  <td class="td-6" rowspan="3" style="border-bottom: none;">
+                    <img th:if="${#lists.size(apvList) > 0 && apvList[0].APV_STTUS == 3}" alt="승인"
+                         th:src="@{/image/approval_apv.png}">
+                    <img th:if="${#lists.size(apvList) > 0 && apvList[0].APV_STTUS == 4}" alt="반려"
+                         th:src="@{/image/approval_reject.png}">
+                  </td>
+                  <td class="td-6" rowspan="3" style="border-bottom: none;">
+                    <img th:if="${#lists.size(apvList) > 1 && apvList[1].APV_STTUS == 3}" alt="승인"
+                         th:src="@{/image/approval_apv.png}">
+                    <img th:if="${#lists.size(apvList) > 1 && apvList[1].APV_STTUS == 4}" alt="반려"
+                         th:src="@{/image/approval_reject.png}">
+                  </td>
+                  <td class="td-6" rowspan="3" style="border-bottom: none;">
+                    <img th:if="${#lists.size(apvList) > 2 && apvList[2].APV_STTUS == 3}" alt="승인"
+                         th:src="@{/image/approval_apv.png}">
+                    <img th:if="${#lists.size(apvList) > 2 && apvList[2].APV_STTUS == 4}" alt="반려"
+                         th:src="@{/image/approval_reject.png}">
+                  </td>
+
+                </tr>
+                <tr class="tr-m">
+                  <td class="td-1">기안일자</td>
+                  <td class="td-2" th:text="${#strings.substring(apvDoc.DOC_WRT_DT,0 ,10)}"></td>
+                </tr>
+                <tr class="tr-m">
+                  <td class="td-1">권한</td>
+                  <td class="td-5" th:switch="${apvDoc.MBR_TY}">
+                    <span th:case="'ROLE_ADMIN'">관리자</span>
+                    <span th:case="'ROLE_MANAGER'">매니저</span>
+                  </td>
+                </tr>
+                <tr class="tr-s">
+                  <td class="td-1" rowspan="2">기안자</td>
+                  <td class="td-5" rowspan="2">[[${apvDoc.MBR_NCNM}]]</td>
+                  <td class="td-6" style="border-top: none;"
+                      th:text="${#strings.substring(apvDoc.DOC_WRT_DT,0, 10)}">
+                  </td>
+                  <td class="td-6" style="border-top: none;"
+                      th:text="${#lists.size(apvList) > 0} ? ${#strings.substring(apvList[0].APV_DT, 0, 10)} : ''"></td>
+                  <td class="td-6" style="border-top: none;"
+                      th:text="${#lists.size(apvList) > 1} ? ${#strings.substring(apvList[1].APV_DT, 0, 10)} : ''"></td>
+                  <td class="td-6" style="border-top: none;"
+                      th:text="${#lists.size(apvList) > 2} ? ${#strings.substring(apvList[2].APV_DT, 0, 10)} : ''"></td>
+                </tr>
+                <tr class="tr-s">
+                  <td class="td-5">[[${apvDoc.MBR_NCNM}]]</td>
+                  <td class="td-5" id="name-app0"
+                      th:text="${#lists.size(apvList) > 0} ? ${apvList[0].MBR_NCNM} : ''"></td>
+                  <td class="td-5" id="name-app1"
+                      th:text="${#lists.size(apvList) > 1} ? ${apvList[1].MBR_NCNM} : ''"></td>
+                  <td class="td-5" id="name-app2"
+                      th:text="${#lists.size(apvList) > 2} ? ${apvList[2].MBR_NCNM} : ''"></td>
+                </tr>
+                <tr class="tr-m">
+                  <td class="td-1">참조자</td>
+                  <td colspan="6" id="ref-list" class="indent">
+                    <th:block th:each="ref, stat : ${refList}">
+                      [[${ref.MBR_NCNM}]]
+                      <span th:if="${ref.MBR_TY == 'ROLE_ADMIN'}">관리자</span>
+                      <span th:if="${ref.MBR_TY == 'ROLE_MANAGER'}">매니저</span>
+                      <span th:unless="${stat.last}">,</span>
+                    </th:block>
+                  </td>
+                </tr>
+                <tr id="tr-title" class="tr-m">
+                  <td class="td-1">제목</td>
+                  <td colspan="6" class="indent">[[${apvDoc.DOC_SJ}]]</td>
+                </tr>
+                <tr class="tr-m">
+                  <td colspan="8" class="td-content">내용</td>
+                </tr>
+                <tr>
+                  <td colspan="8" class="td-content-val" th:utext="${apvDoc.DOC_CN}"></td>
+                </tr>
+              </table>
+              <div class="div-span">
+                <th:block th:each="apv : ${apvList}">
+                  <div class="div-rej" th:if="${apv.REJ_RSN != null}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                         viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         class="icon icon-tabler icons-tabler-outline icon-tabler-ban">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                      <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                      <path d="M5.7 5.7l12.6 12.6"/>
+                    </svg>
+                    <span>반려 사유 : </span>
+                    <span class="div-rejRsn">[[${apv.REJ_RSN}]]</span>
+                  </div>
+                </th:block>
+              </div>
+              <div class="div-btn">
+                <th:block th:if="${type == 'draft'}">
+                  <input type="button" id="btn-cancel" value="상신 취소" class="btn btn-danger">
+                </th:block>
+                <th:block th:if="${type == 'apv'}">
+                  <input type="button" id="btn-apv" class="btn btn-success" value="승인">
+                  <input type="button" id="btn-rej" class="btn btn-danger" value="반려">
+                </th:block>
+                <th:block th:if="${type == 'draft'}">
+                  <th:block th:each="apv : ${apvList}">
+                    <input type="button" th:if="${apv.APV_STTUS == 4}" value="재상신" class="btn btn-indigo i-left"
+                           id="reSubmitButton">
+                  </th:block>
+                </th:block>
+                <input type="button" class="btn" value="목록" id="listButton">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+  </div>
+</div>
+<script th:inline="javascript">
+  /* Thymeleaf 변수를 JavaScript 변수로 할당 */
+  var docSttus = /*[[${docSttus}]]*/ 0;
+  var apvDocSttus = /*[[${apvDoc.DOC_STTUS}]]*/ 0;
+  var type = /*[[${type}]]*/ 'defaultType';  // 
+  var docSn = /*[[${apvDoc.DOC_SN}]]*/ 0;
+
+
+
+  console.log("docSttus 값 = " + docSttus)
+  console.log("apvDocSttus 값 = " + apvDocSttus);
+  console.log("type 값 = " + type);
+  console.log("docSn 값 = " + docSn);
+
+  if(docSttus != 0) {
+    $("#btn-apv").css("display", "none");
+    $("#btn-rej").css("display", "none");
+  }
+
+  if(apvDocSttus != 0) {
+    $("#btn-cancel").css("display", "none");
+  }
+
+  $("#btn-cancel").click(function() { 
+    var result = confirm("상신을 취소하시겠습니까?");
+    if(result == true) {
+      location.href = './docDelete?type=' + type + '&docSn=' + docSn;
+    }
+  });
+
+  $("#btn-apv").click(function() { // 승인 확인 창
+    var result = confirm("승인하시겠습니까?");
+    if(result == true) {
+      location.href = 'apvStatus?docSn=' + docSn + '&type=' + type;
+    }
+  });
+
+  $("#btn-rej").click(function() { // 반려 확인 창
+    var rejRsn = prompt("반려 사유를 입력해주세요");
+    if(rejRsn != null) { // 취소 누르면 null 반환하므로 null이 아닌 경우에만 처리
+       var result = confirm("반려하시겠습니까?(반려 사유 : " + rejRsn + ")");
+      if(result == true) {
+        location.href = './rejStatus?docSn=' + docSn + '&type=' + type + '&rejRsn=' + rejRsn;
+      }
+    }
+  });
+
+  $("#listButton").click (function() {
+    location.href = './' + type + 'List';
+  });
+
+
+  $("#reSubmitButton").click (function () {
+    location.href = './docDetail?type=rej&docSn=' + docSn + '&docSttus=' + apvDocSttus;
+  })
+
+
+</script>
+</body>
+</html>

@@ -57,21 +57,69 @@ public interface AdminMapper {
   //밴드원 모집 조회
   List<Map<String, Object>> getRboardList();
 
+  //기안 문서 리스트
   List<ApvDoc> getApvDraftList(String id);
 
+  //임시 문서 리스트
+  List<ApvDoc> getApvTempList(String id);
+
+  //결재 문서 리스트
+  List<ApvDoc> getApvList(@Param("id") String id, @Param("docSttus") String docSttus);
+
+  //참조 문서 리스트
+  List<ApvDoc> getApvRefList(@Param("id") String id, @Param("docSttus") String docSttus);
+
+  //결재자/참조자 회원 리스트
   List<Member> getApvMbrList(String id);
 
-  List<Member> getApvMbrNcnmSearch(@Param("id") String id,  @Param("searchKeyword")String searchKeyword);
+  //결재자/참조자 회원 닉네임 검색
+  List<Member> getApvMbrNcnmSearch(@Param("id") String id,  @Param("searchKeyword") String searchKeyword);
 
-
-  // 기안서 작성
+  //기안서 작성
   int insertDoc(ApvDoc apvDoc);
 
-  // 결재자 등록
+  //결재자 등록(결재자 등록)
   int insertApv(Approval apv);
 
-  // 참조자 등록
+  //참조자 등록(참조자 등록)
   int insertRef(ApvRef ref);
 
+  //문서 조회
+  ApvDoc getDocDetail(int docSn);
 
+  //문서 조회(결재자)
+  List<Approval> getApvDetail(int docSn);
+
+  //문서 조회(참조자)
+  List<ApvRef> getRefDetail(int docSn);
+
+  //문서 삭제(상신 취소)
+  int deleteDoc(int docSn);
+
+  //임시 저장 문서 수정
+  int modifyDoc(ApvDoc apvDoc);
+
+  //결재자 상태 변경 (temp - 대기/예정)
+  int modifyApv(Approval apv);
+
+  //결재자 삭제
+  int deleteApv(int docSn);
+
+  //참조자 삭제
+  int deleteRef(int docSn);
+
+  //참조자 상태 변경 (temp - 참조)
+  int modifyRef(ApvRef ref);
+
+  //결재 상태
+  List<Approval> getApvStatusList(int docSn);
+
+  //다음 결재자 상태 변경
+  void modifyApvNext(int apvSn);
+
+  //결재자 상태 변경 - 결재 승인/반려
+  int modifyApvStatus(Approval apv);
+
+  //문서 상태 변경 - 결재 승인/반려
+  int modifyDocStatus(Approval apv);
 }
