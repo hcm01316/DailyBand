@@ -438,13 +438,16 @@ public class AdminController {
     }
 
     int docResult = adminService.insertDoc(apvDoc);
+
     int apvResult = 0;
     int refResult = 0;
 
-    logger.info("문서 apvDoc.getDOC_SN() 값 : " + apvDoc.getDOC_SN());
+
+    logger.info("문서 apvDoc.getMBR_ID() 값 : " + apvDoc.getMBR_ID());
     if (!apvMbrId.equals("apvMbrId") || param.equals("Temp") || param.equals("Doc")) {
       String[] apvArray = apvMbrId.split(",");
       for (int i = 0; i < apvArray.length; i++) {
+        apv.setDOC_SN(0);
         apv.setMBR_ID(apvArray[i]);
         apv.setAPV_LEV(i + 1);
         if (!param.equals("Temp")) {
@@ -464,6 +467,7 @@ public class AdminController {
       List<Approval> apvList = adminService.getApvDetail(apvDoc.getDOC_SN());
       if (!apvList.isEmpty()) {
         for (int i = 0; i < apvList.size(); i++) {
+          apv.setDOC_SN(0);
           apv.setMBR_ID(apvList.get(i).getMBR_ID());
           apv.setAPV_LEV(apvList.get(i).getAPV_LEV());
           if (!param.equals("RejTemp")) {
@@ -488,6 +492,7 @@ public class AdminController {
         if (!refList.isEmpty()) {
           for (int i = 0; i < refList.size(); i++) {
             ref.setMBR_ID(refList.get(i).getMBR_ID());
+            ref.setDOC_SN(0);
             if (!param.equals("RejTemp")) {
               ref.setREF_STTUS(0);
             } else {
@@ -502,6 +507,7 @@ public class AdminController {
         String[] refArray = refMbrId.split(",");
         for (int i = 0; i < refArray.length; i++) {
           ref.setMBR_ID(refArray[i]);
+          ref.setDOC_SN(0);
           if (!param.equals("RejTemp")) {
             ref.setREF_STTUS(0);
           } else {
@@ -517,6 +523,7 @@ public class AdminController {
         String[] refArray = refMbrId.split(",");
         for (int i = 0; i < refArray.length; i++) {
           ref.setMBR_ID(refArray[i]);
+          ref.setDOC_SN(0);
           if (!param.equals("Temp")) {
             ref.setREF_STTUS(0);
           } else {
@@ -596,7 +603,7 @@ public class AdminController {
     } else {
       mv.addObject("message", "문서 조회 실패");
       logger.info("문서 조회 실패");
-      mv.setViewName("redirect:./" + type + "List");
+      mv.setViewName("redirect:" + type + "List");
     }
 
     return mv;
