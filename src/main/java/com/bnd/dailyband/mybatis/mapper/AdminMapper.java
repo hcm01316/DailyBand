@@ -51,6 +51,12 @@ public interface AdminMapper {
   //일별 방문 수
   List<Map<String, Object>> getDayVisitCnt();
 
+  //결재 대기 문서 건수
+  int getApvWaitCnt(String id);
+
+  //결재 예정 문서 건수
+  int getApvScheduledCnt(String id);
+
   //게시판별 게시글 수
   List<Map<String, Object>> getBbsCnt();
 
@@ -100,16 +106,16 @@ public interface AdminMapper {
   int modifyDoc(ApvDoc apvDoc);
 
   //결재자 상태 변경 (temp - 대기/예정)
-  int modifyApv(Approval apv);
+  void modifyApv(Approval apv);
 
   //결재자 삭제
-  int deleteApv(int docSn);
+  void deleteApv(int docSn);
 
   //참조자 삭제
-  int deleteRef(int docSn);
+  void deleteRef(int docSn);
 
   //참조자 상태 변경 (temp - 참조)
-  int modifyRef(ApvRef ref);
+  void modifyRef(ApvRef ref);
 
   //결재 상태
   List<Approval> getApvStatusList(int docSn);
@@ -122,4 +128,12 @@ public interface AdminMapper {
 
   //문서 상태 변경 - 결재 승인/반려
   int modifyDocStatus(Approval apv);
+
+  int getDocSn(String docMemNum);
+
+  String getMbrNCNM(int docSn);
+
+  String getMbrId(int docSn);
+
+  String getApvMbrNcnm(String appMemNum);
 }

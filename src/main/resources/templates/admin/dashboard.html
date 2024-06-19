@@ -24,7 +24,7 @@
     <div class="page-body">
       <div class="container-xl">
         <div class="row row-cards">
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-6 col-xl-4">
             <div class="card card-sm">
               <div class="card-body">
                 <div class="row align-items-center">
@@ -51,7 +51,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-6 col-xl-4">
             <div class="card card-sm">
               <div class="card-body">
                 <div class="row align-items-center">
@@ -78,35 +78,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6 col-xl-3">
-            <div class="card card-sm">
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-auto">
-                        <span class="bg-red text-white avatar">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                               viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                               class="icon icon-tabler icons-tabler-outline icon-tabler-speakerphone"><path
-                              stroke="none" d="M0 0h24v24H0z" fill="none"/><path
-                              d="M18 8a3 3 0 0 1 0 6"/><path
-                              d="M10 8v11a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1v-5"/><path
-                              d="M12 8h0l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8"/></svg>
-                        </span>
-                  </div>
-                  <div class="col">
-                    <div class="font-weight-medium">
-                      전체 신고 -건
-                    </div>
-                    <div class="text-muted">
-                      일일 신고 -건
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-6 col-xl-4">
             <div class="card card-sm">
               <div class="card-body">
                 <div class="row align-items-center">
@@ -115,19 +87,19 @@
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                               class="icon icon-tabler icons-tabler-outline icon-tabler-speakerphone"><path
+                               class="icon icon-tabler icons-tabler-outline icon-tabler-file-check"><path
                               stroke="none" d="M0 0h24v24H0z" fill="none"/><path
-                              d="M18 8a3 3 0 0 1 0 6"/><path
-                              d="M10 8v11a1 1 0 0 1 -1 1h-1a1 1 0 0 1 -1 -1v-5"/><path
-                              d="M12 8h0l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8"/></svg>
+                              d="M14 3v4a1 1 0 0 0 1 1h4"/><path
+                              d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/><path
+                              d="M9 15l2 2l4 -4"/></svg>
                         </span>
                   </div>
                   <div class="col">
                     <div class="font-weight-medium">
-                      -
+                      결재 대기 문서 [[${ApvWaitCnt}]]건
                     </div>
                     <div class="text-muted">
-                      -
+                      결재 예정 문서 [[${ApvScheduledCnt}]]건
                     </div>
                   </div>
                 </div>
@@ -211,7 +183,7 @@
     },
     series: [{
       name: 'Count',
-      data: dayRegCnt.map(function(item) {
+      data: dayRegCnt.map(function (item) {
         return {x: item.date, y: item.cnt};
       })
     }],
@@ -253,7 +225,7 @@
     },
     series: [{
       name: 'Count',
-      data: dayVisitCnt.map(function(item) {
+      data: dayVisitCnt.map(function (item) {
         return {x: item.date, y: item.cnt};
       })
     }],
@@ -295,8 +267,8 @@
     },
     series: [{
       name: 'Count',
-      data: bbsCnt.map(function(item) {
-        return { x: item.bbsNm, y: item.cnt };
+      data: bbsCnt.map(function (item) {
+        return {x: item.bbsNm, y: item.cnt};
       })
     }],
     xaxis: {

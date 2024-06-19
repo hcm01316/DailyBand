@@ -46,12 +46,17 @@ public interface AdminService {
   //분야별 회원 활동 분야 수
   Map<String, Integer> getActRealmCnt();
 
-
   //일별 가입자 수
   List<Map<String, Object>> getDayRegCnt();
 
   //일별 방문 수
   List<Map<String, Object>> getDayVisitCnt();
+
+  //결재 대기 문서 건수
+  int getApvWaitCnt(String id);
+
+  //결재 예정 문서 건수
+  int getApvScheduledCnt(String id);
 
   //게시판별 게시글 수
   List<Map<String, Object>> getBbsCnt();
@@ -85,12 +90,6 @@ public interface AdminService {
 
   //기안문서 작성(참조자 등록)
   int insertRef(ApvRef ref);
-
-  //기안 문서 작성 process (결재자 등록)
-  int processApvList(String apvMbrId, String param, int docSn);
-
-  //기안 문서 작성 process (참조자 등록)
-  int processRefList(String refMbrId, String param, int docSn);
 
   //문서 조회
   ApvDoc getDocDetail(int docSn);
@@ -131,4 +130,11 @@ public interface AdminService {
   //문서 상태 변경 - 결재 승인/반려
   int modifyDocStatus(Approval apv);
 
+  int getDocSn(String docMbrId);
+
+  String getMbrNCNM(int docSn);
+
+  String getMbrId(int docSn);
+
+  String getApvMbrNcnm(String apvMbrId);
 }

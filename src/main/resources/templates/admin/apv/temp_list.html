@@ -46,7 +46,7 @@
                       <span th:case="1">품의서</span>
                       <span th:case="2">지출 결의서</span>
                     </td>
-                    <th:block th:with="tDetail=@{./docDetail(type=${type}, docSttus=${t.DOC_STTUS}, docSn=${t.DOC_SN})}">
+                    <th:block th:with="tDetail=@{docDetail(type=${type}, docSttus=${t.DOC_STTUS}, docSn=${t.DOC_SN})}">
                       <td><a th:href="${tDetail}">[[${t.DOC_SJ}]]</a></td>
                     </th:block>
                     <td th:text="${#strings.substring(t.DOC_WRT_DT,0 ,10)}"></td>
