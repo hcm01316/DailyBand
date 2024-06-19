@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang='en' xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset='utf-8'/>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <style>
+        #yrModal {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modalContent {
+            width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #modalContent h1 {
+            margin-top: 0;
+        }
+
+        #modalContent input[type="text"],
+        #modalContent input[type="time"],
+        #modalContent input[type="color"],
+        #modalContent button {
+            margin-bottom: 10px;
+        }
+
+        #modalContent button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #modalContent button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            font-size: 12px;
+            background-color: yellow;
+            color: black;
+            padding: 2px 5px;
+            border-radius: 3px;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+    </style>
+    <title>합주실 예약</title>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            합주실 예약
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-body">
+            <th:block th:if="${isband} == 0">
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <circle cx="12" cy="12" r="9"/>
+                            <line x1="9" y1="10" x2="9.01" y2="10"/>
+                            <line x1="15" y1="10" x2="15.01" y2="10"/>
+                            <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0"/>
+                        </svg>
+                    </div>
+                    <p class="empty-title">가입한 밴드가 없습니다.</p>
+                    <p class="empty-subtitle text-secondary">
+                        밴드원 모집에서 새로운 밴드를 만들거나 가입하세요.
+                    </p>
+                    <div class="empty-action">
+                        <a th:href="@{/rboard/list}" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <circle cx="10" cy="10" r="7"/>
+                                <line x1="21" y1="21" x2="15" y2="15"/>
+                            </svg>
+                            밴드가입 및 생성
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+            <th:block th:if="${isband} != 0">
+            <div class="container-xl">
+                <div id="yrModal" style="display:none;">
+                    <div id="modalContent">
+                        <h1>일정 추가 모달</h1>
+                        <label>방 선택:</label>
+                        <label for="room1">white:</label>
+                        <input type="radio" id="room1" name="roomNumber" value="1" onchange="setDefaultColors()">
+                        <label for="room2">purple:</label>
+                        <input type="radio" id="room2" name="roomNumber" value="2" onchange="setDefaultColors()">
+                        <label for="room3">red:</label>
+                        <input type="radio" id="room3" name="roomNumber" value="3" onchange="setDefaultColors()">
+                        <label for="room3">blue:</label>
+                        <input type="radio" id="room4" name="roomNumber" value="4" onchange="setDefaultColors()"><br>
+                        <label for="schStart">시작일:</label>
+                        <input type="text" id="schStart" th:value="${schStart}"><br>
+                        <label for="schStartTime">시작시간:</label>
+                        <input type="time" id="schStartTime" th:value="${schStartTime}"><br>
+                        <label for="schEnd">종료일:</label>
+                        <input type="text" id="schEnd" th:value="${schEnd}"><br>
+                        <label for="schEndTime">종료시간:</label>
+                        <input type="time" id="schEndTime" th:value="${schEndTime}"><br>
+                        <label for="schTitle">제목:</label>
+                        <input type="text" id="schTitle" th:value="${schTitle}"><br>
+                        <input type="checkbox" id="allDay" th:checked="${allDay}" style="display: none;">
+                        <label for="allDay" style="display: none;">하루종일</label><br>
+                        <label for="schBColor" style="display: none;">배경색:</label>
+                        <input type="color" id="schBColor" th:value="${schBColor}" style="display: none;"><br>
+                        <label for="schFColor" style="display: none;">글자색:</label>
+                        <input type="color" id="schFColor" th:value="${schFColor}" style="display: none;"><br>
+                        <button onclick="fCalAdd()">추가</button>
+                        <button onclick="fMClose()">닫기</button>
+                    </div>
+                </div>
+                <div id="Wrapper">
+                    <div id='calendar'></div>
+                </div>
+            </div>
+            </th:block>
+        </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+    </div>
+</div>
+<script th:inline="javascript">
+    let token = $("meta[name='_csrf']").attr("content");
+    let header = $("meta[name='_csrf_header']").attr("content");
+
+    const bandck = [[${bandck}]]
+
+    let calendar = {}
+
+        const calendarEl = document.querySelector('#calendar');
+        const mySchStart = document.querySelector("#schStart");
+        const mySchStartTime = document.querySelector("#schStartTime");
+        const mySchEnd = document.querySelector("#schEnd");
+        const mySchEndTime = document.querySelector("#schEndTime");
+        const mySchTitle = document.querySelector("#schTitle");
+        const mySchAllday = document.querySelector("#allDay");
+        const mySchBColor = document.querySelector("#schBColor");
+        const mySchFColor = document.querySelector("#schFColor");
+        const YrModal = document.querySelector("#yrModal");
+
+        let respondata = [];
+        const bbsSn = [[${bbsSn}]]
+
+        function getlist(){
+
+            $.ajax({
+                url:"select",
+                method : "GET",
+                async : false,
+                data : {bbsSn : bbsSn},
+                success : function (rdata){
+
+                    respondata = rdata;
+
+                    const calendarOption = {
+                        height: '700px',
+                        expandRows: true,
+                        headerToolbar: {
+                            left: 'prevYear,prev,next,nextYear today',
+                            center: 'title',
+                            right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                        },
+                        initialView: 'timeGridDay',
+                        locale: 'kr',
+                        selectable: true,
+                        selectMirror: true,
+                        navLinks: true,
+                        editable: true,
+                        eventResizableFromStart: true,
+                        dayMaxEventRows: true,
+                        nowIndicator: true,
+                        events:rdata
+                    }
+
+                    calendar = new FullCalendar.Calendar(calendarEl, calendarOption);
+
+                    calendar.on("select", info => {
+                        mySchStart.value = info.startStr.split('T')[0];
+                        mySchEnd.value = info.endStr.split('T')[0];
+
+                        // 선택한 날짜의 시간을 입력란에 표시합니다.
+                        if (!info.allDay) {
+                            mySchStartTime.value = info.startStr.split('T')[1].substring(0, 5);
+                            mySchEndTime.value = info.endStr.split('T')[1].substring(0, 5);
+                        }
+
+                        // 월간 뷰에서는 종료일을 선택한 날짜의 마지막 날짜로 설정
+                        if (info.view.type === 'dayGridMonth') {
+                            let endDate = new Date(info.endStr);
+                            endDate.setDate(endDate.getDate() - 1); // 선택한 달의 마지막 날짜로 설정
+                            mySchEnd.value = endDate.toISOString().split('T')[0];
+                        }
+                        // 주간 뷰에서는 종료일을 선택한 주의 마지막 날짜로 설정
+                        else if (info.view.type === 'dayGridWeek') {
+                            let endDate = new Date(info.endStr);
+                            endDate.setDate(endDate.getDate() -1); // 선택한 주의 마지막 날짜로 설정
+                            mySchEnd.value = endDate.toISOString().split('T')[0];
+                        }
+
+                        YrModal.style.display = "flex";
+                    });
+
+                    // 이벤트 수정 시 알림 창 표시
+                    calendar.on('eventChange', function(changeInfo) {
+                        if (confirm("이 일정을 수정하시겠습니까?")) {
+                            updateEvent(changeInfo.event);
+                        } else {
+                            // 변경 사항을 취소하고 원래 위치로 복구
+                            changeInfo.revert();
+                        }
+                    });
+
+
+                    calendar.on('eventClick', function(info) {
+                        if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
+                            deleteCalendar(info.event.extendedProps.cal_id);
+                        }
+                    });
+
+                    calendar.render();
+
+                    console.log("getlist()");
+                }
+            })
+        }
+        if(bandck != -1)
+        getlist();
+
+
+
+        function deleteCalendar(cal_id) {
+            $.ajax({
+                url: "delete/" + cal_id,
+                method: "POST",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(response) {
+                    console.log(response);
+                    // 삭제된 일정을 바로 캘린더에서 제거
+                    calendar.getEvents().forEach(function(event) {
+                        if (event.extendedProps.cal_id === cal_id) {
+                            event.remove(); // 캘린더에서 해당 이벤트를 삭제
+                        }
+                    });
+                }
+            });
+        }
+    function fCalAdd() {
+
+        const selectedroomnumber = $("input[name=roomNumber]:checked").val();
+
+        if (selectedroomnumber == undefined) {
+            alert("방을 선택해주세요.");
+            return;
+        }
+
+        if (!mySchTitle.value) {
+            alert("제목을 입력하세요.");
+            mySchTitle.focus();
+            return;
+        }
+
+        if (!mySchAllday.checked && (!mySchStartTime.value || !mySchEndTime.value)) {
+            alert("시작시간과 종료시간을 선택하세요.");
+            return;
+        }
+
+        // 시작 시간과 종료 시간을 JavaScript Date 객체로 변환
+        const startDate = new Date(mySchStart.value + 'T' + mySchStartTime.value);
+        const currentDate = new Date(); // 현재 시간
+
+        // 비교: 시작 시간이 현재 시간보다 이전인지 확인
+        if (startDate <= currentDate) {
+            alert("현재 시간 이후로 일정을 추가해주세요.");
+            return;
+        }
+
+        // 시간 차이 계산 (밀리초 단위)
+        const endDate = new Date(mySchEnd.value + 'T' + mySchEndTime.value);
+        const timeDiff = endDate - startDate;
+
+        // 최대 2시간을 초과하는지 확인 (2시간 = 7200000 밀리초)
+        if (timeDiff > 7200000) {
+            alert("일정은 최대 2시간까지만 등록할 수 있습니다.");
+            return;
+        }
+
+        // 기존 일정과 시간 비교하여 중복 확인
+        let isOverlap = false;
+
+        calendar.getEvents().forEach(function(existingEvent) {
+            const existingStart = existingEvent.start;
+            const existingEnd = existingEvent.end;
+
+            // 시간이 겹치는지 확인
+            if (
+                (startDate >= existingStart && startDate < existingEnd) ||
+                (endDate > existingStart && endDate <= existingEnd) ||
+                (startDate <= existingStart && endDate >= existingEnd)
+            ) {
+                isOverlap = true;
+                return false; // 중복이 발생하면 순회 중지
+            }
+        });
+
+        if (isOverlap) {
+            alert("이미 예약된 시간입니다.");
+            return;
+        }
+
+        let bColor = mySchBColor.value;
+        let fColor = mySchFColor.value;
+        if (fColor == bColor) {
+            bColor = "#7C87FF";
+            fColor = "white";
+        }
+
+        let event = {
+            title: mySchTitle.value,
+            allDay: mySchAllday.checked,
+            backgroundColor: bColor,
+            textColor: fColor
+        };
+
+        if (mySchAllday.checked) {
+            // 하루 종일 이벤트
+            event.start = mySchStart.value + 'T00:00'; // 시작일의 00:00
+            // 종료일은 시작일의 다음 날의 00:00으로 설정
+            let nextDay = new Date(mySchEnd.value);
+            nextDay.setDate(nextDay.getDate() + 1);
+            event.end = nextDay.toISOString().split('T')[0] + 'T00:00';
+
+            // 종료일이 시작일보다 이후인지 확인
+            if (new Date(event.start) >= new Date(event.end)) {
+                alert("시작시간은 종료시간보다 빨라야 합니다.");
+                return;
+            }
+        } else {
+            // 시간이 지정된 이벤트
+            event.start = mySchStart.value + 'T' + mySchStartTime.value;
+            event.end = mySchEnd.value + 'T' + mySchEndTime.value;
+
+            if (new Date(event.start) > new Date(event.end)) {
+                alert("시작시간은 종료시간보다 빨라야 합니다.");
+                return;
+            }
+        }
+
+        calendar.addEvent(event);
+
+        const sendData = {
+            bbs_sn: bbsSn,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            color: bColor,
+            textColor: fColor,
+            room_number: selectedroomnumber
+        };
+
+        $.ajax({
+            url: "add",
+            data: sendData,
+            method: "post",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            cache: false,
+            success: function() {
+                getlist(); // 일정 추가 후 캘린더 갱신
+            }
+        });
+
+        fMClose(); // 모달 닫기
+    }
+
+
+
+        function fMClose() {
+            YrModal.style.display = "none";
+        }
+
+        window.fCalAdd = fCalAdd;
+        window.fMClose = fMClose;
+
+
+
+    // 이벤트 업데이트 함수
+    function updateEvent(event) {
+        const isoStart = moment(event.start).format('YYYY-MM-DDTHH:mm'); // 시작 시간을 ISO 형식 문자열로 변환
+        const isoEnd = moment(event.end).format('YYYY-MM-DDTHH:mm');     // 종료 시간을 ISO 형식 문자열로 변환
+        const updatedEvent = {
+            cal_id: event.extendedProps.cal_id,
+            start: isoStart,
+            end: isoEnd,
+        };
+        console.log("업데이트할 이벤트:", updatedEvent);
+        // 서버로 수정된 이벤트 정보를 전송하여 데이터베이스를 업데이트합니다.
+        $.ajax({
+            url: "update",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(updatedEvent),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+                // 성공적으로 업데이트된 경우에 대한 처리
+                console.log("성공");
+            },
+            error: function(xhr, status, error) {
+                // 업데이트에 실패한 경우에 대한 처리
+                console.error("업데이트 중 오류", error);
+            }
+        });
+    }
+    function setDefaultColors() {
+        const room1Checkbox = document.querySelector("#room1");
+        const room2Checkbox = document.querySelector("#room2");
+        const room3Checkbox = document.querySelector("#room3");
+        const room4Checkbox = document.querySelector("#room4");
+
+        // 클릭된 체크박스 확인
+        if (room1Checkbox.checked) {
+            room2Checkbox.checked = false;
+            room3Checkbox.checked = false;
+            room4Checkbox.checked = false;
+        } else if (room2Checkbox.checked) {
+            room1Checkbox.checked = false;
+            room3Checkbox.checked = false;
+            room4Checkbox.checked = false;
+        } else if (room3Checkbox.checked) {
+            room1Checkbox.checked = false;
+            room2Checkbox.checked = false;
+            room4Checkbox.checked = false;
+        } else if (room4Checkbox.checked) {
+            room1Checkbox.checked = false;
+            room2Checkbox.checked = false;
+            room3Checkbox.checked = false;
+        }
+
+        // 선택된 체크박스에 따라 배경색 설정
+        let defaultBackgroundColor = "#ffffff"; // 기본 배경색
+        let defaultTextColor = "#000000"; // 기본 글자색
+
+        if (room1Checkbox.checked) {
+            defaultBackgroundColor = "#ffffff"; // 1번방 배경색 (하얀색)
+        } else if (room2Checkbox.checked) {
+            defaultBackgroundColor = "#d8bfd8"; // 2번방 배경색 (보라색)
+        } else if (room3Checkbox.checked) {
+            defaultBackgroundColor = "#ffb6c1"; // 3번방 배경색 (빨간색)
+        } else if (room4Checkbox.checked) {
+            defaultBackgroundColor = "#add8e6"; // 4번방 배경색 (파란색)
+        }
+
+        mySchBColor.value = defaultBackgroundColor;
+        mySchFColor.value = defaultTextColor;
+    }
+
+</script>
+</body>
+</html>
