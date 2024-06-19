@@ -71,6 +71,20 @@
     WHERE DATE(VISIT_DT) = CURDATE()
   </select>
 
+  <!-- 결재 대기 문서 -->
+  <select id="getApvWaitCnt">
+    select count(*) from APPROVAL
+    where APV_STTUS = 0
+    and MBR_ID = #{id}
+  </select>
+
+  <!-- 결재 예정 문서 -->
+  <select id="getApvScheduledCnt">
+    select count(*) from APPROVAL
+    where APV_STTUS = 1
+    and MBR_ID = #{id}
+  </select>
+
   <!-- 지역별 회원 선호 지역 -->
   <select id="getPreferAreaCnt" resultType="map">
     select bc.CTGRY_NM as name, count(m.MBR_PREFER_AREA) as count
@@ -109,12 +123,19 @@
 
   <!--게시판별 게시글 수 -->
   <select id="getBbsCnt" resultType="map">
-    select bc.BBS_TY_NM as bbsNm, count(*) as cnt
-    from RCRIT_BBS rb
-           inner join BBS_CTGRY bc
-                      on rb.BBS_TY_ID = bc.BBS_TY_ID
-    group by bc.BBS_TY_NM;
-
+    select *
+    from (select b.BBS_TY_NM as bbsNm, count(*) as cnt
+          from GNRL_BBS g
+                 inner join BBS_CTGRY b
+                            on g.BBS_TY_ID = b.BBS_TY_ID
+          group by b.BBS_TY_NM
+          union
+          select b.BBS_TY_NM as bbsNm, count(*) as cnt
+          from RCRIT_BBS r
+                 inner join BBS_CTGRY b
+                            on r.BBS_TY_ID = b.BBS_TY_ID
+          group by b.BBS_TY_NM) b
+    order by bbsNm;
   </select>
 
   <!-- 일별 가입자 수 -->
@@ -399,4 +420,27 @@
     update APV_DOC set DOC_STTUS = #{DOC_STTUS}
     where DOC_SN = #{DOC_SN}
   </update>
+
+  <select id="getDocSn" >
+    select MAX(DOC_SN) from APV_DOC
+    where MBR_ID = #{docMbrId}
+  </select>
+
+  <select id="getMbrNCNM">
+    select MBR_NCNM
+    from APV_DOC a
+    join MBR_INFO m
+    on a.MBR_ID = m.MBR_ID
+    where DOC_SN = #{docSn}
+  </select>
+
+  <select id="getMbrId">
+    select MBR_ID from APV_DOC
+    where DOC_SN = #{DOC_SN}
+  </select>
+
+  <select id="getApvMbrNcnm">
+    select MBR_NCNM from MBR_INFO where MBR_ID = #{apvMbrId}
+  </select>
+
 </mapper>

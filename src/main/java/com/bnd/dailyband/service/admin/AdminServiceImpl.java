@@ -5,6 +5,7 @@ import com.bnd.dailyband.domain.ApvDoc;
 import com.bnd.dailyband.domain.ApvRef;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.mybatis.mapper.AdminMapper;
+import com.bnd.dailyband.service.notify.SseService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class AdminServiceImpl implements AdminService {
 
   private AdminMapper adao;
+  private SseService sseService;
 
   @Autowired
   public AdminServiceImpl(AdminMapper adao) {
@@ -112,6 +114,16 @@ public class AdminServiceImpl implements AdminService {
     return adao.getDayVisitCnt();
   }
 
+  @Override
+  public int getApvWaitCnt(String id) {
+    return adao.getApvWaitCnt(id);
+  }
+
+  @Override
+  public int getApvScheduledCnt(String id) {
+    return adao.getApvScheduledCnt(id);
+  }
+
   //게시판별 게시글 수
   @Override
   public List<Map<String, Object>> getBbsCnt() {
@@ -178,73 +190,6 @@ public class AdminServiceImpl implements AdminService {
     return adao.insertRef(ref);
   }
 
-  //기안 문서 작성 process (결재자 등록)
-  @Override
-  public int processApvList(String apvMbrId, String param, int docSn) {
-    int apvResult = 0;
-    if (!apvMbrId.equals("apvMbrId") || param.equals("Temp") || param.equals("Doc")) {
-      String[] apvArray = apvMbrId.split(",");
-      for (int i = 0; i < apvArray.length; i++) {
-        Approval apv = new Approval();
-        apv.setDOC_SN(docSn);
-        apv.setMBR_ID(apvArray[i]);
-        apv.setAPV_LEV(i + 1);
-        apv.setAPV_STTUS(param.equals("Temp") ? 5 : (i == 0 ? 0 : 1)); //5는 임시
-        apvResult += insertApv(apv); // 결재자 등록
-      }
-    } else { // 반려된 문서 재상신 - 결재자 선택 안함
-      List<Approval> apvList = getApvDetail(docSn);
-      for (int i = 0; i < apvList.size(); i++) {
-        Approval existingApv = apvList.get(i);
-        existingApv.setAPV_STTUS(param.equals("RejTemp") ? 5 : (i == 0 ? 0 : 1));
-        apvResult += insertApv(existingApv);
-      }
-    }
-    return apvResult;
-  }
-
-  //기안 문서 작성 process (참조자 등록)
-  @Override
-  public int processRefList(String refMbrId, String param, int docSn) {
-    int refResult = 0;
-    if (param.equals("RejDoc") || param.equals("RejTemp")) { // 재상신
-      if (refMbrId.equals("refMbrId")) {
-        List<ApvRef> refList = getRefDetail(docSn);
-        for (ApvRef existingRef : refList) {
-          existingRef.setREF_STTUS(param.equals("RejTemp") ? 1 : 0);
-          refResult += insertRef(existingRef);
-        }
-        if (refList.isEmpty()) {
-          refResult = 1;
-        }
-      } else if (!refMbrId.isEmpty()) {
-        String[] refArray = refMbrId.split(",");
-        for (String refMemberId : refArray) {
-          ApvRef newRef = new ApvRef();
-          newRef.setDOC_SN(docSn);
-          newRef.setMBR_ID(refMemberId);
-          newRef.setREF_STTUS(param.equals("RejTemp") ? 1 : 0);
-          refResult += insertRef(newRef);
-        }
-      } else { // refMbrId가 비어있을 경우
-        refResult = 1;
-      }
-    } else { // 재상신이 아닌 경우
-      if (!refMbrId.isEmpty()) {
-        String[] refArray = refMbrId.split(",");
-        for (String refMemberId : refArray) {
-          ApvRef newRef = new ApvRef();
-          newRef.setDOC_SN(docSn);
-          newRef.setMBR_ID(refMemberId);
-          newRef.setREF_STTUS(param.equals("Temp") ? 1 : 0);
-          refResult += insertRef(newRef);
-        }
-      } else { // refMbrId가 비어있을 경우
-        refResult = 1;
-      }
-    }
-    return refResult;
-  }
 
   //문서 조회
   @Override
@@ -323,6 +268,26 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public int modifyDocStatus(Approval apv) {
     return adao.modifyDocStatus(apv);
+  }
+
+  @Override
+  public int getDocSn(String docMbrId) {
+    return adao.getDocSn(docMbrId);
+  }
+
+  @Override
+  public String getMbrNCNM(int docSn) {
+    return adao.getMbrNCNM(docSn);
+  }
+
+  @Override
+  public String getMbrId(int docSn) {
+    return adao.getMbrId(docSn);
+  }
+
+  @Override
+  public String getApvMbrNcnm(String apvMbrId) {
+    return adao.getApvMbrNcnm(apvMbrId);
   }
 
 

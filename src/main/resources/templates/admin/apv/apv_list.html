@@ -82,7 +82,7 @@
                       <span th:case="2">지출 결의서</span>
                     </td>
                     <th:block
-                        th:with="aDetail=@{./docDetail(type=${type}, docSttus=${a.APV_STTUS}, docSn=${a.DOC_SN})}">
+                        th:with="aDetail=@{docDetail(type=${type}, docSttus=${a.APV_STTUS}, docSn=${a.DOC_SN})}">
                       <td><a th:href="${aDetail}">[[${a.DOC_SJ}]]</a></td>
                     </th:block>
                     <td>
