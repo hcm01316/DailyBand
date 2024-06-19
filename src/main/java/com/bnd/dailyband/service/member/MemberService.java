@@ -3,6 +3,8 @@ package com.bnd.dailyband.service.member;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Social;
+import java.util.List;
+import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.StringReader;
@@ -41,4 +43,7 @@ public interface MemberService {
 	public String findPassByEmail(String email);
 
 	public int pwd_update(String memberEmail, String encPassword);
+
+	List<Map<String, Object>> getMyBoardList(String id);
+
 }

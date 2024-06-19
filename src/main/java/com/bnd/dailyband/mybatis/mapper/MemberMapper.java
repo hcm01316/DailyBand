@@ -3,6 +3,7 @@ package com.bnd.dailyband.mybatis.mapper;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Social;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
@@ -38,4 +39,6 @@ public interface MemberMapper {
 	public String findPassByEmail(String email);
 
 	public int pwd_update(String memberEmail, String encPassword);
+
+	List<Map<String,Object>> getMyBoardList(String id);
 }

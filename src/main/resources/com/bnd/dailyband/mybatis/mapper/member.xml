@@ -78,6 +78,11 @@
 		where MBR_EML_ADDR = #{memberEmail}
 	</update>
 
-
+	<select id="getMyBoardList" resultType="map">
+		select bc.BBS_TY_NM, gb.BBS_SN, gb.BBS_SJ, gb.MBR_ID, gb.REG_DT, gb.BBS_READ_CNT, gb.BBS_REMD_CNT
+		from GNRL_BBS gb left outer join BBS_CTGRY bc
+		on gb.BBS_TY_ID = bc.BBS_TY_ID
+		where MBR_ID = #{id}
+	</select>
 
 </mapper>
