@@ -49,10 +49,30 @@
                       [[${b['BBS_TY_NM']}]]
                     </td>
                     <td>
-                      <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
+                      <th:block th:if="${b['BBS_TY_NM'] == '음악'}">
+                        <a th:href="@{'/gboard/music/detail/' + ${b.BBS_SN}}">
+                          <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
+                        </a>
+                      </th:block>
+                      <th:block th:if="${b['BBS_TY_NM'] == '자유'}">
+                        <a th:href="@{'/gboard/free/detail/' + ${b.BBS_SN}}">
+                          <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
+                        </a>
+                      </th:block>
+                      <th:block th:if="${b['BBS_TY_NM'] == 'Q&A'}">
+                        <a th:href="@{'/gboard/qna/detail/' + ${b.BBS_SN}}">
+                          <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
+                        </a>
+                      </th:block>
+                      <th:block th:if="${b['BBS_TY_NM'] == '영상'}">
+                        <a th:href="@{'/gboard/video/detail/' + ${b.BBS_SN}}">
+                          <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
+                        </a>
+                      </th:block>
+
                     </td>
-                    <td>[[${b['MBR_ID']}]]</td>
-                    <td>[[${b['REG_DT']}]]</td>
+                    <td><a th:href="@{../member/myprofile}">[[${b['MBR_ID']}]]</a></td>
+                    <td th:text="${#strings.substring(b['REG_DT'], 0, 10)}"></td>
                     <td>[[${b['BBS_READ_CNT']}]]</td>
                     <td>[[${b['BBS_REMD_CNT']}]]</td>
                   </tr>

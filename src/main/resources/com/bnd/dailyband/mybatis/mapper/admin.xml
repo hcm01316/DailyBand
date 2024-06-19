@@ -156,18 +156,24 @@
 
   <!-- 밴드원 모집 조회-->
   <select id="getRboardList" resultType="map">
-    select rb.*,
-           COALESCE(prpt.PRPT_STTUS, 0)   as PRPT_STTUS,
-           COALESCE(joined.JOIN_STTUS, 0) as JOIN_STTUS
+    SELECT rb.*,
+           COALESCE(prpt.PRPT_STTUS, 0) AS PRPT_STTUS,
+           COALESCE(joined.JOIN_STTUS, 0) AS JOIN_STTUS,
+           cr.CHAT_ROOM_ID
     FROM RCRIT_BBS rb
-           left outer join (select bpi.BBS_SN, COUNT(bpi.BBS_SN) as PRPT_STTUS
-                            from BAND_PRPT_INFO bpi
-                            where bpi.MBR_PRPT_STTUS in (1, 2)
-                            group by bpi.BBS_SN) prpt on rb.BBS_SN = prpt.BBS_SN
-           left outer join (select bpi.BBS_SN, COUNT(bpi.BBS_SN) as JOIN_STTUS
-                            from BAND_PRPT_INFO bpi
-                            where bpi.MBR_PRPT_STTUS = 0
-                            group by bpi.BBS_SN) joined on rb.BBS_SN = joined.BBS_SN;
+           LEFT OUTER JOIN (
+      SELECT bpi.BBS_SN, COUNT(bpi.BBS_SN) AS PRPT_STTUS
+      FROM BAND_PRPT_INFO bpi
+      WHERE bpi.MBR_PRPT_STTUS IN (1, 2)
+      GROUP BY bpi.BBS_SN
+    ) prpt ON rb.BBS_SN = prpt.BBS_SN
+           LEFT OUTER JOIN (
+      SELECT bpi.BBS_SN, COUNT(bpi.BBS_SN) AS JOIN_STTUS
+      FROM BAND_PRPT_INFO bpi
+      WHERE bpi.MBR_PRPT_STTUS = 0
+      GROUP BY bpi.BBS_SN
+    ) joined ON rb.BBS_SN = joined.BBS_SN
+           LEFT OUTER JOIN CHAT_ROOM cr ON rb.BAND_TEAM_NM = cr.CHAT_NM;
   </select>
 
   <!-- 기안 문서 리스트 -->

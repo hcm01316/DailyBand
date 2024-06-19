@@ -95,7 +95,8 @@
                       <td class="btn-list flex-nowrap">
                         <button type="button" class="btn btn-primary btn-icon btn-sm"
                                 data-bs-toggle="modal" data-bs-target="#modal-participant"
-                                th:data-bbs-sn="${r.BBS_SN}" th:data-mbr-id="${r.MBR_ID}">
+                                th:data-bbs-sn="${r.BBS_SN}" th:data-mbr-id="${r.MBR_ID}"
+                                th:data-chat-num="${r.CHAT_ROOM_ID}">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                stroke-width="2"
@@ -113,7 +114,7 @@
                           </svg>
                         </button>
                         <button type="button" class="btn btn-danger btn-icon btn-sm"
-                                th:data-bbs-sn="${r.BBS_SN}" onclick="confirmDelete(this);">
+                                th:data-bbs-sn="${r.BBS_SN}" th:data-chat-num="${r.CHAT_ROOM_ID}" onclick="confirmDelete(this);">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                stroke-width="2"
@@ -227,7 +228,9 @@
 
   $("button[data-bs-toggle='modal']").click(function () {
     var bbsSn = $(this).data("bbs-sn");
-    var mbrId = $(this).data("bbs-sn");
+    var mbrId = $(this).data("mbr-id");
+    var chatNum = $(this).data("chat-num");
+
     var participantsMap = /*[[${participantsMap}]]*/ {};
     var joinListMap = /*[[${joinListMap}]]*/ {};
     var participantList = participantsMap[bbsSn];
@@ -250,7 +253,7 @@
             `<a href="../member/info?id=${participant.mbr_ID}">${participant.mbr_ID}</a>`;
         var Resignbtn = index === 0 ? '<td></td>' :
             `<td> <a class="btn btn-pill btn-outline-danger btn-sm" href="#" data-mbr-id="${participant.mbr_ID}"
-              data-bbs-sn="${bbsSn}" onclick="confirmResign(this); return false;">강퇴</a></td>`;
+              data-bbs-sn="${bbsSn}" data-chat-num="${chatNum}" onclick="confirmResign(this); return false;">강퇴</a></td>`;
         var participantRow = `<tr>
           <td>${participant.mbr_NCNM}(${profile})</td>
           <td>${age}</td>
@@ -278,7 +281,7 @@
           <td>${join.mbr_GENDER || '-'} </td>
           <td class="btn-list flex-nowrap">
             <a class="btn btn-pill btn-outline-success btn-sm" href="#" data-mbr-id="${join.mbr_ID}" data-bbs-sn="${bbsSn}"
-              onclick="confirmAccept(this); return false;">수락
+              data-chat-num="${chatNum}" onclick="confirmAccept(this); return false;">수락
             </a>
             <a class="btn btn-pill btn-outline-danger btn-sm" href="#" data-mbr-id="${join.mbr_ID}" data-bbs-sn="${bbsSn}"
               onclick="confirmRefuse(this); return false;">거절

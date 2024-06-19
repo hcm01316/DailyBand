@@ -441,10 +441,6 @@ public class AdminController {
     int apvResult = 0;
     int refResult = 0;
 
-    String mbrId = adminService.getMbrId(apvDoc.getDOC_SN());
-    String ApvMbrNcnm = adminService.getApvMbrNcnm(apv.getMBR_ID());
-
-
     logger.info("문서 apvDoc.getDOC_SN() 값 : " + apvDoc.getDOC_SN());
     if (!apvMbrId.equals("apvMbrId") || param.equals("Temp") || param.equals("Doc")) {
       String[] apvArray = apvMbrId.split(",");
@@ -519,11 +515,13 @@ public class AdminController {
     } else {
       if (!refMbrId.isEmpty()) {
         String[] refArray = refMbrId.split(",");
-        for (String refMemberId : refArray) {
-          ApvRef newRef = new ApvRef();
-          newRef.setDOC_SN(apvDoc.getDOC_SN());
-          newRef.setMBR_ID(refMemberId);
-          newRef.setREF_STTUS(param.equals("Temp") ? 1 : 0);
+        for (int i = 0; i < refArray.length; i++) {
+          ref.setMBR_ID(refArray[i]);
+          if (!param.equals("Temp")) {
+            ref.setREF_STTUS(0);
+          } else {
+            ref.setREF_STTUS(1);
+          }
           refResult = adminService.insertRef(ref);
         }
     } else { // refMbrId가 비어있을 경우
@@ -713,7 +711,7 @@ public class AdminController {
     }
 
     //참조자
-    if (!refMbrId.equals("refMbrId") && !refMbrId.isEmpty()) { //새로 선택
+    if (!refMbrId.equals("refMbrId") && !refMbrId.equals("")) { //새로 선택
       List<ApvRef> refList = adminService.getRefDetail(apvDoc.getDOC_SN());
       if (!refList.isEmpty()) {
         adminService.deleteRef(apvDoc.getDOC_SN());
@@ -756,10 +754,10 @@ public class AdminController {
     } else {
       if (param.equals("Doc")) {
         mv.addObject("message", "결재 요청을 완료하였습니다.");
-        mv.setViewName("redirect:./draftList");
+        mv.setViewName("redirect:draftList");
       } else if (param.equals("Temp")) {
         mv.addObject("message", "임시 저장을 완료하였습니다.");
-        mv.setViewName("redirect:./tempList");
+        mv.setViewName("redirect:tempList");
       }
     }
 
