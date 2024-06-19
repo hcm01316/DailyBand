@@ -10,7 +10,7 @@ pipeline {
         stage('Git Pull') {
             steps {
                  // Get some code from a GitHub repository
-                git branch: 'develop', credentialsId: 'github2', url: 'https://github.com/hcm01316/web2024'
+                git branch: 'develop', credentialsId: 'github2', url: 'https://github.com/hcm01316/DailyBand'
 
             }
             post {

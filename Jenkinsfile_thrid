@@ -10,7 +10,7 @@ pipeline {
         stage('Git Pull') {
             steps {
                  // Get some code from a GitHub repository
-                git branch: 'develop', credentialsId: 'github2', url: 'https://github.com/hcm01316/web2024'
+                git branch: 'develop', credentialsId: 'github2', url: 'https://github.com/hcm01316/DailyBand'
 
             }
             post {
@@ -34,11 +34,11 @@ pipeline {
             }
             post {
                 success {
-                    echo 'maven build success'
+                    echo 'gradle build success'
                 }
 
                 failure {
-                    echo 'maven build failed'
+                    echo 'gradle build failed'
                     exit 1
                 }
             } 
