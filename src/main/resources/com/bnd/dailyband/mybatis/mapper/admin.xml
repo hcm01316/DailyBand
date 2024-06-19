@@ -280,7 +280,7 @@
     insert into APPROVAL (MBR_ID, DOC_SN, APV_LEV, APV_STTUS)
     values (#{MBR_ID},
     <choose>
-      <when test="DOC_SN == 0">(select MAX(DOC_SN) from APV_DOC)
+      <when test="DOC_SN == 0">LAST_INSERT_ID()
       </when>
       <otherwise>
         #{DOC_SN}
