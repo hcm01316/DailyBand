@@ -16,27 +16,36 @@
         body {
             font-feature-settings: "cv03", "cv04", "cv11";
         }
+        #pwUpdateForm{
+            padding-top: 40%;
+            padding-left: 20%;
+        }
+        .form-control{
+            text-align: center;
+            background-color: #7C87FF;
+            opacity: 0.8;
+        }
+
+        .form-control::placeholder{
+            color: white;
+        }
+
+
+
     </style>
 
 </head>
 <body>
 <script th:inline="javascript">
     $(document).ready(function (){
-
-        $("#pwUpdate").on("click",function(){
-            if($("#memberPw1").val == ""){
-                alert("변경 비밀번호(을)를 입력해주세요");
-                $("#memberPw1").focus();
-                return false
+        $("#pwUpdate").on("click", function(){
+            var memberPw1 = $("#memberPw1").val().trim(); // 비밀번호 입력 값 가져오기
+            if(memberPw1 === ""){
+                alert("변경 비밀번호를 입력해주세요");
+                $("#memberPw1").focus(); // 입력 필드에 포커스 주기
+                return false; // 폼 제출 막기
             }
-        $("#pwUpdate").on("click",function() {
-            if ($("#memberPw1").val == "") {
-                alert("변경 비밀번호(을)를 입력해주세요");
-                $("#memberPw1").focus();
-                return false
-            }
-        })
-        })
+        });
     });
 </script>
 
@@ -75,12 +84,14 @@
                                             <p class="lead">변경하실 비밀번호를 입력해 주세요.</p>
 
                                             <div class="form-group">
-                                                <input type="password" name="memberPw1" class="form-control form-control-inline text-center" placeholder="새 비밀번호" />
+                                                <input type="password" name="memberPw1" id="memberPw1" class="form-control" placeholder="새 비밀번호" />
                                             </div>
                                             <div class="form-group">
-                                                <input type="password" name="memberPw2" class="form-control form-control-inline text-center" placeholder="새 비밀번호 확인" />
+                                                <input type="password" name="memberPw2" id="memberPw2" class="form-control" placeholder="새 비밀번호 확인" />
                                             </div>
-                                            <button type="submit" id="pwUpdate" name="pwUpdate" class="btn btn-primary">비밀번호 변경</button> <a href="/member/infoView" class="btn btn-default">취소</a>
+                                            <br>
+                                            <button type="submit" id="pwUpdate" name="pwUpdate" class="btn">비밀번호 변경</button>
+                                            <a href="../member/login" class="btn btn-default">취소</a>
                                         </div>
                                     </div>
                                 </div>

@@ -16,6 +16,15 @@
         body {
             font-feature-settings: "cv03", "cv04", "cv11";
         }
+        
+        .card{
+            font-weight: bolder;
+            color: #7C87FF;
+            font-family: 함초롬바탕;
+            font-size: 4em;
+            padding-top: 40%;
+            padding-left: 20%;
+        }
     </style>
 
 </head>
@@ -46,7 +55,7 @@
 
                     <div class="col-md-6" style="padding: 0px;">
                         <div class="card" style="height: 700px;">
-                            <p>[[${findId}]] 입니다!</p>
+                            <p id="findId">[[${findId}]] 입니다!</p>
 
                             </div>
 
@@ -56,6 +65,10 @@
             </div>
         </div>
     </div>
-</div>
+<script>
+    document.getElementById("findId").addEventListener("click", function (){
+        window.location = "../member/login";
+    })
+</script>
 </body>
 </html>

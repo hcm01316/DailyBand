@@ -19,6 +19,8 @@
       alert([[${message}]]);
       isMessage = false;
     }
+
+
   </script>
 </div>
 <div class="page">
@@ -73,13 +75,15 @@
                     </a>
                   </div>
                 <div>
-                  <form th:action="@{/member/updateaction}" method="post" name =myinfo_form>
+                  <form th:action="@{/member/updateaction}" method="post" name =myinfo_form >
+                   <input name="MBR_PWD" type="hidden" th:value="1234">
+
                   <div class="form-label">닉네임</div>
                   <div class="row g-2">
                     <div class="col-auto">
                       <input type="text"  name="MBR_NCNM" class="form-control w-auto" th:value="${memberinfo.MBR_NCNM}">
                     </div>
-                    <div class="col-auto"><a href="#" class="btn">
+                    <div class="col-auto-nick"><a href="#" class="btn">
                       중복 검사
                     </a></div>
                   </div>
@@ -91,14 +95,37 @@
                     </div>
                   </div>
                 </div>
-                <div>
+
+                <div style="height: 100px">
                   <h3 class="card-title mt-4">비밀번호</h3>
-                  <div>
-                    <a href="#" class="btn">
-                      Set new password
-                    </a>
+                  <!-- 비밀번호 모달창 -->
+                  <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" >
+                  비밀번호 변경
+                  </button>
+                  <!-- Modal -->
+                  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="height: 100%">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-body">
+
+                          <div class="form-group">
+                            <input type="password" name="memberPw1" id="memberPw1" class="form-control form-control-inline text-center" placeholder="새 비밀번호" />
+                          </div>
+                          <div class="form-group">
+                            <input type="password" name="memberPw2" id="memberPw2" class="form-control form-control-inline text-center" placeholder="새 비밀번호 확인" />
+                          </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                          <button type="button" id="pwUpdate" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                  <!-- 비밀번호 모달창 끝 -->
                 </div>
+
                 <div class="mb-3">
                   <div class="form-label">성별</div>
                   <div>
@@ -256,6 +283,72 @@
   });
 
 
+
+  //닉네임 검사
+  $(".col-auto-nick").on('click', function () {
+    const name = $("input[name=MBR_NCNM]").val();
+    if (name.trim() == "") {
+      checkname = false;
+      $("#name_message").html("");
+      alert("닉네임을 입력해주세요.");
+      return;
+    }
+
+    $.ajax({
+      url: "namecheck",
+      data: {"name": name},
+      success: function (resp) {
+        if (resp == '-1') {
+          $("#name_message").css('color', 'green').html("사용 가능한 닉네임 입니다");
+          checkname = true;
+          alert("사용 가능한 닉네임 입니다");
+        } else {
+          $("#name_message").css('color', 'blue').html("사용중인 닉네임 입니다");
+          checkname = false;
+          $("input[name=MBR_NCNM]").val("").focus();
+          alert("사용중인 닉네임 입니다");
+        }
+      }
+    });
+  });
+
+
+  // 모달이 열릴 때 비밀번호 창 위치 조정
+  $('#staticBackdrop').on('shown.bs.modal', function () {
+    var modal = $(this);
+    var modalDialog = modal.find('.modal-dialog');
+    var verticalOffset = ($(window).height() - modalDialog.height()) / 2;
+    modalDialog.css('margin-top', verticalOffset);
+  });
+
+  //새로운 비밀번호 입력하기
+  $(document).ready(function (){
+
+    $("#pwUpdate").on("click",function(){
+      var newPassword1 = $('#memberPw1').val(); // 첫 번째 비밀번호 입력 필드에서 값 읽기
+      var newPassword2 = $('#memberPw2').val(); // 두 번째 비밀번호 입력 필드에서 값 읽기
+
+      if(newPassword1 == '' ){
+        alert("변경 비밀번호(을)를 입력해주세요");
+        $("#memberPw1").focus();
+        return false
+      }
+      // 비밀번호 확인 로직 추가 (예: 두 비밀번호가 일치하는지 검사)
+      if (newPassword1 !== newPassword2) {
+        alert('입력한 비밀번호가 일치하지 않습니다.');
+        return;
+      }
+      $('input[name="MBR_PWD"]').val(newPassword1)
+
+      })//end $("#pwUpdate").on("click",function(){
+
+    // 비밀번호 변경 버튼 클릭 시 모달 열기
+    $('#btn').click(function() {
+      $('#staticBackdrop').modal('show');
+
+
+    })
+  });//ready
 </script>
 </body>
 </html>

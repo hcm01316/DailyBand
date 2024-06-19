@@ -17,8 +17,27 @@
         body {
             font-feature-settings: "cv03", "cv04", "cv11";
         }
+      .btn {
+          background-color: #7C87FF;
+          opacity: 0.8;
+          color: white;
+      }
+      input::placeholder{
+              color: white;
+          }
+
+      .box{
+          padding-top: 40%;
+          padding-left: 20%;
+      }
+
+
     </style>
     <script th:inline="javascript">
+        //이메일 인증 상태를 추적하는 변수
+        let emailVerified = false;
+        let passVerified = false;
+
         //이메일 인증 번호 받기 - 아이디
         $(function (){
             $("input[name=MBR_EML_ADDR]").on('keyup', function () {
@@ -66,10 +85,12 @@
             }
             if (code == input_code) {
                 alert("인증되었습니다.");
+                emailVerified = true;  // 이메일 인증 완료
                 $("#email_message").html("");
                 $("#check_email1").prop("disabled", true)
                 $("input[name=find_id]").prop("readonly", true)
                 $("#email_check").prop("disabled", true)
+                $("#find_id_go").prop("disabled", false)
             } else {
                 $("#email_check1").text("인증번호가 일치하지 않습니다.").css('color', 'red')
             }
@@ -123,17 +144,33 @@
             }
             if (code == input_code) {
                 alert("인증되었습니다.");
+                passVerified = true;  // 이메일 인증 완료
                 $("#email_message").html("");
                 $("#check_email1").prop("disabled", true)
                 $("input[name=find_password]").prop("readonly", true)
                 $("#email_check").prop("disabled", true)
+                $("change_pass_go").prop("disabled", false)
             } else {
                 $("#email_check2").text("인증번호가 일치하지 않습니다.").css('color', 'red')
             }
         });
-        });
-
-
+    });
+        // 아이디 찾기 폼 검증
+        function validateIdForm() {
+            if (!emailVerified) {
+                alert("이메일 인증을 완료해주세요.");
+                return false;
+            }
+            return true;
+        }
+        // 비밀번호 찾기 폼 검증
+        function validatePassForm() {
+            if (!passVerified) {
+                alert("이메일 인증을 완료해주세요.");
+                return false;
+            }
+            return true;
+        }
     </script>
 </head>
 <body>
@@ -178,35 +215,35 @@
             <div class="tab-content">
                 <!-- 아이디찾기 -->
                 <div class="tab-pane active show" id="tabs-home-5">
-                    <form th:action="id_result" method="post">
+                    <form th:action="id_result" method="post" class="box" onsubmit="return validateIdForm()">
                         <!-- 이메일 -->
-                        <input type="email" id="email_email" name="MBR_EML_ADDR" placeholder="메일 주소 입력">
-                        <button type="button" id="check_email1">인증번호 전송</button><br>
+                        <input type="email" class="btn" id="email_email" name="MBR_EML_ADDR" placeholder="메일 주소 입력">
+                        <button type="button"  class="btn" id="check_email1">인증번호 전송</button><br>
                         <span id="email_message"></span><br>
 
                         <!-- 인증번호 -->
-                        <input type="text" id="check_id" name="code" placeholder="인증번호 입력">
-                        <button type="button" id="check_email2">확인</button><br>
+                        <input type="text" class="btn" id="check_id" name="code" placeholder="인증번호 입력">
+                        <button type="button" class="btn" id="check_email2">확인</button><br>
                         <span id="email_check1"></span><br>
 
-                        <button type="submit" id="find_id_go">아이디 찾기 let's go</button>
+                        <button type="submit" class="btn " id="find_id_go">아이디 찾기 let's go</button>
                     </form>
                 </div>
 
                 <!-- 비밀번호 찾기 -->
                 <div class="tab-pane" id="tabs-profile-5">
-                    <form th:action="change_pass" method="post">
+                    <form th:action="change_pass" method="post" class="box" onsubmit="return validatePassForm()">
                         <!-- 비밀번호 -->
-                        <input type="email" id="email_pass" name="MBR_EML_ADDR1" placeholder="메일 주소 입력">
-                        <button type="button" id="check_pass1">인증번호 전송</button><br>
+                        <input type="email" class="btn" id="email_pass" name="MBR_EML_ADDR1" placeholder="메일 주소 입력">
+                        <button type="button" class="btn" id="check_pass1">인증번호 전송</button><br>
                         <span id="pass_message"></span><br>
 
                         <!-- 인증번호 -->
-                        <input type="text" id="" name="code1" placeholder="인증번호 입력">
-                        <button type="button" id="check_pass2">확인</button><br>
+                        <input type="text" class="btn"  name="code1" placeholder="인증번호 입력">
+                        <button type="button" class="btn" id="check_pass2">확인</button><br>
                         <span id="email_check2"></span><br>
 
-                        <button type="submit" id="change_pass_go">비밀번호 찾기 let's go</button>
+                        <button type="submit" class="btn" id="change_pass_go">비밀번호 찾기 let's go</button>
                     </form>
                 </div>
                 <div class="tab-pane" id="tabs-activity-5">
@@ -221,5 +258,4 @@
     </div>
 </div>
 </body>
-
 </html>

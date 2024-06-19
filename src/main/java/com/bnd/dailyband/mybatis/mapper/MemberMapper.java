@@ -17,7 +17,7 @@ public interface MemberMapper {
 
 	public Member isName(String name);
 
-	public int myinfo_modify(Map<String, Object> map);
+	public int myinfo_modify(Member member);
 
 	public Social mysocial(String id);
 
