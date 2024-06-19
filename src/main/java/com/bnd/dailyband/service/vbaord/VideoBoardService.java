@@ -1,5 +1,5 @@
 // BoardService.java
-package com.bnd.dailyband.service.board;
+package com.bnd.dailyband.service.vbaord;
 
 import com.bnd.dailyband.domain.Board;
 import com.bnd.dailyband.domain.Ctgry;
@@ -7,7 +7,7 @@ import com.bnd.dailyband.domain.Ctgry;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface BoardService {
+public interface VideoBoardService {
     int getBoardListCount();
     public ArrayList<Ctgry> getCtgryList(int type);
     void addBoard(Board board);

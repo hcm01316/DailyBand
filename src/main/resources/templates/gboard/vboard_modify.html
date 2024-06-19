@@ -22,7 +22,7 @@
             margin: 20px auto;
         }
     </style>
-    <title>음악게시글 수정</title>
+    <title>영상게시글 수정</title>
     <script>
         function checkOnlyOne(checkbox, groupName) {
             var checkboxes = document.getElementsByName(groupName);
@@ -50,19 +50,14 @@
         </div>
         <div class="page-body">
             <div class="container">
-                <form th:action="@{'/gboard/music/modify/' + ${board.BBS_SN}}" method="post" name="boardform">
+                <form th:action="@{'/gboard/video/modify/' + ${board.BBS_SN}}" method="post" name="boardform">
                 <input type="hidden" name="MBR_ID" th:value="${#authentication.principal.username}">
                     <div class="mb-3">
                         <label class="form-label">제목</label>
                         <input type="text" class="form-control" id="BBS_SJ" name="BBS_SJ" placeholder="제목을 입력하세요." th:value="${board.BBS_SJ}" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">장르</label>
                         <div class="form-selectgroup form-selectgroup-pills">
-                            <label class="form-selectgroup-item" th:each="item, iterStat : ${Genrelist}">
-                                <input type="checkbox" name="GENRE_ID" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'GENRE_ID')" />
-                                <span class="form-selectgroup-label" th:text="${item.CTGRY_NM}"></span>
-                            </label>
                         </div>
                     </div>
 
@@ -80,7 +75,7 @@
                         </script>
                     </div>
                     <input type="submit" class="btn" value="글수정"/>
-                    <a th:href="@{'/gboard/music/detail/' + ${board.BBS_SN}}" class="btn">
+                    <a th:href="@{'/gboard/video/detail/' + ${board.BBS_SN}}" class="btn">
                         취소
                     </a>
                 </form>
@@ -108,13 +103,6 @@
             if ($.trim($("#BBS_SJ").val()) == "") {
                 alert("제목을 입력하세요");
                 $("#board_subject").focus();
-                return false;
-            }
-
-            if ($("input[name='GENRE_ID']:checked").length == 0) {
-                alert("장르를 선택하세요");
-                // 체크박스 그룹 중 첫 번째 체크박스로 포커스 이동
-                $("input[name='GENRE_ID']").first().focus();
                 return false;
             }
 

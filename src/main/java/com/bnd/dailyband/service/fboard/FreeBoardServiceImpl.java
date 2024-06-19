@@ -1,9 +1,9 @@
 // BoardServiceImpl.java
-package com.bnd.dailyband.service.board;
+package com.bnd.dailyband.service.fboard;
 
 import com.bnd.dailyband.domain.Board;
 import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.mybatis.mapper.BoardMapper;
+import com.bnd.dailyband.mybatis.mapper.FreeBoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,29 +14,29 @@ import java.util.List;
 
 @Service
 @Transactional
-public class BoardServiceImpl implements BoardService {
+public class FreeBoardServiceImpl implements FreeBoardService {
 
-    private BoardMapper boardMapper;
+    private FreeBoardMapper freeBoardMapper;
 
     @Autowired
-    public  BoardServiceImpl(BoardMapper boardMapper){
-        this.boardMapper = boardMapper;
+    public FreeBoardServiceImpl(FreeBoardMapper freeBoardMapper){
+        this.freeBoardMapper = freeBoardMapper;
     }
 
     @Override
     public int getBoardListCount() {
-        return boardMapper.getBoardListCount();
+        return freeBoardMapper.getBoardListCount();
     }
 
     @Override
     public ArrayList<Ctgry> getCtgryList(int type) {
 
-        return boardMapper.getCtgryList(type);
+        return freeBoardMapper.getCtgryList(type);
     }
 
     @Override
     public void addBoard(Board board) {
-        boardMapper.insertBoard(board);
+        freeBoardMapper.insertBoard(board);
     }
 
     @Override
@@ -47,40 +47,40 @@ public class BoardServiceImpl implements BoardService {
         int endrow=startrow+limit-1;
         map.put("start", startrow);
         map.put("end", endrow);
-        return boardMapper.getBoardList(map);
+        return freeBoardMapper.getBoardList(map);
     }
 
     @Override
     public Board getBoardById(int id) {
-        return boardMapper.getBoardById(id);
+        return freeBoardMapper.getBoardById(id);
     }
 
     @Override
     public void increaseReadCount(int id) {
-        boardMapper.increaseReadCount(id);
+        freeBoardMapper.increaseReadCount(id);
     }
     @Override
     public int likeBoard(int id) {
         // 게시글 추천 수 증가 로직
-        boardMapper.increaseLikes(id);
-        return boardMapper.getLikes(id);
+        freeBoardMapper.increaseLikes(id);
+        return freeBoardMapper.getLikes(id);
     }
 
     @Override
     public int dislikeBoard(int id) {
         // 게시글 비추천 수 증가 로직
-        boardMapper.increaseDislikes(id);
-        return boardMapper.getDislikes(id);
+        freeBoardMapper.increaseDislikes(id);
+        return freeBoardMapper.getDislikes(id);
     }
 
     @Override
     public void deleteBoard(int id) {
-        boardMapper.deleteBoard(id);
+        freeBoardMapper.deleteBoard(id);
     }
 
     @Override
     public void updateBoard(int id, Board updatedBoard) {
-        boardMapper.updateBoard(id, updatedBoard);
+        freeBoardMapper.updateBoard(id, updatedBoard);
     }
 }
 

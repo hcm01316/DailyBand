@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bnd.dailyband.mybatis.mapper.CommentMapper">
+
+    <!-- 댓글 갯수 조회 -->
+    <select id="getListCount" resultType="int">
+        SELECT COUNT(*)
+        FROM BBS_CMNT
+        WHERE BBS_SN = #{board_num}
+    </select>
+
+    <insert id="commentsInsert" parameterType="com.bnd.dailyband.domain.Comment">
+        <selectKey resultType="int" order="BEFORE" keyProperty="CMNT_SN">
+            SELECT IFNULL(MAX(CMNT_SN), 0) + 1 AS CMNT_SN FROM BBS_CMNT
+        </selectKey>
+        INSERT INTO BBS_CMNT (CMNT_SN,BBS_TY_ID, BBS_SN, MBR_ID, CMNT_CN, CMNT_LEV, CMNT_SEQ, CMNT_REF, MDF_DT)
+        VALUES (#{CMNT_SN},'BBS01', #{BBS_SN}, #{MBR_ID}, #{CMNT_CN}, #{CMNT_LEV}, #{CMNT_SEQ}, #{CMNT_SN}, #{MDF_DT})
+    </insert>
+
+
+
+    <!-- 댓글 리스트 조회 -->
+    <select id="getCommentList" resultType="com.bnd.dailyband.domain.Comment">
+        SELECT c.CMNT_SN, c.BBS_TY_ID, c.BBS_SN, c.MBR_ID, c.CMNT_CN, c.CMNT_LEV, c.CMNT_SEQ,
+               c.CMNT_REF, c.CMNT_REMD_CNT, c.CMNT_NREMD_CNT, c.REG_DT, c.MDF_DT,
+               m.MBR_PROFL_PHOTO, m.MBR_NCNM
+        FROM BBS_CMNT c
+                 LEFT JOIN MBR_INFO m ON c.MBR_ID = m.MBR_ID
+        WHERE c.BBS_SN = #{board_num}
+        ORDER BY c.CMNT_REF DESC, c.CMNT_SEQ ASC
+    </select>
+
+    <!-- 댓글 수정 -->
+    <update id="commentsUpdate">
+        UPDATE BBS_CMNT
+        SET CMNT_CN = #{CMNT_CN}, MDF_DT = CURRENT_TIMESTAMP
+        WHERE CMNT_SN = #{CMNT_SN}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="commentsDelete">
+        DELETE FROM BBS_CMNT
+        WHERE CMNT_SN = #{CMNT_SN}
+    </delete>
+
+    <!-- 답글 추가 -->
+    <insert id="commentsReply" parameterType="com.bnd.dailyband.domain.Comment">
+        <selectKey resultType="int" order="BEFORE" keyProperty="CMNT_SN">
+            SELECT IFNULL(MAX(CMNT_SN), 0) + 1 AS CMNT_SN FROM BBS_CMNT
+        </selectKey>
+        INSERT INTO BBS_CMNT (CMNT_SN,BBS_TY_ID, BBS_SN, MBR_ID, CMNT_CN, CMNT_LEV, CMNT_SEQ, CMNT_REF, MDF_DT)
+        VALUES (#{CMNT_SN},'BBS01', #{BBS_SN}, #{MBR_ID}, #{CMNT_CN}, #{CMNT_LEV}, #{CMNT_SEQ}, #{CMNT_REF}, #{MDF_DT})
+    </insert>
+
+</mapper>
