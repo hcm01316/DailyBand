@@ -26,6 +26,9 @@
 	update MBR_INFO
 	set MBR_NCNM = #{MBR_NCNM}, MBR_AGE = #{MBR_AGE}, MBR_GENDER = #{MBR_GENDER},MBR_PREFER_AREA = #{MBR_PREFER_AREA}, MBR_ACT_REALM = #{MBR_ACT_REALM},
 		MBR_PREFER_GENRE = #{MBR_PREFER_GENRE}, MBR_INTRO = #{MBR_INTRO}, MDF_DT = now()
+		<if test = "MBR_PWD != '' ">
+			, MBR_PWD = #{MBR_PWD}
+		</if>
 	where MBR_ID = #{MBR_ID}
 </update>
 

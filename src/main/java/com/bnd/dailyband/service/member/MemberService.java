@@ -24,7 +24,7 @@ public interface MemberService {
 
 	public ArrayList<Ctgry> getCtgryList(int type);
 
-	public int myinfo_modify(Member m,String id);
+	public int myinfo_modify(Member member);
 
 	public int social_insert(Social social,String id);
 

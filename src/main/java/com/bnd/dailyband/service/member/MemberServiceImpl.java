@@ -92,18 +92,11 @@ public class MemberServiceImpl implements MemberService{
 
 
 	@Override
-	public int myinfo_modify(Member member, String id) {
-		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("MBR_ID", id);
-		paramMap.put("MBR_NCNM", member.getMBR_NCNM());
-		paramMap.put("MBR_AGE", member.getMBR_AGE());
-		paramMap.put("MBR_GENDER", member.getMBR_GENDER());
-		paramMap.put("MBR_PREFER_AREA", member.getMBR_PREFER_AREA());
-		paramMap.put("MBR_ACT_REALM", member.getMBR_ACT_REALM());
-		paramMap.put("MBR_PREFER_GENRE", member.getMBR_PREFER_GENRE());
-		paramMap.put("MBR_INTRO", member.getMBR_INTRO());
+	public int myinfo_modify(Member member) {
 
-		return dao.myinfo_modify(paramMap);
+
+
+		return dao.myinfo_modify(member);
 	}
 
 

@@ -373,11 +373,17 @@ public class MemberController {
 			}
 		}
 
+		//비밀번호 암호화
+		String encPassword = passwordEncoder.encode(member.getMBR_PWD());
+		logger.info(encPassword);
+		member.setMBR_PWD(encPassword);
+
+		member.setMBR_ID(id);
 		member.setMBR_ACT_REALM(trealm);
 		member.setMBR_PREFER_AREA(tarea);
 		member.setMBR_PREFER_GENRE(tgenre);
 
-		int modify = memberService.myinfo_modify(member,id);
+		int modify = memberService.myinfo_modify(member);
 
 		if (modify == 1) {
 			redirect.addFlashAttribute("message", "정보 수정에 성공 했습니다.");
