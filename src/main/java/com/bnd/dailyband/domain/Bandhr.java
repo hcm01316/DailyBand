@@ -95,55 +95,55 @@ public class Bandhr {
     for (String a : aresult) {
       switch (a) {
         case "A01":
-          area.append("서울");
+          area.append("서울 ");
           break;
         case "A02":
-          area.append("경기");
+          area.append("경기 ");
           break;
         case "A03":
-          area.append("부산");
+          area.append("부산 ");
           break;
         case "A04":
-          area.append("대구");
+          area.append("대구 ");
           break;
         case "A05":
-          area.append("광주");
+          area.append("광주 ");
           break;
         case "A06":
-          area.append("대전");
+          area.append("대전 ");
           break;
         case "A07":
-          area.append("충남");
+          area.append("충남 ");
           break;
         case "A08":
-          area.append("충북");
+          area.append("충북 ");
           break;
         case "A09":
-          area.append("세종");
+          area.append("세종 ");
           break;
         case "A10":
-          area.append("울산");
+          area.append("울산 ");
           break;
         case "A11":
-          area.append("인천");
+          area.append("인천 ");
           break;
         case "A12":
-          area.append("강원");
+          area.append("강원 ");
           break;
         case "A13":
-          area.append("전남");
+          area.append("전남 ");
           break;
         case "A14":
-          area.append("전북");
+          area.append("전북 ");
           break;
         case "A15":
-          area.append("경북");
+          area.append("경북 ");
           break;
         case "A16":
-          area.append("경남");
+          area.append("경남 ");
           break;
         case "A17":
-          area.append("제주");
+          area.append("제주 ");
           break;
       }
     }
