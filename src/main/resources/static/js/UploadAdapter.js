@@ -12,8 +12,10 @@
 }
 
     _initRequest() {
+
+    var url  = location.host
     const xhr = this.xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:9000/dailyband/rboard/upload', true);
+    xhr.open('POST', `http://${url}/dailyband/rboard/upload`, true);
     xhr.responseType = 'json';
 
     // CSRF 토큰을 헤더에 추가
