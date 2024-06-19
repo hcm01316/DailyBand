@@ -11,12 +11,16 @@ import com.bnd.dailyband.task.SendMail;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -240,8 +244,7 @@ public class MemberController {
 
 	//내 프로필 정보
 	@RequestMapping("/myprofile")
-	public ModelAndView myProfile(
-			HttpServletRequest request, Principal principal,
+	public ModelAndView myProfile(Principal principal,
 			ModelAndView mv) {
 		String id = principal.getName();
 		Member member = memberService.member_info(id);
@@ -254,10 +257,25 @@ public class MemberController {
 		return mv;
 	}
 
+	//내 게시글
+	@RequestMapping("/myboard")
+	public ModelAndView myBoard(ModelAndView mv,
+			@CurrentSecurityContext SecurityContext userPrincipal) {
+		String id = userPrincipal.getAuthentication().getName();
+
+		List<Map<String, Object>> myBoardList = memberService.getMyBoardList(id);
+
+
+		mv.addObject("myBoardList", myBoardList);
+		mv.setViewName("member/my_gboard");
+
+		return mv;
+	}
+
 	//상대 프로필 정보
 	@RequestMapping("/info")
 	public ModelAndView mbrInfo(@RequestParam("id") String id,
-			HttpServletRequest request, ModelAndView mv) {
+			ModelAndView mv) {
 		Member member = memberService.member_info(id);
 		Social social = memberService.mysocial(id);
 

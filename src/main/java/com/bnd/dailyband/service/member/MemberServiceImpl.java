@@ -6,6 +6,7 @@ import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Social;
 import com.bnd.dailyband.mybatis.mapper.MemberMapper;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -151,5 +152,10 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public int pwd_update(String memberEmail, String encPassword) {
 		return dao.pwd_update(memberEmail, encPassword);
+	}
+
+	@Override
+	public List<Map<String, Object>> getMyBoardList(String id) {
+		return dao.getMyBoardList(id);
 	}
 }
