@@ -1,15 +1,19 @@
 let option = 1; //선택한 등록순과 최신순을 수정, 삭제, 추가 후에도 유지되도록 하기위한 변수로 사용됩니다.
+let token = $("meta[name='_csrf']").attr("content");
+let header = $("meta[name='_csrf_header']").attr("content");
 
-function getList(state) {//현재 선택한 댓글 정렬방식을 저장합니다. 1=>등록순, 2=>최신순
-	console.log(state)
+function getList(state) {
+	console.log(state);
 	option = state;
 	$.ajax({
-		type: "post",
-		url: "CommentList.bo",
-		data: { "BBS_SN": $("#BBS_SN").val(), state: state },
+		type: "get",
+		url: "../../../comment/list",
+		data: { "BBS_SN": $("#BBS_SN").val(), state: state, page: 1 },
 		dataType: "json",
-		success: function(rdata) {
-			$('#count').text(rdata.listcount).css('font-family', 'arial,sans-serif')
+		success: function (rdata) {
+			$('#count').text(rdata.listcount).css('font-family', 'arial,sans-serif');
+
+			// 선택된 정렬 방식에 따라 버튼 스타일 설정
 			let red1 = 'red';
 			let red2 = 'red';
 			if (state == 1) {
@@ -19,87 +23,173 @@ function getList(state) {//현재 선택한 댓글 정렬방식을 저장합니�
 			}
 
 			let output = "";
-
 			if (rdata.commentlist.length > 0) {
-				output += '<li class="comment-order-item ' + red1 + '" >'
-					+ '   <a href="javascript:getList(1)" class="comment-order-button">등록순 </a>'
-					+ '</li>'
-					+ '<li class="comment-order-item ' + red2 + '" >'
-					+ '   <a href="javascript:getList(2)" class="comment-order-button">최신순</a>'
-					+ '</li>';
+				// 정렬 버튼 추가
+			//	output += '<li class="comment-order-item ' + red1 + '" >'
+			//		+ '   <a href="javascript:getList(1)" class="comment-order-button">등록순 </a>'
+			//		+ '</li>'
+			//		+ '<li class="comment-order-item ' + red2 + '" >'
+			//		+ '   <a href="javascript:getList(2)" class="comment-order-button">최신순</a>'
+			//		+ '</li>';
 				$('.comment-order-list').html(output);
 
+				// 댓글 리스트 출력
 				output = '';
-				$(rdata.commentlist).each(function() {
-					const lev = this.CMNT_LEV;
+				if (state == 1 || state == 2) {
+					// 등록순 또는 최신순 정렬
+					if (state == 1) {
+						// 등록순 정렬
+						rdata.commentlist.sort(function(a, b) {
+							return new Date(a.reg_DT) - new Date(b.reg_DT);
+						});
+					} else if (state == 2) {
+						// 최신순 정렬
+						rdata.commentlist.sort(function(a, b) {
+							return new Date(b.reg_DT) - new Date(a.reg_DT);
+						});
+					}
+
+					// 댓글과 답변을 처리하는 로직 추가
+					let commentsMap = {};
+					let topLevelComments = [];
+
+					// 댓글과 답변을 분리하여 commentsMap에 저장
+					rdata.commentlist.forEach(function(comment) {
+						if (comment.cmnt_LEV == 0) {
+							// 레벨이 0인 댓글 (원문)
+							commentsMap[comment.cmnt_SN] = { comment: comment, replies: [] };
+							topLevelComments.push(comment.cmnt_SN);
+						} else {
+							// 답변인 경우 해당 원문 댓글의 replies 배열에 추가
+							commentsMap[comment.cmnt_REF].replies.push(comment);
+						}
+					});
+
+					// 정렬된 댓글 리스트 생성
+					topLevelComments.forEach(function(commentId) {
+						const commentData = commentsMap[commentId].comment;
+						const replies = commentsMap[commentId].replies;
+
+						// 원문 댓글 출력
+						output += generateCommentHTML(commentData);
+
+						// 답변 출력
+						replies.forEach(function(reply) {
+							output += generateCommentHTML(reply);
+						});
+					});
+				}
+
+				// 댓글 HTML 생성 함수
+				function generateCommentHTML(comment) {
+					const lev = comment.cmnt_LEV;
 					let comment_reply = '';
-					if (lev == 1) {
+					if (lev === 1) {
 						comment_reply = ' comment-list-item--reply lev1';
-					} else if (lev == 2) {
+					} else if (lev === 2) {
 						comment_reply = ' comment-list-item--reply lev2';
 					}
-					const profile = this.MBR_PROFL_PHOTO;
+					const profile = comment.mbr_PROFL_PHOTO;
 					let src = 'image/profile.png';
 					if (profile) {
-						src = 'memberupload/' + profile;
+						src = profile;
 					}
 
-					output += '<li id="' + this.CMNT_SN + '" class="comment-list-item' + comment_reply + '">'
+					let html = '<li id="' + comment.cmnt_SN + '" class="comment-list-item' + comment_reply + '">'
 						+ '   <div class="comment-nick-area">'
-						+ '     <img src="' + src + '" altr="프로필 사진" width="36 height="36">'
-						+ '	  <div class="comment-box">'
-						+ '	    <div class="comment-nick-box">'
-						+ '            <div class="comment-nick-info">'
-						+ '               <div class="comment-nickname">' + this.MBR_ID + '</div>'
-						+ '			 </div>' //comment-nick-info
-						+ '		 </div>' // comment-nick-box
-						+ ' 		</div>' // comment-box
-						+ '	<div class="comment-text-box">'
-						+ '      <p class="comment-text-view">'
-						+ '        <span class="text-comment">' + this.CMNT_CN + '</span> '
-						+ '	   </p>'
-						+ ' 	</div>' //comment-text-box
-						+ '   <div class="comment-info-box">'
-						+ '	  <span class="comment-info-date">' + this.REG_DT + '</span>';
-					if (lev < 1) {
-						output += '  <a href="javascript:replyform(' + this.CMNT_SN + ','
-							+ lev + ',' + this.CMNT_SEQ + ','
-							+ this.CMNT_REF + ')" class="comment-info-button">답글쓰기</a>'
+						+ '     <img src="' + src + '" alt="프로필 사진" width="36" height="36">'
+						+ '     <div class="comment-box">'
+						+ '         <div class="comment-nick-box">'
+						+ '             <div class="comment-nick-info">'
+						+ '                 <div class="comment-nickname">' + comment.mbr_NCNM + '</div>'
+						+ '             </div>'
+						+ '         </div>'
+						+ '     </div>'
+						+ '     <div class="comment-text-box">'
+						+ '         <p class="comment-text-view">'
+						+ '             <span class="text-comment">' + comment.cmnt_CN + '</span>'
+						+ '         </p>'
+						+ '     </div>'
+						+ '     <div class="comment-info-box">'
+						+ '         <span class="comment-info-date">' + formatDateTime(comment.reg_DT) + '</span>';
+
+					// 날짜 포맷 함수
+					function formatDateTime(dateTimeString) {
+						let date = new Date(dateTimeString);
+						let now = new Date();
+						let diff = Math.floor((now - date) / 1000); // 초 단위 차이 계산
+
+						// 시간 단위 차이 계산
+						let hours = Math.floor(diff / 3600);
+						if (hours < 24) {
+							// 24시간 내에 작성된 경우
+							if (hours < 1) {
+								let minutes = Math.floor(diff / 60);
+								if (minutes < 1) {
+									return '방금 전';
+								} else if (minutes === 1) {
+									return '1분 전';
+								} else {
+									return minutes + '분 전';
+								}
+							} else {
+								return hours + '시간 전';
+							}
+						} else {
+							// 24시간 이상 지난 경우 날짜 형식으로 표시
+							return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
+						}
 					}
-					output += ' 	</div>' //comment-info-box;
 
-					if ($("#loginid").val() == this.MBR_ID) {
-						output += '<div class="comment-tool">'
-							+ '	  <div title="더보기" class="comment-tool-button">'
-							+ '		<div>&#46;&#46;&#46;</div>'
-							+ '   </div>'
-							+ '   <div id="comment-list-item-layer' + this.CMNT_SN + '"  class="LayerMore">'
-							+ '	   <ul class="layer-list">'
-							+ '		<li class="layer-item">'
-							+ ' 	<a href="javascript:updateForm(' + this.CMNT_SN + ')"'
-							+ '		   class="layer-button">수정</a>&nbsp;&nbsp;'
-							+ '		<a href="javascript:del(' + this.CMNT_SN + ')"'
-							+ ' 		class="layer-button">삭제</a></li></ul>'
-							+ '		</div>'//LayerMore
-							+ '  	</div>'//comment-tool
-
+					// 한 자리 숫자일 경우 앞에 0 붙이기 함수
+					function padZero(num) {
+						return num.toString().padStart(2, '0');
 					}
 
-					output += '</div>'// comment-nick-area
-						+ '</li>'//li.comment-list-item
-				})//each end
+					// 답글쓰기 버튼 추가
+					if (lev < 1) { // lev < 2 인 경우에 답글쓰기 버튼을 출력
+						html += '         <a href="javascript:replyform(' + comment.cmnt_SN + ',' + lev + ',' + comment.cmnt_SEQ + ',' + comment.cmnt_REF + ')" class="comment-info-button">답글쓰기</a>';
+					}
+
+					html += '     </div>' // comment-info-box
+
+					if ($("#MBR_ID").val() == comment.mbr_ID) {
+						html += '<div class="comment-tool">'
+							+ '     <div title="더보기" class="comment-tool-button">'
+							+ '         <div>&#46;&#46;&#46;</div>'
+							+ '     </div>'
+							+ '     <div id="comment-list-item-layer' + comment.cmnt_SN + '"  class="LayerMore">'
+							+ '         <ul class="layer-list">'
+							+ '             <li class="layer-item">'
+							+ '                 <a href="javascript:updateForm(' + comment.cmnt_SN + ')" class="layer-button">수정</a>&nbsp;&nbsp;'
+							+ '                 <a href="javascript:del(' + comment.cmnt_SN + ')" class="layer-button">삭제</a>'
+							+ '             </li>'
+							+ '         </ul>'
+							+ '     </div>'//LayerMore
+							+ ' </div>'//comment-tool
+					}
+
+					html += '     </div>' // comment-info-box
+						+ ' </div>' // comment-nick-area
+						+ '</li>'; // li.comment-list-item
+
+					return html;
+				}// generateCommentHTML function end
+
+
 
 				$('.comment-list').html(output);
-			}//if(rdata.commentlist.length>0)
-			else {//댓글 1개가 있는 상태에서 삭젷는 경우 갯수는 0이라 if문을 수행하지 않고 이곳으로 옵니다.
-				//이곳에서 아래의 두 영역을 없앱니다.
+
+			}// if(rdata.commentlist.length>0)
+			else {
+				// 댓글이 없는 경우
 				$('.comment-list').empty();
 				$('.comment-order-list').empty();
-
 			}
-		}//success end
-	});//ajax end
-}//function(getList) end
+		}// success end
+	});// ajax end
+}// function(getList) end
+
 
 //더보기-수정 클릭한 경우에 수정 폼을 보여줍니다.
 function updateForm(CMNT_SN) { //num : 수정할 댓글 글번호
@@ -144,8 +234,13 @@ function del(CMNT_SN) {//num : 댓글 번호
 	}
 
 	$.ajax({
-		url: 'CommentDelete.bo',
-		data: { CMNT_SN: CMNT_SN },
+		url: '../../../comment/delete',
+		type: 'post',
+		contentType: 'application/json', // 데이터 형식 명시
+		data: JSON.stringify({ num: CMNT_SN  }), // JSON 형식으로 데이터 전송
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader(header, token);
+		},
 		success: function(rdata) {
 			if (rdata == 1) {
 				getList(option);
@@ -204,9 +299,9 @@ $(function() {
 		}
 
 		$.ajax({
-			url: 'CommentAdd.bo', //원문 등록
+			url: '../../../comment/add', //원문 등록
 			data: {
-				MBR_ID: $("#loginid").val(),
+				MBR_ID: $("#MBR_ID").val(),
 				CMNT_CN: content,
 				BBS_SN: $("#BBS_SN").val(),
 
@@ -215,6 +310,10 @@ $(function() {
 				CMNT_SEQ: 0
 			},
 			type: 'post',
+			beforeSend: function(xhr) {
+				console.log(header, token);
+				xhr.setRequestHeader(header, token);
+			},
 			success: function(rdata) {
 				if (rdata == 1) {
 					getList(option);
@@ -246,8 +345,12 @@ $(function() {
 		}
 		const num = $(this).attr('data-id');
 		$.ajax({
-			url: 'CommentUpdate.bo',
+			url: '../../../comment/update',
+			method: 'POST',
 			data: { CMNT_SN: num, CMNT_CN: content },
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
 			success: function(rdata) {
 				if (rdata == 1) {
 					getList(option);
@@ -289,16 +392,19 @@ $(function() {
 		const seq = $(this).attr('data-seq');
 
 		$.ajax({
-			url: 'CommentReply.bo',
+			url: '../../../comment/reply',
 			data: {
-				MBR_ID: $("#loginid").val(),
+				MBR_ID: $("#MBR_ID").val(),
 				CMNT_CN: content,
 				BBS_SN: $("#BBS_SN").val(),
-				CMNT_LEV: lev,
+				CMNT_LEV: lev + 1,
 				CMNT_REF: comment_re_ref,
-				CMNT_SEQ: seq
+				CMNT_SEQ: seq + 1
 			},
 			type: 'post',
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
 			success: function(rdata) {
 				if (rdata == 1) {
 					getList(option);
@@ -331,4 +437,5 @@ $(function() {
 	})//답글쓰기 클릭 후 계속 누르는 것을 방지하기 위한 작업
 
 })//ready
+
 

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Mapper
-public interface BoardMapper {
+public interface VideoBoardMapper {
     int getBoardListCount();
     public ArrayList<Ctgry> getCtgryList(int type);
     void insertBoard(Board board);

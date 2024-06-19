@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>음악 게시글</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mboard_view.css}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="page">
+    <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
+    <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+                            자유 게시판
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <input type="hidden" th:value="${board.BBS_SN}" id="BBS_SN">
+            <input type="hidden" th:value="${board.MBR_ID}" id="MBR_ID">
+            <h2 th:text="${board.BBS_SJ}"></h2>
+            <div class="header">
+                <img th:src="${board.MBR_PROFL_PHOTO}" alt="프로필 사진">
+                <div class="info">
+                    <p><span th:text="${board.MBR_NCNM}"></span></p>
+                    <p><span th:text="${#dates.format(board.REG_DT, 'yyyy-MM-dd HH:mm')}"></span></p>
+                </div>
+                <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-eye">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                        <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                    </svg>
+                    <span th:text="${board.BBS_READ_CNT}">0</span>
+                </p>
+            </div>
+            <div class="content">
+                <p th:utext="${board.BBS_CN}"></p>
+
+                <div class="youtube-video" th:if="${board.BBS_CN.contains('youtube.com')}">
+                    <iframe width="560" height="315" th:src="${board.BBS_CN}" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="likes">
+                    <form th:action="@{'/gboard/music/like/' + ${board.BBS_SN}}" method="post">
+                        👍<button type="submit" class="btn btn-like" data-board-id="${board.BBS_SN}">추천</button>
+                        <span th:text="${board.BBS_REMD_CNT}"></span>
+                    </form>
+
+                    <form th:action="@{'/gboard/music/dislike/' + ${board.BBS_SN}}" method="post">
+                        👎<button type="submit" class="btn btn-dislike" data-board-id="${board.BBS_SN}">비추천</button>
+                        <span th:text="${board.BBS_NREMD_CNT}"></span>
+                    </form>
+                </div>
+            </div>
+            <div class="actions">
+                <form th:action="@{'/gboard/free/update/' + ${board.BBS_SN}}" method="get">
+                <button class="btn btn-action">수정</button>
+                </form>
+                <form th:action="@{'/gboard/free/delete/' + ${board.BBS_SN}}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+                    <button type="submit" class="btn btn-action">삭제</button>
+                </form>
+            </div>
+
+            <div class="comment-area">
+                <div class="comment-head">
+                    <h3 class="comment-count">
+                        댓글 <sup id="count"></sup>
+                    </h3>
+                    <div class="comment-order">
+                        <ul class="comment-order-list">
+                        </ul>
+                    </div>
+                </div>
+                <ul class="comment-list">
+                </ul>
+                <div class="comment-write">
+                    <div class="comment-write-area">
+                        <b class="comment-write-area-name" th:text="${board.MBR_NCNM}"></b>
+                        <span class="comment-write-area-count">0/200</span>
+                        <textarea placeholder="댓글을 남겨보세요" rows="1"
+                                  class="comment-write-area-text" maxLength="200"></textarea>
+
+                    </div>
+                    <div class="register-box">
+                        <div class="button btn-cancel">취소</div>
+                        <div class="button btn-register">등록</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
+</div>
+</div>
+<script th:src="@{/js/view.js}"></script>
+<script>
+
+    // YouTube Data API 키
+    var API_KEY = 'AIzaSyBroII_7tvlLRoTWLzxIWISVn640O8jaqM';
+
+    // 게시글 내용에서 YouTube 동영상 링크 추출을 위한 정규 표현식
+    var html = document.querySelector('.youtube-video').innerHTML;
+    var regex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/g;
+
+    // 정규 표현식에 매칭되는 첫 번째 링크의 동영상 ID 추출
+    var match = regex.exec(html);
+    var videoId = match[1];
+
+    // YouTube Data API를 사용하여 동영상 정보 가져오기
+    fetch('https://www.googleapis.com/youtube/v3/videos?key=' + API_KEY + '&part=snippet&id=' + videoId)
+        .then(response => response.json())
+        .then(data => {
+            // 동영상을 표시할 iframe의 src 속성 업데이트
+            var iframe = document.querySelector('.youtube-video iframe');
+            iframe.src = 'https://www.youtube.com/embed/' + videoId;
+
+            // 동영상의 제목을 추가하여 표시
+            var titleElement = document.createElement('h2');
+            titleElement.textContent = title;
+            document.querySelector('.youtube-video').appendChild(titleElement);
+        })
+        .catch(error => console.error('Error fetching video data:', error));
+
+
+</script>
+</body>
+</html>

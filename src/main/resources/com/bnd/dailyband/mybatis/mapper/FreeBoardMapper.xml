@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.bnd.dailyband.mybatis.mapper.BoardMapper">
+<mapper namespace="com.bnd.dailyband.mybatis.mapper.FreeBoardMapper">
 
     <select id="getBoardList" resultType="board">
         SELECT *
@@ -26,15 +26,17 @@
                      GROUP BY BBS_SN
                  ) bc ON b.BBS_SN = bc.BBS_SN
                           LEFT OUTER JOIN BAND_CTGRY band ON b.GENRE_ID = band.CTGRY_ID
+                 WHERE b.BBS_TY_ID = 'BBS02'
              ) AS result
-        WHERE rnum BETWEEN #{start} AND #{end};
+        WHERE result.rnum BETWEEN #{start} AND #{end};
     </select>
+
 
 
 
     <select id="getBoardListCount" resultType="int">
         SELECT COUNT(*)
-        FROM GNRL_BBS
+        FROM GNRL_BBS where BBS_TY_ID = 'BBS02'
     </select>
 
     <select id="getCtgryList" resultType="Ctgry">
@@ -43,7 +45,7 @@
 
     <insert id="insertBoard" parameterType="Board">
         INSERT INTO GNRL_BBS (BBS_TY_ID, MBR_ID, BBS_SJ, BBS_CN, BBS_REMD_CNT, BBS_NREMD_CNT, BBS_READ_CNT, GENRE_ID)
-        VALUES ('BBS01',#{MBR_ID}, #{BBS_SJ}, #{BBS_CN}, 0, 0, 0, #{GENRE_ID})
+        VALUES ('BBS02',#{MBR_ID}, #{BBS_SJ}, #{BBS_CN}, 0, 0, 0, #{GENRE_ID})
     </insert>
 
     <select id="getBoardById" resultType="com.bnd.dailyband.domain.Board">
