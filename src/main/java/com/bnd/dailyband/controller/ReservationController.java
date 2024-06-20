@@ -56,7 +56,7 @@ public class ReservationController {
         {
             mv.addObject("bbsSn",rboard.getBBS_SN());
         }
-        mv.setViewName("reservation/room_reservation");
+        mv.setViewName("room/room_reservation");
 
         return mv;
     }
