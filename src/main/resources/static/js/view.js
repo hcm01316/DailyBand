@@ -311,7 +311,6 @@ $(function() {
 			},
 			type: 'post',
 			beforeSend: function(xhr) {
-				console.log(header, token);
 				xhr.setRequestHeader(header, token);
 			},
 			success: function(rdata) {

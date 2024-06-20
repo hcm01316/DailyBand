@@ -49,7 +49,7 @@ public class SecurityConfig {
 							.requestMatchers( "/member/update")
 											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER", "ROLE_MANAGER")
 							.requestMatchers( "/board/**", "/comment/**")
-											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER")
+											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER", "ROLE_MANAGER")
 											.requestMatchers( "/**").permitAll()
 				);
 
