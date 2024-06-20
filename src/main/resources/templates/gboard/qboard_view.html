@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org/">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>음악 게시글</title>
@@ -25,7 +26,7 @@
         </div>
         <div class="container">
             <input type="hidden" th:value="${board.BBS_SN}" id="BBS_SN">
-            <input type="hidden" th:value="${board.MBR_ID}" id="MBR_ID">
+            <input type="hidden" id="MBR_ID" name="MBR_ID" th:value="${#authentication.principal.MBR_ID}" />
             <h2 th:text="${board.BBS_SJ}"></h2>
             <div class="header">
                 <img th:src="${board.MBR_PROFL_PHOTO}" alt="프로필 사진">
@@ -85,7 +86,7 @@
                 </ul>
                 <div class="comment-write">
                     <div class="comment-write-area">
-                        <b class="comment-write-area-name" th:text="${board.MBR_NCNM}"></b>
+                        <span class="comment-write-area-name" th:text="${#authentication.principal.MBR_NCNM}"></span>
                         <span class="comment-write-area-count">0/200</span>
                         <textarea placeholder="댓글을 남겨보세요" rows="1"
                                   class="comment-write-area-text" maxLength="200"></textarea>
