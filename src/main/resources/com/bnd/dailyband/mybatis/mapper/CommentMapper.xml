@@ -33,7 +33,7 @@
     <!-- 댓글 수정 -->
     <update id="commentsUpdate">
         UPDATE BBS_CMNT
-        SET CMNT_CN = #{CMNT_CN}, MDF_DT = CURRENT_TIMESTAMP
+        SET CMNT_CN = #{CMNT_CN}, MDF_DT = NOW()
         WHERE CMNT_SN = #{CMNT_SN}
     </update>
 

@@ -63,7 +63,7 @@
                     </form>
                 </div>
             </div>
-            <div class="actions">
+            <div class="actions" th:if="${#authentication.principal.MBR_ID eq board.MBR_ID}">
                 <form th:action="@{'/gboard/video/update/' + ${board.BBS_SN}}" method="get">
                 <button class="btn btn-action">수정</button>
                 </form>

@@ -28,7 +28,6 @@
                           LEFT OUTER JOIN BAND_CTGRY band ON b.GENRE_ID = band.CTGRY_ID
                  WHERE b.BBS_TY_ID = 'BBS03'
              ) AS result
-        WHERE result.rnum BETWEEN #{start} AND #{end};
     </select>
 
 
@@ -92,7 +91,8 @@
         UPDATE GNRL_BBS
         SET BBS_SJ = #{updatedBoard.BBS_SJ},
             BBS_CN = #{updatedBoard.BBS_CN},
-            GENRE_ID = #{updatedBoard.GENRE_ID}
+            GENRE_ID = #{updatedBoard.GENRE_ID},
+            MDF_DT = NOW()
         WHERE BBS_SN = #{id}
     </update>
 

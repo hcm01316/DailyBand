@@ -60,12 +60,11 @@
                         <label class="form-label">장르</label>
                         <div class="form-selectgroup form-selectgroup-pills">
                             <label class="form-selectgroup-item" th:each="item, iterStat : ${Genrelist}">
-                                <input type="checkbox" name="GENRE_ID" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" onclick="checkOnlyOne(this, 'GENRE_ID')" />
+                                <input type="checkbox" name="GENRE_ID" th:value="${item.CTGRY_ID}" class="form-selectgroup-input" th:checked="${board.GENRE_ID.contains(item.CTGRY_ID)}" onclick="checkOnlyOne(this, 'GENRE_ID')" />
                                 <span class="form-selectgroup-label" th:text="${item.CTGRY_NM}"></span>
                             </label>
                         </div>
                     </div>
-
                     <div class="mb-3">
                         <textarea id="editor" name="BBS_CN" th:text="${board.BBS_CN}"></textarea>
                         <script th:inline="javascript">

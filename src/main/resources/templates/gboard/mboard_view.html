@@ -64,15 +64,14 @@
                     </form>
                 </div>
             </div>
-            <div class="actions">
+            <div class="actions" th:if="${#authentication.principal.MBR_ID eq board.MBR_ID}">
                 <form th:action="@{'/gboard/music/update/' + ${board.BBS_SN}}" method="get">
-                <button class="btn btn-action">수정</button>
+                    <button class="btn btn-action">수정</button>
                 </form>
                 <form th:action="@{'/gboard/music/delete/' + ${board.BBS_SN}}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
                     <button type="submit" class="btn btn-action">삭제</button>
                 </form>
             </div>
-
             <div class="comment-area">
                 <div class="comment-head">
                     <h3 class="comment-count">
@@ -100,8 +99,8 @@
                 </div>
             </div>
         </div>
+        <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
     </div>
-    <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
 </div>
 </div>
 <script th:src="@{/js/view.js}"></script>
@@ -126,14 +125,8 @@
             var iframe = document.querySelector('.youtube-video iframe');
             iframe.src = 'https://www.youtube.com/embed/' + videoId;
 
-            // 동영상의 제목을 추가하여 표시
-            var titleElement = document.createElement('h2');
-            titleElement.textContent = title;
-            document.querySelector('.youtube-video').appendChild(titleElement);
         })
         .catch(error => console.error('Error fetching video data:', error));
-
-
 </script>
 </body>
 </html>
