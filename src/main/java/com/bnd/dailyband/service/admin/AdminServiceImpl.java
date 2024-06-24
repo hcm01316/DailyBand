@@ -136,6 +136,30 @@ public class AdminServiceImpl implements AdminService {
     return adao.getRboardList();
   }
 
+  //커뮤니티 게시글 조회
+  @Override
+  public List<Map<String, Object>> getGboardList() {
+    return adao.getGboardList();
+  }
+
+  //커뮤니티 댓글 조회
+  @Override
+  public List<Map<String, Object>> getGboardCmntList() {
+    return adao.getGboardCmntList();
+  }
+
+  //커뮤니티 게시글 삭제
+  @Override
+  public int gBoardDelete(int num) {
+    return adao.gBoardDelete(num);
+  }
+
+  //커뮤니티 댓글 삭제
+  @Override
+  public int gBoardCmntDelete(int num) {
+    return adao.gBoardCmntDelete(num);
+  }
+
   //기안 문서 리스트
   @Override
   public List<ApvDoc> getApvDraftList(String id) {

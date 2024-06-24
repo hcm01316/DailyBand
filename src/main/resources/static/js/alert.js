@@ -1,5 +1,6 @@
 // 공통 SweetAlert 호출
-function showConfirmationDialog(title, text, icon, confirmButtonText, cancelButtonText, onConfirm) {
+function showConfirmationDialog(title, text, icon, confirmButtonText,
+    cancelButtonText, onConfirm) {
   Swal.fire({
     title: title,
     text: text,
@@ -109,4 +110,30 @@ function confirmDelete(data) {
       '취소',
       () => redirectToUrl(`../rboard/delete?num=${num}&chat=${chat}`)
   );
+}
+
+//커뮤니티 게시글 삭제
+function confirmGboardDelete(data) {
+  var num = data.getAttribute('data-bbs-sn');
+  showConfirmationDialog(
+      '정말 삭제 하시겠습니까?',
+      '삭제 시 복구할 수 없습니다.',
+      'warning',
+      '삭제',
+      '취소',
+      () => redirectToUrl(`../admin/gboardDelete?num=${num}`)
+  )
+}
+
+//커뮤니티 댓글 삭제
+function confirmGboardCmntDelete(data) {
+  var num = data.getAttribute('data-cmnt-sn');
+  showConfirmationDialog(
+      '정말 삭제 하시겠습니까?',
+      '삭제 시 복구할 수 없습니다.',
+      'warning',
+      '삭제',
+      '취소',
+      () => redirectToUrl(`../admin/gboardCmntDelete?num=${num}`)
+  )
 }

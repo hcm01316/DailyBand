@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -283,6 +284,67 @@ public class AdminController {
     }
     return realm.toString().trim();
   }
+
+  @RequestMapping("/gboardmgmt")
+  public ModelAndView gboardmgmt(ModelAndView mv) {
+    addAdminAttributes(mv);
+    mv.addObject("current_drop", "adminGboardMgmt");
+
+    List<Map<String, Object>> gBoardList = adminService.getGboardList();
+    List<Map<String, Object>> gBoardCmntList = adminService.getGboardCmntList();
+
+    mv.addObject("gBoardList", gBoardList);
+    mv.addObject("gBoardCmntList", gBoardCmntList);
+
+    mv.setViewName("admin/gboardinfo_mgmt");
+
+    return mv;
+  }
+
+  @RequestMapping("/gboardDelete")
+  public ModelAndView gboardDelete(ModelAndView mv, int num,RedirectAttributes redirect) {
+
+    int delete = adminService.gBoardDelete(num);
+
+    if (delete == 0) {
+      redirect.addFlashAttribute("message", "게시글 삭제에 실패 했습니다.");
+      redirect.addFlashAttribute("status", "error");
+    } else {
+      redirect.addFlashAttribute("message", "게시글 삭제를 완료 했습니다.");
+      redirect.addFlashAttribute("status", "success");
+    }
+
+    mv.setViewName("redirect:gboardmgmt");
+    return mv;
+  }
+
+  @RequestMapping("/gboardCmntDelete")
+  public ModelAndView gboardCmntDelete(ModelAndView mv, int num, RedirectAttributes redirect) {
+    int cmntDelete = adminService.gBoardCmntDelete(num);
+
+    if (cmntDelete == 0) {
+      redirect.addFlashAttribute("message", "댓글 삭제에 실패 했습니다.");
+      redirect.addFlashAttribute("status", "error");
+    } else {
+      redirect.addFlashAttribute("message", "댓글 삭제를 완료 했습니다.");
+      redirect.addFlashAttribute("status", "success");
+    }
+
+    mv.setViewName("redirect:gboardmgmt?tab=comments");
+    return mv;
+  }
+
+//  @ResponseBody
+//  @GetMapping("/loadbbs")
+//  public List<Map<String, Object>> loadBbs() {
+//    return adminService.getGboardList();
+//  }
+
+//  @ResponseBody
+//  @GetMapping("/loadcomments")
+//  public List<Map<String, Object>> loadComments() {
+//    return adminService.getGboardCmntList();
+//  }
 
 
   //기안, 결재, 참조, 임시 문서 리스트
