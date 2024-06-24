@@ -64,6 +64,18 @@ public interface AdminService {
   //밴드원 모집 조회
   List<Map<String, Object>> getRboardList();
 
+  //커뮤니티 게시글 조회
+  List<Map<String, Object>> getGboardList();
+
+  //커뮤니티 댓글 조회
+  List<Map<String, Object>> getGboardCmntList();
+
+  //커뮤니티 게시글 삭제
+  int gBoardDelete(int num);
+
+  //커뮤니티 댓글 삭제
+  int gBoardCmntDelete(int num);
+
   //기안 문서 리스트
   List<ApvDoc> getApvDraftList(String id);
 
@@ -137,4 +149,6 @@ public interface AdminService {
   String getMbrId(int docSn);
 
   String getApvMbrNcnm(String apvMbrId);
+
+
 }
