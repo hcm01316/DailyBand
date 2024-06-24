@@ -36,41 +36,25 @@ public class MusicBoardController {
         }
     }
 
-    @RequestMapping(value="/music/list",method= RequestMethod.GET)
+    @RequestMapping(value="/music/list", method=RequestMethod.GET)
     public ModelAndView boardList(
-            @RequestParam(value="page",defaultValue="1") int page,
+            @RequestParam(value="page", defaultValue="1") int page,
             ModelAndView mv) {
         mv.addObject("current", "gBoard");
         mv.addObject("current_show", "gBoard");
         mv.addObject("current_drop", "gBoardMusic");
         int limit = 10; // 한 화면에 출력할 로우 갯수
 
+        List<Board> boardlist = boardService.getBoardList(page, limit); // 리스트를 받아옴
         int listcount = boardService.getBoardListCount(); // 총 리스트 수를 받아옴
 
-        // 총 페이지 수
-        int maxpage = (listcount + limit - 1) / limit;
-
-        // 현재 페이지에 보여줄 시작 페이지 수(1, 11, 21 등...)
-        int startpage = ((page - 1) / 10) * 10 + 1;
-
-        // 현재 페이지에 보여줄 마지막 페이지 수(10, 20, 30 등...)
-        int endpage = startpage + 10 - 1;
-
-        if (endpage > maxpage)
-            endpage = maxpage;
-
-        List<Board> boardlist = boardService.getBoardList(page, limit); // 리스트를 받아옴
-
         mv.setViewName("gboard/mboard_list");
-        mv.addObject("page",page);
-        mv.addObject("maxpage",maxpage);
-        mv.addObject("startpage",startpage);
-        mv.addObject("endpage",endpage);
-        mv.addObject("listcount",listcount);
-        mv.addObject("boardlist",boardlist);
-        mv.addObject("limit",limit);
+        mv.addObject("boardlist", boardlist);
+        mv.addObject("listcount", listcount);
+        mv.addObject("limit", limit);
         return mv;
     }
+
 
     @GetMapping("/count")
     public int getBoardListCount() {
@@ -81,7 +65,9 @@ public class MusicBoardController {
     public String showWriteForm(Model model) {
         ArrayList<Ctgry> Genrelist = boardService.getCtgryList(1);
         model.addAttribute("Genrelist", Genrelist);
-        model.addAttribute("current","Board");
+        model.addAttribute("current", "gBoard");
+        model.addAttribute("current_show", "gBoard");
+        model.addAttribute("current_drop", "gBoardMusic");
         return "gboard/mboard_write";
     }
 
@@ -130,9 +116,12 @@ public class MusicBoardController {
     @GetMapping("/music/update/{id}")
     public String showUpdateForm(@PathVariable("id") int id, Model model) {
         Board board = boardService.getBoardById(id);
-        ArrayList<Ctgry> Genrelist = boardService.getCtgryList(1); // 장르 목록을 가져옵니다. 여기서 1은 장르 카테고리 ID일 것입니다.
+        ArrayList<Ctgry> Genrelist = boardService.getCtgryList(1);
         model.addAttribute("board", board);
         model.addAttribute("Genrelist", Genrelist); // 속성 이름을 Genrelist로 변경
+        model.addAttribute("current", "gBoard");
+        model.addAttribute("current_show", "gBoard");
+        model.addAttribute("current_drop", "gBoardMusic");
         return "gboard/mboard_modify";
     }
     @PostMapping("/music/modify/{id}")

@@ -23,6 +23,7 @@ public class Board {
     private String MBR_NCNM;
     private String MBR_PROFL_PHOTO;
     private String CTGRY_NM;
+    private String COMMENT_COUNT;
 
     public String get_GENRE_ID() {
         String genre = GENRE_ID;

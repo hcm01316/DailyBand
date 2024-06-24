@@ -11,7 +11,7 @@
                         COALESCE(c.cnt, 0) AS cnt,
                         m.MBR_NCNM,
                         m.MBR_PROFL_PHOTO,
-                        COALESCE(bc.comment_count, 0) AS comment_count,
+                        COALESCE(bc.COMMENT_COUNT, 0) AS COMMENT_COUNT,
                         band.CTGRY_NM
                  FROM GNRL_BBS b
                           LEFT OUTER JOIN (
@@ -21,14 +21,13 @@
                  ) c ON b.BBS_SN = c.BBS_SN
                           LEFT OUTER JOIN MBR_INFO m ON b.MBR_ID = m.MBR_ID
                           LEFT OUTER JOIN (
-                     SELECT BBS_SN, COUNT(*) AS comment_count
+                     SELECT BBS_SN, COUNT(*) AS COMMENT_COUNT
                      FROM BBS_CMNT
                      GROUP BY BBS_SN
                  ) bc ON b.BBS_SN = bc.BBS_SN
                           LEFT OUTER JOIN BAND_CTGRY band ON b.GENRE_ID = band.CTGRY_ID
                  WHERE b.BBS_TY_ID = 'BBS01'
              ) AS result
-        WHERE result.rnum BETWEEN #{start} AND #{end};
     </select>
 
 
@@ -93,7 +92,8 @@
         UPDATE GNRL_BBS
         SET BBS_SJ = #{updatedBoard.BBS_SJ},
             BBS_CN = #{updatedBoard.BBS_CN},
-            GENRE_ID = #{updatedBoard.GENRE_ID}
+            GENRE_ID = #{updatedBoard.GENRE_ID},
+            MDF_DT = NOW()
         WHERE BBS_SN = #{id}
     </update>
 
