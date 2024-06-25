@@ -19,7 +19,25 @@
     </select>
 
     <select id="ChatRoomList"  resultType="ChatRoom">
-        select CHAT_HC,CHAT_NM,CHAT_TYPE,CHAT_ROOM.CHAT_ROOM_ID from CHAT_ROOM left join CHAT_MAPPING on CHAT_MAPPING.CHAT_ROOM_ID = CHAT_ROOM.CHAT_ROOM_ID where MBR_ID = #{id}
+        select C.CHAT_ROOM_ID,MBR_INFO.MBR_PROFL_PHOTO,MBR_INFO.MBR_NCNM  from
+            (select A.CHAT_ROOM_ID, MBR_ID
+             from (select CHAT_HC, CHAT_NM, CHAT_TYPE, CHAT_ROOM.CHAT_ROOM_ID
+                   from CHAT_ROOM
+                            left join CHAT_MAPPING
+                                      on CHAT_MAPPING.CHAT_ROOM_ID = CHAT_ROOM.CHAT_ROOM_ID
+                   where MBR_ID = #{id}) A
+                      join (select *
+                            from CHAT_MAPPING
+                            where CHAT_ROOM_ID in (select CHAT_ROOM_ID
+                                                   from CHAT_MAPPING
+                                                   where MBR_ID = #{id})
+                              and MBR_ID != #{id}) B on A.CHAT_ROOM_ID = B.CHAT_ROOM_ID and CHAT_TYPE = 2) C
+                join MBR_INFO on C.MBR_ID = MBR_INFO.MBR_ID
+        UNION
+        select CHAT_ROOM.CHAT_ROOM_ID,'그룹채팅',CHAT_NM
+        from CHAT_ROOM left join CHAT_MAPPING
+                                 on CHAT_MAPPING.CHAT_ROOM_ID = CHAT_ROOM.CHAT_ROOM_ID
+        where MBR_ID = #{id} and CHAT_TYPE =3
     </select>
 
     <insert id="ChatJoin">

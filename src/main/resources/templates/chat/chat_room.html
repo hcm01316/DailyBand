@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script th:src="@{/js/jquery-3.7.1.js}"></script>
-    <script th:src="@{/js/chat.js}"></script>
     <style>
         #send1 {
             display: none;
@@ -15,6 +14,7 @@
 <div class="page">
     <th:block th:replace="~{dailyband/navbar :: navbarFragment}"/>
     <th:block th:replace="~{dailyband/header :: headerFragment}"/>
+    <script th:src="@{/js/chat.js}"></script>
     <div class="page-wrapper">
         <div class="page-header d-print-none">
             <div class="container-xl">
@@ -42,16 +42,22 @@
                                             <a th:each="chat : ${Chatroom}" th:href="'/dailyband/room/' + ${chat.CHAT_ROOM_ID} + '/messages'" class="nav-link text-start mw-100 p-3" th:attr="data-chatroom-id=${chat.CHAT_ROOM_ID}" data-bs-toggle="pill" role="tab">
                                                 <div class="row align-items-center flex-fill">
                                                     <div class="col-auto">
+                                                        <th:block th:if="${chat.MBR_PROFL_PHOTO != '그룹채팅'}">
+                                                            <span class ="avatar" th:style="|background-image: url('${chat.MBR_PROFL_PHOTO}');|"></span>
+                                                        </th:block>
+                                                        <th:block th:if="${chat.MBR_PROFL_PHOTO == '그룹채팅'}">
+                                                            <img class="avatar" th:src="@{/image/bandchat.jpg}" />
+                                                        </th:block>
                                                     </div>
                                                     <div class="col text-body">
+                                                        <div>
+                                                            <th:block th:if="${chat.MBR_PROFL_PHOTO == '그룹채팅'}">
+                                                                <div th:text="${chat.MBR_NCNM} + ' 밴드 '"></div>
+                                                            </th:block>
+                                                            <th:block th:if="${chat.MBR_PROFL_PHOTO != '그룹채팅'}">
+                                                                <div th:text="${chat.MBR_NCNM}"></div>
+                                                            </th:block>
 
-                                                        <div th:if="${chat.CHAT_TYPE} == 2 ">
-                                                            <div th:each="name : ${#strings.setSplit(chat.CHAT_NM, '-')}">
-                                                                <div th:if="${name} != ${myname}" th:text="${name}"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div th:if="${chat.CHAT_TYPE} == 3 ">
-                                                            <div th:text="${chat.CHAT_NM}"></div>
                                                         </div>
                                                         <div class="text-secondary text-truncate w-100"></div>
                                                     </div>
@@ -70,12 +76,39 @@
                                 </div>
                                 <div class="card-footer">
                                     <div class="input-group input-group-flat" style="width: 100%;">
-                                        <form style="width: 100%;">
+                                        <form style="width: 93%;">
                                             <input type="hidden" id="MBR_NCNM" th:value="${#authentication.principal.MBR_NCNM}">
                                             <input type="hidden" id="CHAT_ROOM_ID">
-                                            <input type="text" class="form-control" id="MSG_CN" autocomplete="off" placeholder="Type message" style="width: 100%;">
+                                            <input type="text" class="form-control" id="MSG_CN" autocomplete="off" placeholder="채팅을 입력하세요." style="width: 100%;">
                                             <button id="send1" class="btn btn-default" type="submit">Send</button>
                                         </form>
+                                        <span class="input-group-text">
+                                            <a href="#" class="link-secondary" data-bs-toggle="modal" data-bs-target="#myModal" aria-label="Add notification" title="사진 첨부">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-paperclip">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M15 7l-6.5 6.5a1.5 1.5 0 0 0 3 3l6.5 -6.5a3 3 0 0 0 -6 -6l-6.5 6.5a4.5 4.5 0 0 0 9 9l6.5 -6.5" />
+                                            </svg>
+                                        </a>
+                                        </span>
+                                        <!-- 모달 부분 -->
+                                        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="myModalLabel">사진 첨부</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="file" id="photoInput" class="form-control"/>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                        <button type="button" id="imageupload" class="btn btn-primary">사진 첨부</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
                             </div>

@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ChatMsg {
+public class
+ChatMsg {
     private String MBR_ID;
     private String MBR_NCNM;
     private int CHAT_ROOM_ID;
