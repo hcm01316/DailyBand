@@ -44,6 +44,6 @@ public class ImageUploadService {
     private String changeFileName(String originalFileName) {
         /* 업로드할 파일의 이름을 변경하는 로직 */
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        return originalFileName + "_" + LocalDateTime.now().format(formatter);
+        return LocalDateTime.now().format(formatter)+ "_" +originalFileName;
     }
 }
