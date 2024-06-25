@@ -285,6 +285,7 @@ public class AdminController {
     return realm.toString().trim();
   }
 
+  //커뮤니티 관리
   @RequestMapping("/gboardmgmt")
   public ModelAndView gboardmgmt(ModelAndView mv) {
     addAdminAttributes(mv);
@@ -301,16 +302,17 @@ public class AdminController {
     return mv;
   }
 
+  //커뮤니티 관리 - 게시글 삭제
   @RequestMapping("/gboardDelete")
   public ModelAndView gboardDelete(ModelAndView mv, int num,RedirectAttributes redirect) {
 
     int delete = adminService.gBoardDelete(num);
 
     if (delete == 0) {
-      redirect.addFlashAttribute("message", "게시글 삭제에 실패 했습니다.");
+      redirect.addFlashAttribute("message", "게시글 삭제에 실패했습니다.");
       redirect.addFlashAttribute("status", "error");
     } else {
-      redirect.addFlashAttribute("message", "게시글 삭제를 완료 했습니다.");
+      redirect.addFlashAttribute("message", "게시글 삭제를 완료했습니다.");
       redirect.addFlashAttribute("status", "success");
     }
 
@@ -318,15 +320,16 @@ public class AdminController {
     return mv;
   }
 
+  //커뮤니티 관리 - 댓글 삭제
   @RequestMapping("/gboardCmntDelete")
   public ModelAndView gboardCmntDelete(ModelAndView mv, int num, RedirectAttributes redirect) {
     int cmntDelete = adminService.gBoardCmntDelete(num);
 
     if (cmntDelete == 0) {
-      redirect.addFlashAttribute("message", "댓글 삭제에 실패 했습니다.");
+      redirect.addFlashAttribute("message", "댓글 삭제에 실패했습니다.");
       redirect.addFlashAttribute("status", "error");
     } else {
-      redirect.addFlashAttribute("message", "댓글 삭제를 완료 했습니다.");
+      redirect.addFlashAttribute("message", "댓글 삭제를 완료했습니다.");
       redirect.addFlashAttribute("status", "success");
     }
 
@@ -334,18 +337,59 @@ public class AdminController {
     return mv;
   }
 
-//  @ResponseBody
-//  @GetMapping("/loadbbs")
-//  public List<Map<String, Object>> loadBbs() {
-//    return adminService.getGboardList();
-//  }
 
-//  @ResponseBody
-//  @GetMapping("/loadcomments")
-//  public List<Map<String, Object>> loadComments() {
-//    return adminService.getGboardCmntList();
-//  }
+  //합주실 예약 관리
+  @RequestMapping("roommgmt")
+  public ModelAndView roomResMgmt(ModelAndView mv) {
+    addAdminAttributes(mv);
+    mv.addObject("current_drop","adminRoomMgmt");
 
+    List<Map<String, Object>> rlist = adminService.getRoomResList();
+
+    mv.addObject("rlist", rlist);
+    mv.setViewName("admin/room_res_mgmt");
+    return mv;
+  }
+
+  //합주실 예약 수락
+  @RequestMapping("resAccept")
+  public ModelAndView resAccept (ModelAndView mv, int cal, int bbsSn, RedirectAttributes redirect) {
+    int resResult = adminService.resAccept(cal);
+    List<String> bandMbrList = rboardService.bandlist(bbsSn);
+
+    if (resResult == 0) {
+      redirect.addFlashAttribute("message", "예약 수락에 실패했습니다.");
+      redirect.addFlashAttribute("status", "error");
+    } else {
+      redirect.addFlashAttribute("message", "예약 수락을 완료했습니다.");
+      redirect.addFlashAttribute("status", "success");
+      for (String mbrId : bandMbrList) {
+        sseService.sendNotification(mbrId, "합주실 예약 신청이 수락되었습니다.", "rboard/bandHR", 4);
+      }
+    }
+    mv.setViewName("redirect:roommgmt");
+    return mv;
+  }
+
+  //합주실 예약 거절
+  @RequestMapping("resReject")
+  public ModelAndView resReject (ModelAndView mv, int cal, int bbsSn, RedirectAttributes redirect) {
+    int resResult = adminService.resReject(cal);
+    List<String> bandMbrList = rboardService.bandlist(bbsSn);
+
+    if (resResult == 0) {
+      redirect.addFlashAttribute("message", "예약 거절에 실패했습니다.");
+      redirect.addFlashAttribute("status", "error");
+    } else {
+      redirect.addFlashAttribute("message", "예약 거절을 완료했습니다.");
+      redirect.addFlashAttribute("status", "success");
+      for (String mbrId : bandMbrList) {
+        sseService.sendNotification(mbrId, "합주실 예약 신청이 거절되었습니다.", "rboard/bandHR", 4);
+      }
+    }
+    mv.setViewName("redirect:roommgmt");
+    return mv;
+  }
 
   //기안, 결재, 참조, 임시 문서 리스트
   @RequestMapping("apv/{param}List")

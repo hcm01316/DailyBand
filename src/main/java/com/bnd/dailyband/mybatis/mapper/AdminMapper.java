@@ -75,6 +75,15 @@ public interface AdminMapper {
   //커뮤니티 댓글 삭제
   int gBoardCmntDelete(int num);
 
+  //합주실 예약 리스트
+  List<Map<String, Object>> getRoomResList();
+
+  //합주실 예약 수락
+  int resAccept(int num);
+
+  //합주실 예약 거절
+  int resReject(int num);
+
   //기안 문서 리스트
   List<ApvDoc> getApvDraftList(String id);
 

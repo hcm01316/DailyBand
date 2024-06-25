@@ -3,12 +3,14 @@ package com.bnd.dailyband.mybatis.mapper;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Bandhr;
 import com.bnd.dailyband.domain.Rboard;
+import com.bnd.dailyband.domain.Reservation;
 import com.bnd.dailyband.domain.Rlist;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface RboardMapper  {
@@ -50,13 +52,13 @@ public interface RboardMapper  {
     public int leaderck(String id);
 
     // 밴드 가입 수락
-    public int bandaccept(String id,int num);
+    public int bandaccept(@Param("id") String id,@Param("num") int num);
 
     //밴드 가입 여부 확인
     public int isjoin(String id);
 
     //밴드 가입 신청
-    public void join(String id, int num);
+    public void join(@Param("id") String id,@Param("num") int num);
 
     //가입 수락시 다른 신청 대기중 삭제
     public void joinwatingdel(int num);
@@ -68,22 +70,22 @@ public interface RboardMapper  {
     public int myband (String id);
 
     // 밴드원 강퇴
-    public int resign(String id, int num);
+    public int resign(@Param("id") String id,@Param("num") int num);
 
     // 밴드원 거절
-    public int refuse(String id, int num);
+    public int refuse(@Param("id") String id,@Param("num") int num);
 
     // 밴드 해체
     public int breakup(int num);
 
     // 게시글 작성시 밴드모집 테이블에도 추가
-    public void insertBand(String id, int num);
+    public void insertBand(@Param("id") String id,@Param("num") int num);
 
     // 방금 작성한 게시글 번호
     public int getaddnum();
 
     // 밴드 탈퇴
-    public int leave(String id, int num);
+    public int leave(@Param("id") String id,@Param("num") int num);
 
     // 현재 모집한 인원수
     public int bandacceptcnt(int num);
@@ -97,7 +99,7 @@ public interface RboardMapper  {
 
     public int updateRboard(Rboard rboard);
 
-    public void BandChatRoomCreate(String chatname,int hc);
+    public void BandChatRoomCreate(@Param("chatname") String chatname, @Param("hc")int hc);
 
     public int getChatNum();
 
@@ -105,15 +107,18 @@ public interface RboardMapper  {
 
     public int MyBandChat(String name);
 
-    public void BandChatJoin(int chat,String id);
+    public void BandChatJoin(@Param("chat") int chat,@Param("id") String id);
 
-    public void ChatLeave(int chat, String id);
+    public void ChatLeave(@Param("chat") int chat, @Param("id") String id);
 
-    public int JoinCk(int num, String id);
+    public int JoinCk(@Param("num") int num,@Param("id") String id);
 
-    public int JoinCancel(int num, String id);
+    public int JoinCancel(@Param("num") int num, @Param("id") String id);
 
     public String getleader(int num);
 
     public List<String> bandlist(int num);
+
+    //합주실 예약 현황
+    List<Reservation> getRoomResList(int num);
 }

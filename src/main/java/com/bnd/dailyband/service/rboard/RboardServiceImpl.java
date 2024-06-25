@@ -3,6 +3,7 @@ package com.bnd.dailyband.service.rboard;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Bandhr;
 import com.bnd.dailyband.domain.Rboard;
+import com.bnd.dailyband.domain.Reservation;
 import com.bnd.dailyband.domain.Rlist;
 import com.bnd.dailyband.mybatis.mapper.RboardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,6 +208,12 @@ public class RboardServiceImpl implements RboardService {
     @Override
     public List<String> bandlist(int num) {
         return dao.bandlist(num);
+    }
+
+    //합주실 예약 현황
+    @Override
+    public List<Reservation> getRoomResList(int bandck) {
+        return dao.getRoomResList(bandck);
     }
 
 
