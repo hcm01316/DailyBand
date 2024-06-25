@@ -160,6 +160,24 @@ public class AdminServiceImpl implements AdminService {
     return adao.gBoardCmntDelete(num);
   }
 
+  //합주실 예약 리스트
+  @Override
+  public List<Map<String, Object>> getRoomResList() {
+    return adao.getRoomResList();
+  }
+
+  //합주실 예약 수락
+  @Override
+  public int resAccept(int num) {
+    return adao.resAccept(num);
+  }
+
+  //합주실 예약 거절
+  @Override
+  public int resReject(int num) {
+    return adao.resReject(num);
+  }
+
   //기안 문서 리스트
   @Override
   public List<ApvDoc> getApvDraftList(String id) {

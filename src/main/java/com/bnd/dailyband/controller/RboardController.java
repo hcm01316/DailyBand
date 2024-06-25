@@ -157,10 +157,10 @@ public class RboardController {
 		{
 			int myband = rboardService.myband(id);
 			String TeamName =rboardService.BandTeamName(myband);
-			System.out.println(bandck);
+			//System.out.println(bandck);
 			int MyBandChat = rboardService.MyBandChat(TeamName);
 			mv.addObject("MyBandChat", MyBandChat);
-			System.out.println(MyBandChat);
+			//System.out.println(MyBandChat);
 			int leaderck = rboardService.leaderck(id);
 			mv.addObject("leaderck",leaderck);
 			List<Bandhr> bandlist = new ArrayList<Bandhr>();
@@ -170,6 +170,11 @@ public class RboardController {
 			joinlist = rboardService.getjoinlist(myband);
 			mv.addObject("joinlist", joinlist);
 			logger.info(bandlist.toString());
+			List<Reservation> resList = rboardService.getRoomResList(myband);
+
+			logger.info(resList.toString());
+			mv.addObject("resList",resList);
+
 		}
 		mv.setViewName("rboard/rboard_mgmt");
 		return mv;

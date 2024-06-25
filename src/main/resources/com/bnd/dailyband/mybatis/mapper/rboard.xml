@@ -202,4 +202,13 @@
 	<select id="bandlist" resultType="String">
 		select MBR_ID from BAND_PRPT_INFO where BBS_SN = #{num}
 	</select>
+
+	<select id="getRoomResList" resultType="Reservation">
+		select res.cal_id, room_number, res.bbs_sn, rb.BAND_TEAM_NM, start, end, status, res.reg_dt
+		from RESERVATION res
+		left join RCRIT_BBS rb
+		on res.bbs_sn = rb.BBS_SN
+		where res.bbs_sn = #{num}
+		order by res.reg_dt desc
+	</select>
 </mapper>

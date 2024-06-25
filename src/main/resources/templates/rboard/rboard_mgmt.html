@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>밴드 관리</title>
   <script th:src="@{/js/alert.js}"></script>
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="page">
@@ -59,7 +61,7 @@
             <div class="col-12">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title" style="font-weight: bold">밴드 가입 현황</h3>
+                  <h3 class="card-title" style="font-weight: bold">밴드원 목록</h3>
                 </div>
                 <div class="table-responsive">
                   <table class="table card-table table-vcenter">
@@ -145,7 +147,8 @@
                       </td>
                       <td>
                         <th:block th:if="${leaderck} == 2 and ${item.MBR_ID} == ${id}">
-                          <a class="btn btn-red" href="#" th:data-bbs-sn="${item.BBS_SN}" th:data-chat-num="${MyBandChat}"
+                          <a class="btn btn-red" href="#" th:data-bbs-sn="${item.BBS_SN}"
+                             th:data-chat-num="${MyBandChat}"
                              onclick="confirmBreakup(this); return false;">해체</a>
                         </th:block>
                         <th:block th:if="${leaderck} == 2 and ${item.MBR_ID} != ${id}">
@@ -189,7 +192,8 @@
                       <tr th:if="${joinlist == null or #lists.isEmpty(joinlist)}">
                         <td colspan="7" class="text-center">가입 신청한 회원이 없습니다.</td>
                       </tr>
-                      <tr th:each="item, iterStat : ${joinlist}" th:unless="${joinlist == null or #lists.isEmpty(joinlist)}">
+                      <tr th:each="item, iterStat : ${joinlist}"
+                          th:unless="${joinlist == null or #lists.isEmpty(joinlist)}">
                         <td>
                           <span class="avatar avatar-sm"
                                 th:style="|background-image: url('${item.MBR_PROFL_PHOTO}');| "></span>
@@ -256,6 +260,61 @@
                 </div>
               </div>
             </th:block>
+            <hr>
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title" style="font-weight: bold">합주실 예약 현황</h3>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table id="res_table" class="table card-table table-vcenter display" style="width:100%">
+                      <thead>
+                      <tr style="background: #f6f8fb">
+                        <th>합주실</th>
+                        <th>예약시작시간</th>
+                        <th>예약종료시간</th>
+                        <th>예약상태</th>
+                        <th>예약등록일시</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr th:each="item, iterStat : ${resList}">
+                        <td th:if="${item.room_number == 1}"><span
+                            class="badge bg-dark-lt">WHITE</span></td>
+                        <td th:if="${item.room_number == 2}"><span
+                            class="badge bg-purple-lt">PURPLE</span></td>
+                        <td th:if="${item.room_number == 3}"><span
+                            class="badge bg-red-lt">RED</span></td>
+                        <td th:if="${item.room_number == 4}"><span
+                            class="badge bg-blue-lt">BLUE</span></td>
+                        <td class="text-secondary">
+                          <span th:text="${#strings.substring(item.start, 0,10)}"></span>
+                          <span class="badge badge-outline text-blue"
+                                th:text="${#strings.substring(item.start, 11,16)}"></span>
+                        </td>
+                        <td class="text-secondary">
+                          <span th:text="${#strings.substring(item.end, 0,10)}"></span>
+                          <span class="badge badge-outline text-blue"
+                                th:text="${#strings.substring(item.end, 11,16)}"></span>
+                        </td>
+                        <td th:if="${item.status == '대기'}"><span
+                            class="status status-blue">대기</span>
+                        </td>
+                        <td th:if="${item.status == '수락'}"><span
+                            class="status status-green">수락</span>
+                        </td>
+                        <td th:if="${item.status == '거절'}"><span class="status status-red">거절</span>
+                        </td>
+                        <td class="text-secondary"
+                            th:text="${#dates.format(item.reg_dt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </th:block>
@@ -263,6 +322,9 @@
     <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
   </div>
 </div>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
 <div th:if="${message}">
   <script th:inline="javascript">
     Swal.fire({
@@ -274,5 +336,29 @@
     });
   </script>
 </div>
+<script>
+  $('#res_table').DataTable({
+    responsive: true,
+    order: false,
+    language: {
+      "decimal": "",
+      "emptyTable": "예약 신청한 내역이 없습니다",
+      "info": "_START_ - _END_ (총 _TOTAL_건)",
+      "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 건씩 보기",
+      "loadingRecords": "로딩 중...",
+      "processing": "처리 중...",
+      "search": "검색:",
+      "zeroRecords": "검색된 데이터가 없습니다",
+      "aria": {
+        "sortAscending": ": 오름차순 정렬",
+        "sortDescending": ": 내림차순 정렬"
+      }
+    },
+    lengthMenu: [5, 15, 30, {label: '전체', value: -1}]
+  });
+</script>
 </body>
 </html>

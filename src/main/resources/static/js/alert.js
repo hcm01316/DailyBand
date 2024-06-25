@@ -137,3 +137,32 @@ function confirmGboardCmntDelete(data) {
       () => redirectToUrl(`../admin/gboardCmntDelete?num=${num}`)
   )
 }
+
+//합주실 예약 수락
+function confirmRoomResAccept(data) {
+  var calNum = data.getAttribute('data-cal-id');
+  var bbsSn = data.getAttribute('data-bbs-sn');
+  showConfirmationDialog(
+      '예약을 수락 하시겠습니까?',
+      '수락 시 복구할 수 없습니다.',
+      'question',
+      '수락',
+      '취소',
+      () => redirectToUrl(`../admin/resAccept?cal=${calNum}&bbsSn=${bbsSn}`)
+  )
+}
+
+//합주실 예약 거절
+function confirmRoomResRefuse(data) {
+  var calNum = data.getAttribute('data-cal-id');
+  var bbsSn = data.getAttribute('data-bbs-sn');
+  showConfirmationDialog(
+      '예약을 거절 하시겠습니까?',
+      '거절 시 복구할 수 없습니다.',
+      'question',
+      '거절',
+      '취소',
+      () => redirectToUrl(`../admin/resReject?cal=${calNum}&bbsSn=${bbsSn}`)
+  )
+}
+
