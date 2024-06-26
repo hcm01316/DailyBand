@@ -107,6 +107,18 @@ public class VideoBoardController {
         return "redirect:/gboard/video/detail/" + id;
     }
 
+    @PostMapping("/video/unlike/{id}")
+    public String unlikeBoard(@PathVariable("id") int id) {
+        videoBoardService.unlikeBoard(id);
+        return "redirect:/gboard/video/detail/" + id;
+    }
+
+    @PostMapping("/video/undislike/{id}")
+    public String undislikeBoard(@PathVariable("id") int id) {
+        videoBoardService.undislikeBoard(id);
+        return "redirect:/gboard/video/detail/" + id;
+    }
+
     @PostMapping("/video/delete/{id}")
     public String deleteBoard(@PathVariable("id") int id) {
         videoBoardService.deleteBoard(id);

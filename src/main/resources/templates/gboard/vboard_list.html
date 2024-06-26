@@ -61,7 +61,7 @@
                                         <td>영상</td>
                                         <td>
                                             <div>
-                                                <a th:href="@{'/gboard/music/detail/' + ${b.BBS_SN}}">
+                                                <a th:href="@{'/gboard/video/detail/' + ${b.BBS_SN}}">
                                                     <span th:text="${#strings.length(b.BBS_SJ) >= 20 ? #strings.substring(b.BBS_SJ,0,20) + '...' : b.BBS_SJ}"></span>
                                                     <span th:text="'[' + ${b.COMMENT_COUNT} + ']'" style="color: red;"></span>
                                                     <span th:if="${#strings.contains(b.BBS_CN, '&lt;figure class=&quot;image&quot;&gt;')}">
@@ -100,8 +100,8 @@
                                                 <span class="time-ago" th:attr="data-timestamp=${b.REG_DT.time}"></span>
                                             </div>
                                         </td>
-                                        <td style="text-align: center;"><div th:text="${b.BBS_READ_CNT}"></div></td>
-                                        <td style="text-align: center;"><div th:text="${b.BBS_REMD_CNT}"></div></td>
+                                        <td style="text-align: right;"><div th:text="${b.BBS_READ_CNT}"></div></td>
+                                        <td style="text-align: right;"><div th:text="${b.BBS_REMD_CNT}"></div></td>
                                     </tr>
                                     </tbody>
                                 </table>

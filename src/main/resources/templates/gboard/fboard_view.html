@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>음악 게시글</title>
+    <title>자유 게시글</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/mboard_view.css}" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -31,7 +31,7 @@
             <div class="header">
                 <img th:src="${board.MBR_PROFL_PHOTO}" alt="프로필 사진">
                 <div class="info">
-                    <p><span th:text="${board.MBR_NCNM}"></span></p>
+                    <a th:href="@{'/member/info?id=' + ${board.MBR_ID}}" th:text="${board.MBR_NCNM}"></a>
                     <p><span th:text="${#dates.format(board.REG_DT, 'yyyy-MM-dd HH:mm')}"></span></p>
                 </div>
                 <p>
@@ -52,15 +52,11 @@
             </div>
             <div class="footer">
                 <div class="likes">
-                    <form th:action="@{'/gboard/music/like/' + ${board.BBS_SN}}" method="post">
-                        👍<button type="submit" class="btn btn-like" data-board-id="${board.BBS_SN}">추천</button>
-                        <span th:text="${board.BBS_REMD_CNT}"></span>
-                    </form>
+                    <button class="btn btn-like" onclick="likeBoard()">👍 추천</button>
+                    <span th:text="${board.BBS_REMD_CNT}"></span>
 
-                    <form th:action="@{'/gboard/music/dislike/' + ${board.BBS_SN}}" method="post">
-                        👎<button type="submit" class="btn btn-dislike" data-board-id="${board.BBS_SN}">비추천</button>
-                        <span th:text="${board.BBS_NREMD_CNT}"></span>
-                    </form>
+                    <button class="btn btn-dislike" onclick="dislikeBoard()">👎 비추천</button>
+                    <span th:text="${board.BBS_NREMD_CNT}"></span>
                 </div>
             </div>
             <div class="actions" th:if="${#authentication.principal.MBR_ID eq board.MBR_ID}">
@@ -132,6 +128,113 @@
         })
         .catch(error => console.error('Error fetching video data:', error));
 
+
+    function likeBoard() {
+        var boardId = document.getElementById('BBS_SN').value;
+        $.ajax({
+            type: "POST",
+            url: "../../../gboard/free/like/" + boardId,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+                var likeCountElement = $(".btn-like").next("span");
+                var newCount = parseInt(likeCountElement.text()) + 1;
+                likeCountElement.text(newCount);
+
+                // 버튼 텍스트 변경
+                $(".btn-like").text("👍 취소");
+                $(".btn-like").attr("onclick", "unlikeBoard()");
+
+                // 비추천 버튼 비활성화
+                $(".btn-dislike").prop("disabled", true);
+            },
+            error: function(xhr, status, error) {
+                console.error("추천 처리 중 오류 발생: " + error);
+            }
+        });
+    }
+
+
+    function unlikeBoard() {
+        var boardId = document.getElementById('BBS_SN').value;
+        $.ajax({
+            type: "POST",
+            url: "../../../gboard/free/unlike/" + boardId,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+                var likeCountElement = $(".btn-like").next("span");
+                var newCount = parseInt(likeCountElement.text()) - 1;
+                likeCountElement.text(newCount);
+
+                // 버튼 텍스트 변경
+                $(".btn-like").text("👍 추천");
+                $(".btn-like").attr("onclick", "likeBoard()");
+
+                // 비추천 버튼 다시 활성화
+                $(".btn-dislike").prop("disabled", false);
+            },
+            error: function(xhr, status, error) {
+                console.error("추천 취소 처리 중 오류 발생: " + error);
+            }
+        });
+    }
+
+
+    function dislikeBoard() {
+        var boardId = document.getElementById('BBS_SN').value;
+        $.ajax({
+            type: "POST",
+            url: "../../../gboard/free/dislike/" + boardId,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+                var dislikeCountElement = $(".btn-dislike").next("span");
+                var newCount = parseInt(dislikeCountElement.text()) + 1;
+                dislikeCountElement.text(newCount);
+
+                // 버튼 텍스트 변경
+                $(".btn-dislike").text("👎 취소");
+                $(".btn-dislike").attr("onclick", "undislikeBoard()");
+
+                // 추천 버튼 비활성화
+                $(".btn-like").prop("disabled", true);
+            },
+            error: function(xhr, status, error) {
+                console.error("비추천 처리 중 오류 발생: " + error);
+            }
+        });
+    }
+
+
+    function undislikeBoard() {
+        var boardId = document.getElementById('BBS_SN').value;
+        $.ajax({
+            type: "POST",
+            url: "../../../gboard/free/undislike/" + boardId,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function(response) {
+                var dislikeCountElement = $(".btn-dislike").next("span");
+                var newCount = parseInt(dislikeCountElement.text()) - 1;
+                dislikeCountElement.text(newCount);
+
+                // 버튼 텍스트 변경
+                $(".btn-dislike").text("👎 비추천");
+                $(".btn-dislike").attr("onclick", "dislikeBoard()");
+
+                // 추천 버튼 다시 활성화
+                $(".btn-like").prop("disabled", false);
+            },
+            error: function(xhr, status, error) {
+                console.error("비추천 취소 처리 중 오류 발생: " + error);
+            }
+        });
+    }
 
 </script>
 </body>

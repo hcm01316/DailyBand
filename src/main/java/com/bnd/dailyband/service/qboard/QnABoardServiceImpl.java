@@ -82,5 +82,15 @@ public class QnABoardServiceImpl implements QnABoardService {
     public void updateBoard(int id, Board updatedBoard) {
         qnABoardMapper.updateBoard(id, updatedBoard);
     }
+
+    @Override
+    public void unlikeBoard(int id) {
+        qnABoardMapper.decreaseLikes(id);
+    }
+
+    @Override
+    public void undislikeBoard(int id) {
+        qnABoardMapper.decreaseDislikes(id);
+    }
 }
 

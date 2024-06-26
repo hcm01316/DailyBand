@@ -18,5 +18,8 @@ public interface VideoBoardService {
     int dislikeBoard(int id);
     void deleteBoard(int id);
     void updateBoard(int id, Board updatedBoard);
+    void unlikeBoard(int id);
+
+    void undislikeBoard(int id);
 }
 

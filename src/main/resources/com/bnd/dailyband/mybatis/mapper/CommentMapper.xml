@@ -38,9 +38,9 @@
     </update>
 
     <!-- 댓글 삭제 -->
-    <delete id="commentsDelete">
+    <delete id="commentsDelete" parameterType="int">
         DELETE FROM BBS_CMNT
-        WHERE CMNT_SN = #{CMNT_SN}
+        WHERE CMNT_SN = #{CMNT_SN} OR CMNT_REF = #{CMNT_SN}
     </delete>
 
     <!-- 답글 추가 -->
@@ -52,4 +52,8 @@
         VALUES (#{CMNT_SN},'BBS01', #{BBS_SN}, #{MBR_ID}, #{CMNT_CN}, #{CMNT_LEV}, #{CMNT_SEQ}, #{CMNT_REF}, #{MDF_DT})
     </insert>
 
+
+    <select id="getWriter" resultType="String">
+        select MBR_ID from GNRL_BBS where BBS_SN = #{num}
+    </select>
 </mapper>
