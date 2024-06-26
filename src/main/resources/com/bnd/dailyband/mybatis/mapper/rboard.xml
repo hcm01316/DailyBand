@@ -211,4 +211,15 @@
 		where res.bbs_sn = #{num}
 		order by res.reg_dt desc
 	</select>
+
+	<select id="isTeamName" resultType="int">
+		select count(*) from RCRIT_BBS where BAND_TEAM_NM = #{BAND_TEAM_NM}
+	</select>
+
+	<select id="writeck" resultType="int">
+		select COALESCE(
+					   (select MBR_PRPT_STTUS from BAND_PRPT_INFO
+						where MBR_ID = #{id} and MBR_PRPT_STTUS IN (0,1,2) )
+				   ,-1) as MBR_PRPT_STTUS;
+	</select>
 </mapper>

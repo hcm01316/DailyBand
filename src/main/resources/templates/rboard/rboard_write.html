@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-    <script src = "../js/UploadAdapter.js" charset="utf-8"></script>
+    <script src="../js/UploadAdapter.js" charset="utf-8"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js}"></script>
     <style>
         #container {
             width: 1000px;
@@ -27,6 +28,62 @@
                 if (item !== checkbox) item.checked = false;
             });
         }
+
+        let checkeTM = false;
+        // CKEditor 5 인스턴스를 전역 변수로 선언
+        let editor;
+
+        // CKEditor 5 인스턴스 생성 및 초기화
+        function initializeEditor() {
+            ClassicEditor
+                .create(document.querySelector('#editor'), {
+                    language: 'ko',
+                    extraPlugins: [MyCustomUploadAdapterPlugin]
+                })
+                .then(newEditor => {
+                    editor = newEditor;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        // CKEditor 5 유효성 검사 함수
+        function validateEditor() {
+            const editorData = editor.getData();
+            if (editorData === '' || editorData.length === 0) {
+                alert("내용을 입력해주세요.");
+                editor.editing.view.focus();
+                return false;
+            }
+            return true;
+        }
+
+        $(function () {
+
+
+            $("input[name=BAND_TEAM_NM]").on('keyup', function () {
+
+                const BAND_TEAM_NM = $(this).val();
+                $.ajax({
+                    url: "BandTeamNameCheck",
+                    data: {"BAND_TEAM_NM": BAND_TEAM_NM},
+                    success: function (resp) {
+                        if (resp == 0) {
+                            $("#BAND_TEAM_NM_message").css('color', 'green').html("사용 가능한 팀명 입니다");
+                            checkeTM = true;
+                        } else {
+                            $("#BAND_TEAM_NM_message").css('color', 'blue').html("사용중인 팀명 입니다");
+                            checkeTM = false;
+                        }
+                    }
+                });
+
+            });
+        })
+
+
+
     </script>
 </head>
 <body>
@@ -42,23 +99,22 @@
                             밴드원 모집 게시글 작성
                         </h2>
                     </div>
-
                 </div>
             </div>
         </div>
         <div class="page-body">
-            <div class = "container">
-                <form th:action="@{/rboard/add}" method="post" name = rboardform>
-                    <input type ="hidden" name ="MBR_ID" th:value="${#authentication.principal.username}">
+            <div class="container">
+                <form th:action="@{/rboard/add}" method="post" name="rboardform" onsubmit="return validateForm()">
+                    <input type="hidden" name="MBR_ID" th:value="${#authentication.principal.username}">
                     <div class="mb-3">
-                        <label class="form-label">팀명</label>
-                        <input type="text" class="form-control" id="BAND_TEAM_NM"  name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." />
+                        <label class="form-label">팀명 <span id="BAND_TEAM_NM_message"></span></label>
+                        <input type="text" class="form-control" id="BAND_TEAM_NM" name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">분야</label>
                         <div class="form-selectgroup form-selectgroup-pills">
                             <label class="form-selectgroup-item" th:each="item, iterStat : ${Realemlist}">
-                                <input type="checkbox"  name="realem" th:value="${item.CTGRY_ID}" class="form-selectgroup-input"/>
+                                <input type="checkbox" name="realem" th:value="${item.CTGRY_ID}" class="form-selectgroup-input"/>
                                 <span class="form-selectgroup-label">[[${item.CTGRY_NM}]]</span>
                             </label>
                         </div>
@@ -116,34 +172,23 @@
                     </div>
 
                     <div class="mb-3">
-                        <textarea id="editor"  name="BBS_CN"></textarea>
-                        <script th:inline="javascript">
-                            ClassicEditor
-                                .create(document.querySelector('#editor'), {
-                                    language:'ko',
-                                    extraPlugins: [MyCustomUploadAdapterPlugin]
-                                })
-                                .catch(error => {
-                                    console.error(error);
-                                });
-                        </script>
+                        <textarea id="editor" name="BBS_CN"></textarea>
                     </div>
                     <input type="submit" class="btn" value="글쓰기"/>
                     <a th:href="@{/rboard/list}" onclick="return confirm('정말 취소 하겠습니까?')" class="btn">
                         취소
                     </a>
                 </form>
-
             </div>
             <div class="container-xl">
-
             </div>
         </div>
         <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
     </div>
 </div>
-<script th:inline="javascript"  charset="utf-8">
-    $(document).ready(function() {
+<script th:inline="javascript" charset="utf-8">
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeEditor(); // 에디터 초기화
 
         function checkOnlyOne(checkbox, groupName) {
             var checkboxes = document.getElementsByName(groupName);
@@ -151,51 +196,54 @@
                 if (item !== checkbox) item.checked = false;
             });
         }
+
         $("form[name=rboardform]").submit(function () {
 
-            if ($.trim($("#BAND_TEAM_NM").val()) == "") {
-                alert("팀명을 입력하세요");
-                $("#board_subject").focus();
+            if (!checkeTM) {
+                alert("사용가능한 팀명으로 입력하세요.");
+                $("input[name=BAND_TEAM_NM]").val('').focus();
+                $("#BAND_TEAM_NM_message").text('');
                 return false;
             }
 
+            if ($.trim($("#BAND_TEAM_NM").val()) == "") {
+                alert("팀명을 입력하세요");
+                $("#BAND_TEAM_NM").focus();
+                return false;
+            }
 
             if ($("input[name='realem']:checked").length == 0) {
                 alert("최소 하나 이상의 분야를 선택하세요");
-                // 체크박스 그룹 중 첫 번째 체크박스로 포커스 이동
                 $("input[name='realem']").first().focus();
                 return false;
             }
 
             if ($("input[name='RCRIT_GENRE_ID']:checked").length == 0) {
                 alert("분야를 선택하세요");
-                // 체크박스 그룹 중 첫 번째 체크박스로 포커스 이동
                 $("input[name='RCRIT_GENRE_ID']").first().focus();
                 return false;
             }
 
             if ($("input[name='RCRIT_AREA_ID']:checked").length == 0) {
                 alert("지역를 선택하세요");
-                // 체크박스 그룹 중 첫 번째 체크박스로 포커스 이동
                 $("input[name='RCRIT_AREA_ID']").first().focus();
                 return false;
             }
 
             if ($("input[name='RCRIT_NOPE']:checked").length == 0) {
                 alert("인원수를 선택하세요");
-                // 체크박스 그룹 중 첫 번째 체크박스로 포커스 이동
                 $("input[name='RCRIT_NOPE']").first().focus();
                 return false;
             }
 
-            const editorData = ClassicEditor.instances.editor.getData();
-            if ($.trim(editorData) == "") {
-                alert("내용을 입력하세요");
-                $("#editor").focus();
+            // CKEditor 5 내용 유효성 검사
+            if (!validateEditor()) {
                 return false;
             }
-        });// submit end
-    }); // ready() end
+
+            return true;
+        });
+    });
 </script>
 </body>
 </html>
