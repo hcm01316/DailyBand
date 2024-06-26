@@ -72,6 +72,18 @@
         WHERE BBS_SN = #{id}
     </update>
 
+    <update id="decreaseLikes" parameterType="int">
+        UPDATE GNRL_BBS
+        SET BBS_REMD_CNT = BBS_REMD_CNT - 1
+        WHERE BBS_SN = #{id}
+    </update>
+
+    <update id="decreaseDislikes" parameterType="int">
+        UPDATE GNRL_BBS
+        SET BBS_NREMD_CNT = BBS_NREMD_CNT - 1
+        WHERE BBS_SN = #{id}
+    </update>
+
     <select id="getLikes" resultType="int" parameterType="int">
         SELECT BBS_REMD_CNT
         FROM GNRL_BBS

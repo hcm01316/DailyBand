@@ -107,6 +107,18 @@ public class FreeBoardController {
         return "redirect:/gboard/free/detail/" + id;
     }
 
+    @PostMapping("/free/unlike/{id}")
+    public String unlikeBoard(@PathVariable("id") int id) {
+        freeBoardService.unlikeBoard(id);
+        return "redirect:/gboard/free/detail/" + id;
+    }
+
+    @PostMapping("/free/undislike/{id}")
+    public String undislikeBoard(@PathVariable("id") int id) {
+        freeBoardService.undislikeBoard(id);
+        return "redirect:/gboard/free/detail/" + id;
+    }
+
     @PostMapping("/free/delete/{id}")
     public String deleteBoard(@PathVariable("id") int id) {
         freeBoardService.deleteBoard(id);

@@ -23,5 +23,8 @@ public interface VideoBoardMapper {
     int getDislikes(int id);
     void deleteBoard(int id);
     void updateBoard(@Param("id") int id,Board updatedBoard);
+    void decreaseLikes(@Param("id") int id);
+
+    void decreaseDislikes(@Param("id") int id);
 }
 

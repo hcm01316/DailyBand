@@ -82,5 +82,15 @@ public class VideoBoardServiceImpl implements VideoBoardService {
     public void updateBoard(int id, Board updatedBoard) {
         videoBoardMapper.updateBoard(id, updatedBoard);
     }
+
+    @Override
+    public void unlikeBoard(int id) {
+        videoBoardMapper.decreaseLikes(id);
+    }
+
+    @Override
+    public void undislikeBoard(int id) {
+        videoBoardMapper.decreaseDislikes(id);
+    }
 }
 

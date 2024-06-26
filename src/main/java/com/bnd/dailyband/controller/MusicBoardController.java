@@ -108,6 +108,19 @@ public class MusicBoardController {
         return "redirect:/gboard/music/detail/" + id;
     }
 
+    @PostMapping("/music/unlike/{id}")
+    public String unlikeBoard(@PathVariable("id") int id) {
+        boardService.unlikeBoard(id);
+        return "redirect:/gboard/music/detail/" + id;
+    }
+
+    @PostMapping("/music/undislike/{id}")
+    public String undislikeBoard(@PathVariable("id") int id) {
+        boardService.undislikeBoard(id);
+        return "redirect:/gboard/music/detail/" + id;
+    }
+
+
     @PostMapping("/music/delete/{id}")
     public String deleteBoard(@PathVariable("id") int id) {
         boardService.deleteBoard(id);

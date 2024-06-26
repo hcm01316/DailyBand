@@ -82,5 +82,15 @@ public class FreeBoardServiceImpl implements FreeBoardService {
     public void updateBoard(int id, Board updatedBoard) {
         freeBoardMapper.updateBoard(id, updatedBoard);
     }
+
+    @Override
+    public void unlikeBoard(int id) {
+        freeBoardMapper.decreaseLikes(id);
+    }
+
+    @Override
+    public void undislikeBoard(int id) {
+        freeBoardMapper.decreaseDislikes(id);
+    }
 }
 

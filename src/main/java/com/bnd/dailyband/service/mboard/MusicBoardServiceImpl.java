@@ -82,5 +82,25 @@ public class MusicBoardServiceImpl implements MusicBoardService {
     public void updateBoard(int id, Board updatedBoard) {
         musicBoardMapper.updateBoard(id, updatedBoard);
     }
+
+    @Override
+    public int getLikesCount(int id) {
+        return musicBoardMapper.getLikes(id);
+    }
+
+    @Override
+    public int getDislikesCount(int id) {
+        return musicBoardMapper.getDislikes(id);
+    }
+
+    @Override
+    public void unlikeBoard(int id) {
+        musicBoardMapper.decreaseLikes(id);
+    }
+
+    @Override
+    public void undislikeBoard(int id) {
+        musicBoardMapper.decreaseDislikes(id);
+    }
 }
 

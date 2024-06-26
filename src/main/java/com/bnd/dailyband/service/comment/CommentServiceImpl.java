@@ -56,4 +56,10 @@ public class CommentServiceImpl implements CommentService {
     public int commentsReply(Comment comment) {
         return dao.commentsReply(comment);
     }
+
+    @Override
+    public String getWriter(int num) {
+        return dao.getWriter(num);
+    }
+
 }

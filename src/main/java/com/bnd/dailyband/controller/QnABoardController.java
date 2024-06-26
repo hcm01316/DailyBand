@@ -107,6 +107,18 @@ public class QnABoardController {
         return "redirect:/gboard/qna/detail/" + id;
     }
 
+    @PostMapping("/qna/unlike/{id}")
+    public String unlikeBoard(@PathVariable("id") int id) {
+        qnABoardService.unlikeBoard(id);
+        return "redirect:/gboard/qna/detail/" + id;
+    }
+
+    @PostMapping("/qna/undislike/{id}")
+    public String undislikeBoard(@PathVariable("id") int id) {
+        qnABoardService.undislikeBoard(id);
+        return "redirect:/gboard/qna/detail/" + id;
+    }
+
     @PostMapping("/qna/delete/{id}")
     public String deleteBoard(@PathVariable("id") int id) {
         qnABoardService.deleteBoard(id);

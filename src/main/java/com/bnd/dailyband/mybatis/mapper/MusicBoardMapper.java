@@ -12,16 +12,31 @@ import java.util.List;
 @Mapper
 public interface MusicBoardMapper {
     int getBoardListCount();
+
     public ArrayList<Ctgry> getCtgryList(int type);
+
     void insertBoard(Board board);
+
     List<Board> getBoardList(HashMap<String, Integer> map);
+
     Board getBoardById(int id);
+
     void increaseReadCount(@Param("id") int id);
+
     void increaseLikes(int id);
+
     void increaseDislikes(int id);
+
     int getLikes(int id);
+
     int getDislikes(int id);
+
     void deleteBoard(int id);
+
     void updateBoard(@Param("id") int id,Board updatedBoard);
+
+    void decreaseLikes(@Param("id") int id);
+
+    void decreaseDislikes(@Param("id") int id);
 }
 

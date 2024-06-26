@@ -20,4 +20,7 @@ public interface CommentMapper {
     int commentsUpdate(Comment co);
 
     int commentsReply(Comment comment);
+
+    String getWriter(int num);
+
 }
