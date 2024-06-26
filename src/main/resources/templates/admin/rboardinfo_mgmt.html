@@ -31,9 +31,6 @@
         <div class="row row-cards">
           <div class="col-12">
             <div class="card">
-              <div class="card-header">
-                <h3>밴드원 모집 정보 조회</h3>
-              </div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table id="rboard_table" class="table table-vcenter card-table"
@@ -201,6 +198,7 @@
 <script th:inline="javascript">
   $('#rboard_table').DataTable({
     responsive: true,
+    order: false,
     language: {
       "decimal": "",
       "emptyTable": "데이터가 없습니다",

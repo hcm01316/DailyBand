@@ -44,8 +44,11 @@ public class SecurityConfig {
 
 		http.authorizeHttpRequests(
 				(au)-> au
-							.requestMatchers( "/member/list", "/member/delete")
-											.hasAuthority("ROLE_ADMIN")
+							.requestMatchers( "/admin/dashboard", "/admin/mbrmgmt","/admin/rboardmgmt",
+									"/admin/gboardmgmt","/admin/roommgmt","/admin/apv/docWrite",
+									"/admin/apv/docDetail","/admin/apv/draftList","/admin/apv/apvList",
+									"/admin/apv/refList","/admin/apv/tempList")
+											.hasAnyAuthority("ROLE_MANAGER","ROLE_ADMIN")
 							.requestMatchers( "/member/update")
 											.hasAnyAuthority("ROLE_ADMIN", "ROLE_MEMBER", "ROLE_MANAGER")
 							.requestMatchers( "/board/**", "/comment/**")

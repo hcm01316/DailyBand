@@ -159,5 +159,6 @@ public interface AdminService {
 
   String getApvMbrNcnm(String apvMbrId);
 
-
+  //합주실 예약 관리 - 대기 count
+  int resWaitCnt();
 }

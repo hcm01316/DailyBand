@@ -3,6 +3,7 @@ package com.bnd.dailyband.controller;
 import com.bnd.dailyband.domain.Board;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.fboard.FreeBoardServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +22,22 @@ import java.util.List;
 public class FreeBoardController {
 
     private static final Logger log = LoggerFactory.getLogger(FreeBoardController.class);
+
     private final FreeBoardServiceImpl freeBoardService; // BoardServiceImpl 주입
+    private AdminService adminService;
 
     @Autowired
-    public FreeBoardController(FreeBoardServiceImpl freeBoardService) { // BoardServiceImpl 주입
+    public FreeBoardController(FreeBoardServiceImpl freeBoardService, AdminService adminService) { // BoardServiceImpl 주입
         this.freeBoardService = freeBoardService;
+        this.adminService = adminService;
     }
 
     @ModelAttribute
     public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+
+        int resCnt = adminService.resWaitCnt();
+        model.addAttribute("resCnt", resCnt);
+
         if (member != null) {
             model.addAttribute("profilePhoto", member.getProfilePhoto());
             model.addAttribute("username", member.getUsername());

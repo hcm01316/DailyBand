@@ -3,6 +3,7 @@ package com.bnd.dailyband.controller;
 import com.bnd.dailyband.domain.Board;
 import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.Member;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.mboard.MusicBoardServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +23,19 @@ public class MusicBoardController {
 
     private static final Logger log = LoggerFactory.getLogger(MusicBoardController.class);
     private final MusicBoardServiceImpl boardService; // BoardServiceImpl 주입
+    private AdminService adminService;
 
     @Autowired
-    public MusicBoardController(MusicBoardServiceImpl boardService) { // BoardServiceImpl 주입
+    public MusicBoardController(MusicBoardServiceImpl boardService, AdminService adminService) { // BoardServiceImpl 주입
         this.boardService = boardService;
+        this.adminService = adminService;
     }
 
     @ModelAttribute
     public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+        int resCnt = adminService.resWaitCnt();
+        model.addAttribute("resCnt", resCnt);
+
         if (member != null) {
             model.addAttribute("profilePhoto", member.getProfilePhoto());
             model.addAttribute("username", member.getUsername());

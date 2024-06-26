@@ -157,4 +157,7 @@ public interface AdminMapper {
   String getMbrId(int docSn);
 
   String getApvMbrNcnm(String appMemNum);
+
+  //합주실 예약 관리 - 대기 count
+  int resWaitCnt();
 }

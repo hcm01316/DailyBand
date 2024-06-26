@@ -1,6 +1,7 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.*;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.chat.ChatService;
 import com.bnd.dailyband.service.notify.SseService;
 import com.bnd.dailyband.service.rboard.RboardService;
@@ -42,18 +43,24 @@ public class RboardController {
 	private ImageUploadService imageUploadService;
 	private ChatService chatService;
 	private SseService sseService;
+	private AdminService adminService;
 
 	@Autowired
-	public RboardController(RboardService rboardService, ImageUploadService imageUploadService, ChatService chatService, SseService sseService)
+	public RboardController(RboardService rboardService, ImageUploadService imageUploadService,
+			ChatService chatService, SseService sseService, AdminService adminService)
 	{
 		this.rboardService = rboardService;
 		this.imageUploadService = imageUploadService;
 		this.chatService = chatService;
 		this.sseService = sseService;
+		this.adminService = adminService;
 	}
 
 	@ModelAttribute
 	public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+		int resCnt = adminService.resWaitCnt();
+		model.addAttribute("resCnt", resCnt);
+
 		if (member != null) {
 			model.addAttribute("profilePhoto", member.getProfilePhoto());
 			model.addAttribute("username", member.getUsername());

@@ -213,9 +213,9 @@
                   </a>
                   <a class="dropdown-item" th:href="@{/admin/roommgmt}" th:classappend="${current_drop == 'adminRoomMgmt'} ? active">
                     합주실 예약 관리
-                  </a>
-                  <a class="dropdown-item" th:href="@{/admin/report}" th:classappend="${current_drop == 'adminReport'} ? active">
-                    신고 관리
+                    <th:block th:if="${resCnt != 0}">
+                    <span class="badge bg-primary text-primary-fg ms-auto" th:text="${resCnt}"></span>
+                    </th:block>
                   </a>
                   <div class="dropend">
                   <a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false"
