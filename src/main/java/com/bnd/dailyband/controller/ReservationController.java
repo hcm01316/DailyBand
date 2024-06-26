@@ -3,6 +3,7 @@ package com.bnd.dailyband.controller;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.domain.Reservation;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.reservation.ReservationService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -23,11 +24,13 @@ import java.util.List;
 @RequestMapping("/room")
 public class ReservationController {
 
-    @Autowired
     private ReservationService reservationService;
+    private AdminService adminService;
 
-    public ReservationController(ReservationService reservationService){
+    @Autowired
+    public ReservationController(ReservationService reservationService, AdminService adminService){
         this.reservationService = reservationService;
+        this.adminService = adminService;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ReservationController.class);
@@ -72,6 +75,9 @@ public class ReservationController {
     // 모든 요청에 대해 사용자 정보를 모델에 추가
     @ModelAttribute
     public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+        int resCnt = adminService.resWaitCnt();
+        model.addAttribute("resCnt", resCnt);
+
         if (member != null) {
             model.addAttribute("profilePhoto", member.getProfilePhoto());
             model.addAttribute("username", member.getUsername());

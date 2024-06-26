@@ -1,6 +1,7 @@
 package com.bnd.dailyband.controller;
 
 import com.bnd.dailyband.domain.*;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.chat.ChatService;
 import com.bnd.dailyband.service.rboard.RboardService;
 import com.bnd.dailyband.service.s3upload.ImageUploadService;
@@ -36,16 +37,24 @@ public class ChatController {
     private RboardService rboardService;
     private SimpMessagingTemplate messagingTemplate;
     private ImageUploadService imageUploadService;
+    private AdminService adminService;
+
     @Autowired
-    public ChatController(ChatService chatService, RboardService rboardService,SimpMessagingTemplate messagingTemplate,ImageUploadService imageUploadService) {
+    public ChatController(ChatService chatService, RboardService rboardService,
+        SimpMessagingTemplate messagingTemplate,
+        ImageUploadService imageUploadService, AdminService adminService) {
         this.imageUploadService = imageUploadService;
         this.chatService = chatService;
         this.rboardService = rboardService;
         this.messagingTemplate = messagingTemplate;
+        this.adminService = adminService;
     }
 
     @ModelAttribute
     public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+        int resCnt = adminService.resWaitCnt();
+        model.addAttribute("resCnt", resCnt);
+
         if (member != null) {
             model.addAttribute("profilePhoto", member.getProfilePhoto());
             model.addAttribute("username", member.getUsername());
@@ -54,6 +63,7 @@ public class ChatController {
 
     @RequestMapping("/chat")
     public ModelAndView chatlist(ModelAndView mv,Principal principal) {
+        mv.addObject("current", "chat");
 
         String id = principal.getName();
         String myname = chatService.MyName(id);

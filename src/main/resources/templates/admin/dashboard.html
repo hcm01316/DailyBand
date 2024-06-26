@@ -4,6 +4,31 @@
   <meta charset="UTF-8">
   <title>DashBoard</title>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <style>
+    .toolbar {
+      margin-left: 45px;
+    }
+    button {
+      background: #fff;
+      color: #222;
+      border: 1px solid #e7e7e7;
+      border-bottom: 2px solid #ddd;
+      border-radius: 2px;
+      padding: 4px 17px;
+    }
+
+    button.active {
+      color: #fff;
+      background: #7C87FF;
+      border: 1px solid #435ebe;
+      border-bottom: 2px solid #435ebe;
+    }
+
+    button:focus {
+      outline: 0;
+    }
+
+  </style>
 </head>
 <body>
 <div class="page">
@@ -112,6 +137,13 @@
                 <h3>일별 회원가입 수</h3>
               </div>
               <div class="card-body">
+                <div class="toolbar reg-toolbar">
+                  <button id="reg_one_month" class="active">1M</button>
+                  <button id="reg_six_months">6M</button>
+                  <button id="reg_one_year">1Y</button>
+                  <button id="reg_ytd">YTD</button>
+                  <button id="reg_all">ALL</button>
+                </div>
                 <div id="redDtDayChart"></div>
               </div>
             </div>
@@ -122,6 +154,13 @@
                 <h3>일별 방문자 수</h3>
               </div>
               <div class="card-body">
+                <div class="toolbar visit-toolbar">
+                  <button id="one_month" class="active">1M</button>
+                  <button id="six_months">6M</button>
+                  <button id="one_year">1Y</button>
+                  <button id="ytd">YTD</button>
+                  <button id="all">ALL</button>
+                </div>
                 <div id="visitDayChart"></div>
               </div>
             </div>
@@ -178,17 +217,32 @@
 
   var rddOptions = {
     chart: {
-      type: 'area',
+      type: 'line',
       height: 400
     },
     series: [{
       name: 'Count',
       data: dayRegCnt.map(function (item) {
-        return {x: item.date, y: item.cnt};
+        return { x: new Date(item.date).getTime(), y: item.cnt };
       })
     }],
     xaxis: {
-      type: 'category',
+      type: 'datetime',
+      labels: {
+        formatter: function(value, timestamp) {
+          var date = new Date(timestamp);
+          var month = (date.getMonth() + 1).toString().padStart(2, '0');
+          var day = date.getDate().toString().padStart(2, '0');
+          var year = date.getFullYear();
+
+          var now = new Date();
+          if (year === now.getFullYear()) {
+            return month + '-' + day;
+          } else {
+            return year + '-' + month + '-' + day;
+          }
+        }
+      }
     },
     yaxis: {
       tickAmount: 5
@@ -215,22 +269,87 @@
   var rddChart = new ApexCharts(document.querySelector("#redDtDayChart"), rddOptions);
   rddChart.render();
 
+  // 날짜 범위 변경 함수
+  function updateRegDataRange(minDate) {
+    rddChart.updateOptions({
+      xaxis: {
+        min: minDate,
+        max: new Date().getTime()
+      }
+    });
+  }
+
+  // 버튼 클릭 이벤트 추가
+  document.querySelector("#reg_one_month").addEventListener('click', function () {
+    updateRegDataRange(new Date().setMonth(new Date().getMonth() - 1));
+    setActiveRegButton(this);
+  });
+
+  document.querySelector("#reg_six_months").addEventListener('click', function () {
+    updateRegDataRange(new Date().setMonth(new Date().getMonth() - 6));
+    setActiveRegButton(this);
+  });
+
+  document.querySelector("#reg_one_year").addEventListener('click', function () {
+    updateRegDataRange(new Date().setFullYear(new Date().getFullYear() - 1));
+    setActiveRegButton(this);
+  });
+
+  document.querySelector("#reg_ytd").addEventListener('click', function () {
+    updateRegDataRange(new Date(new Date().getFullYear(), 0, 1).getTime());
+    setActiveRegButton(this);
+  });
+
+  document.querySelector("#reg_all").addEventListener('click', function () {
+    rddChart.updateOptions({
+      xaxis: {
+        min: undefined,
+        max: undefined
+      }
+    });
+    setActiveRegButton(this);
+  });
+
+  // 활성 버튼 스타일 업데이트 함수
+  function setActiveRegButton(activeButton) {
+    var buttons = document.querySelectorAll(".reg-toolbar button");
+    buttons.forEach(function (button) {
+      button.classList.remove('active');
+    });
+    activeButton.classList.add('active');
+  }
+
   //일별 방문자 수
   var dayVisitCnt = /*[[${dayVisitCnt}]]*/ {};
 
   var vdOptions = {
     chart: {
-      type: 'line',
+      type: 'area',
       height: 400
     },
     series: [{
       name: 'Count',
       data: dayVisitCnt.map(function (item) {
-        return {x: item.date, y: item.cnt};
+        return {x: new Date(item.date).getTime(), y: item.cnt}; // 날짜를 타임스탬프로 변환
       })
     }],
     xaxis: {
-      type: 'category',
+      type: 'datetime',
+      labels: {
+        formatter: function(value, timestamp) {
+          var date = new Date(timestamp);
+          var month = (date.getMonth() + 1).toString().padStart(2, '0');
+          var day = date.getDate().toString().padStart(2, '0');
+          var year = date.getFullYear();
+
+          var now = new Date();
+          if (year === now.getFullYear()) {
+            return month + '-' + day;
+          } else {
+            return year + '-' + month + '-' + day;
+          }
+        }
+      }
     },
     yaxis: {
       tickAmount: 5
@@ -256,6 +375,61 @@
 
   var vdchart = new ApexCharts(document.querySelector("#visitDayChart"), vdOptions);
   vdchart.render();
+
+  // 날짜 범위 변경 함수
+  function updateDataRange(minDate) {
+    vdchart.updateOptions({
+      xaxis: {
+        min: minDate,
+        max: new Date().getTime()
+      }
+    });
+  }
+
+  // 버튼 클릭 이벤트 추가
+  document.querySelector("#one_month").addEventListener('click', function () {
+    updateDataRange(new Date().setMonth(new Date().getMonth() - 1));
+    setActiveButton(this);
+  });
+
+  document.querySelector("#six_months").addEventListener('click', function () {
+    updateDataRange(new Date().setMonth(new Date().getMonth() - 6));
+    setActiveButton(this);
+  });
+
+  document.querySelector("#one_year").addEventListener('click', function () {
+    updateDataRange(new Date().setFullYear(new Date().getFullYear() - 1));
+    setActiveButton(this);
+  });
+
+  document.querySelector("#ytd").addEventListener('click', function () {
+    updateDataRange(new Date(new Date().getFullYear(), 0, 1).getTime());
+    setActiveButton(this);
+  });
+
+  document.querySelector("#all").addEventListener('click', function () {
+    vdchart.updateOptions({
+      xaxis: {
+        min: undefined,
+        max: undefined
+      }
+    });
+    setActiveButton(this);
+  });
+
+  // 활성 버튼 스타일 업데이트 함수
+  function setActiveButton(activeButton) {
+    var buttons = document.querySelectorAll(".visit-toolbar button");
+    buttons.forEach(function (button) {
+      button.classList.remove('active');
+    });
+    activeButton.classList.add('active');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector("#one_month").click();
+    document.querySelector("#reg_one_month").click();
+  });
 
   //게시판별 게시글 수
   var bbsCnt = /*[[${bbsCnt}]]*/ {};

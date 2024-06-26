@@ -23,7 +23,6 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +53,8 @@ public class AdminController {
   // 모든 요청에 대해 사용자 정보를 모델에 추가
   @ModelAttribute
   public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+    int resCnt = adminService.resWaitCnt();
+    model.addAttribute("resCnt", resCnt);
     if (member != null) {
       model.addAttribute("profilePhoto", member.getProfilePhoto());
       model.addAttribute("username", member.getUsername());
@@ -106,7 +107,7 @@ public class AdminController {
     } else {
       redirect.addFlashAttribute("message", id + "님의 권한 변경을 완료하였습니다.");
       redirect.addFlashAttribute("status", "success");
-      sseService.sendNotification(id, "회원님의 권한이 " + chrole + "(으)로 변경되었습니다.", "main", 5);
+      sseService.sendNotification(id, "회원님의 권한이 " + chrole + "(으)로 변경되었습니다.", "main", 0);
     }
 
     return "redirect:/admin/mbrmgmt";
@@ -894,18 +895,6 @@ public class AdminController {
     Date currentTime = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     apv.setAPV_DT(sdf.format(currentTime));
-
-    // 추가된 디버깅 코드
-    logger.info("문서 번호 DOC_SN : " + apvDoc.getDOC_SN());
-    logger.info("문서 양식 타입 DOC_FORM_TY : " + apvDoc.getDOC_FORM_TY());
-    logger.info("문서 작성자 아이디 MBR_ID : " + apvDoc.getMBR_ID());
-    logger.info("문서 작성자 닉네임 MBR_NCNM : " + apvDoc.getMBR_NCNM());
-    logger.info("문서 작성자 타입 MBR_TY : " + apvDoc.getMBR_TY());
-    logger.info("문서 제목 DOC_SJ : " + apvDoc.getDOC_SJ());
-    logger.info("문서 내용 DOC_CN : " + apvDoc.getDOC_CN());
-    logger.info("문서 상태 DOC_STTUS : " + apvDoc.getDOC_STTUS());
-    logger.info("문서 작성 날짜 DOC_WRT_DT : " + apvDoc.getDOC_WRT_DT());
-    logger.info("결재 상태 APV_STTUS : " + apvDoc.getAPV_STTUS());
 
     logger.info("문서 작성자 아이디 :" + apvDoc.getMBR_ID());
     logger.info("문서 DOC_SN :" + docSn);

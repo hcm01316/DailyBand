@@ -4,6 +4,7 @@ import com.bnd.dailyband.domain.Calendar;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Rboard;
 import com.bnd.dailyband.service.Calendar.CalendarService;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.rboard.RboardService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -26,9 +27,12 @@ public class BandCalendarController {
 
     @Autowired
     private CalendarService calendarService;
+    private AdminService adminService;
 
-    public BandCalendarController(CalendarService calendarService, RboardService rboardService){
+    public BandCalendarController(CalendarService calendarService,
+        AdminService adminService){
         this.calendarService = calendarService;
+        this.adminService = adminService;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(BandCalendarController.class);
@@ -71,6 +75,8 @@ public class BandCalendarController {
     // 모든 요청에 대해 사용자 정보를 모델에 추가
     @ModelAttribute
     public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+        int resCnt = adminService.resWaitCnt();
+        model.addAttribute("resCnt", resCnt);
         if (member != null) {
             model.addAttribute("profilePhoto", member.getProfilePhoto());
             model.addAttribute("username", member.getUsername());

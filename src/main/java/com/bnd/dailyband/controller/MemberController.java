@@ -4,6 +4,7 @@ import com.bnd.dailyband.domain.Ctgry;
 import com.bnd.dailyband.domain.MailVO;
 import com.bnd.dailyband.domain.Member;
 import com.bnd.dailyband.domain.Social;
+import com.bnd.dailyband.service.admin.AdminService;
 import com.bnd.dailyband.service.member.MemberService;
 import com.bnd.dailyband.service.notify.SseService;
 import com.bnd.dailyband.service.s3upload.ImageUploadService;
@@ -45,21 +46,27 @@ public class MemberController {
 	private SendMail sendMail;
 	private ImageUploadService imageUploadService;
 	private SseService sseService;
+	private AdminService adminService;
 
 	@Autowired
 	public MemberController(MemberService memberService,
 							PasswordEncoder passwordEncoder,
 							SendMail sendMail,ImageUploadService imageUploadService,
-							SseService sseService) {
+							SseService sseService, AdminService adminService) {
 		this.memberService=memberService;
 		this.passwordEncoder=passwordEncoder;
 		this.sendMail = sendMail;
 		this.imageUploadService= imageUploadService;
 		this.sseService=sseService;
+		this.adminService = adminService;
 	}
 
 	@ModelAttribute
 	public void addAttributes(Model model, @AuthenticationPrincipal Member member) {
+
+		int resCnt = adminService.resWaitCnt();
+		model.addAttribute("resCnt", resCnt);
+
 		if (member != null) {
 			model.addAttribute("profilePhoto", member.getProfilePhoto());
 			model.addAttribute("username", member.getUsername());

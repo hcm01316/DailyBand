@@ -332,5 +332,10 @@ public class AdminServiceImpl implements AdminService {
     return adao.getApvMbrNcnm(apvMbrId);
   }
 
+  @Override
+  public int resWaitCnt() {
+    return adao.resWaitCnt();
+  }
+
 
 }
