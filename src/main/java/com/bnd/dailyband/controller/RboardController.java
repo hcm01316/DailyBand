@@ -244,7 +244,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/join")
-	public ModelAndView join(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal, RedirectAttributes redirect) {
+	public ModelAndView join(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal, RedirectAttributes redirect,@AuthenticationPrincipal Member member) {
 
 		String id = userPrincipal.getName();
 		int isjoin = rboardService.isjoin(id);
@@ -253,7 +253,7 @@ public class RboardController {
 			rboardService.join(id,num);
 			redirect.addFlashAttribute("message", "가입 신청이 성공적으로 완료되었습니다.");
 			String leader = rboardService.getleader(num);
-			sseService.sendNotification(leader, id + "님이 가입 신청하셨습니다.", "rboard/bandHR" , 2);
+			sseService.sendNotification(leader, member.getMBR_NCNM() + "님이 가입 신청하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 
@@ -267,7 +267,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/joincancel")
-	public ModelAndView joincancel(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal, RedirectAttributes redirect) {
+	public ModelAndView joincancel(ModelAndView mv, HttpServletRequest request,int num,Principal userPrincipal, RedirectAttributes redirect,@AuthenticationPrincipal Member member) {
 
 		String id = userPrincipal.getName();
 		int joincancel = rboardService.JoinCancel(num,id);
@@ -275,7 +275,7 @@ public class RboardController {
 		if (joincancel == 1) {
 			redirect.addFlashAttribute("message", "가입 취소가 성공적으로 완료되었습니다.");
 			String leader = rboardService.getleader(num);
-			sseService.sendNotification(leader, id + "님이 가입 신청을 취소 하셨습니다.", "rboard/bandHR" , 2);
+			sseService.sendNotification(leader, member.getMBR_NCNM() + "님이 가입 신청을 취소 하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 
@@ -451,7 +451,7 @@ public class RboardController {
 	}
 
 	@RequestMapping ("/leave")
-	public ModelAndView leave(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,Principal userPrincipal,int chat) {
+	public ModelAndView leave(ModelAndView mv, HttpServletRequest request,int num,RedirectAttributes redirect,Principal userPrincipal,int chat,@AuthenticationPrincipal Member member) {
 
 		String id = userPrincipal.getName();
 		int leave = rboardService.leave(id,num);
@@ -474,7 +474,7 @@ public class RboardController {
 			chatService.ChatExit(id,chat);
 			String TeamName = rboardService.BandTeamName(num);
 			String leader = rboardService.getleader(num);
-			sseService.sendNotification(leader, id + "님이 " + TeamName + "를 탈퇴 하셨습니다.", "rboard/bandHR" , 2);
+			sseService.sendNotification(leader, member.getMBR_NCNM() + "님이 " + TeamName + "를 탈퇴 하셨습니다.", "rboard/bandHR" , 2);
 			redirect.addFlashAttribute("status", "success");
 		}
 		mv.setViewName("redirect:bandHR");
@@ -515,5 +515,10 @@ public class RboardController {
 		return ResponseEntity.ok(response);
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/BandTeamNameCheck", method = RequestMethod.GET)
+	public int BandTeamNameCheck(@RequestParam("BAND_TEAM_NM") String BAND_TEAM_NM){
+		return rboardService.isTeamName(BAND_TEAM_NM);
+	}
 
 }

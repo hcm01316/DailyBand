@@ -1,8 +1,6 @@
 package com.bnd.dailyband.service.rboard;
 
-import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.domain.Bandhr;
-import com.bnd.dailyband.domain.Rboard;
+import com.bnd.dailyband.domain.*;
 import com.bnd.dailyband.domain.Reservation;
 import com.bnd.dailyband.domain.Rlist;
 import com.bnd.dailyband.mybatis.mapper.RboardMapper;
@@ -214,6 +212,17 @@ public class RboardServiceImpl implements RboardService {
     @Override
     public List<Reservation> getRoomResList(int bandck) {
         return dao.getRoomResList(bandck);
+    }
+
+    @Override
+    public int isTeamName(String BAND_TEAM_NM) {
+        return dao.isTeamName(BAND_TEAM_NM);
+
+    }
+
+    @Override
+    public int writeck(String id) {
+        return dao.writeck(id);
     }
 
 

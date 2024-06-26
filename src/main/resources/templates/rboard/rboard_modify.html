@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
     <script src = "../js/UploadAdapter.js" charset="utf-8"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js}"></script>
     <style>
         #container {
             width: 1000px;
@@ -27,6 +28,36 @@
                 if (item !== checkbox) item.checked = false;
             });
         }
+
+        let editor;
+        let checkeTM = false;
+
+        // CKEditor 5 인스턴스 생성 및 초기화
+        function initializeEditor() {
+            ClassicEditor
+                .create(document.querySelector('#editor'), {
+                    language: 'ko',
+                    extraPlugins: [MyCustomUploadAdapterPlugin]
+                })
+                .then(newEditor => {
+                    editor = newEditor;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        // CKEditor 5 유효성 검사 함수
+        function validateEditor() {
+            const editorData = editor.getData();
+            if (editorData === '' || editorData.length === 0) {
+                alert("내용을 입력해주세요.");
+                editor.editing.view.focus();
+                return false;
+            }
+            return true;
+        }
+
     </script>
 </head>
 <body>
@@ -53,7 +84,7 @@
                     <input type ="hidden" name ="BBS_SN" th:value="${rboarddata.BBS_SN}">
                     <div class="mb-3">
                         <label class="form-label">팀명</label>
-                        <input type="text" class="form-control" name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." th:value="${rboarddata.BAND_TEAM_NM}"/>
+                        <input type="text" class="form-control" id="BAND_TEAM_NM" name="BAND_TEAM_NM" placeholder="팀명을 입력하세요." readOnly th:value="${rboarddata.BAND_TEAM_NM}"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">분야</label>
@@ -117,16 +148,6 @@
                     </div>
                     <div class="mb-3">
                         <textarea id="editor" name="BBS_CN">[[${rboarddata.BBS_CN}]]</textarea>
-                        <script>
-                            ClassicEditor
-                                .create(document.querySelector('#editor'), {
-                                    language:'ko',
-                                    extraPlugins: [MyCustomUploadAdapterPlugin]
-                                })
-                                .catch(error => {
-                                    console.error(error);
-                                });
-                        </script>
                     </div>
                     <input type="submit" class="btn" value="글쓰기"/>
                     <a th:href="@{/rboard/list}" onclick="return confirm('정말 취소 하겠습니까?')" class="btn">
@@ -142,7 +163,7 @@
         <th:block th:replace="~{dailyband/footer :: footerFragment}"/>
     </div>
 </div>
-<script th:inline="javascript">
+<script th:inline="javascript" charset="utf-8">
 
     const gstr = [[${rboarddata.RCRIT_REALM_ID}]];
     const garr = gstr.split(",");
@@ -150,9 +171,56 @@
     for (let i = 0; i < garr.length; i++) {
         $("input[value='" + garr[i] + "']").prop("checked", true);
     }
-    $("input[value='" + [[${rboarddata.RCRIT_NOPE}]]  + "']").prop("checked", true);
-    $("input[value='" + [[${rboarddata.RCRIT_GENRE_ID}]]  + "']").prop("checked", true);
-    $("input[value='" + [[${rboarddata.RCRIT_AREA_ID}]]  + "']").prop("checked", true);
+    $("input[value='" + [[${rboarddata.RCRIT_NOPE}]] + "']").prop("checked", true);
+    $("input[value='" + [[${rboarddata.RCRIT_GENRE_ID}]] + "']").prop("checked", true);
+    $("input[value='" + [[${rboarddata.RCRIT_AREA_ID}]] + "']").prop("checked", true);
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+        initializeEditor(); // 에디터 초기화
+
+        function checkOnlyOne(checkbox, groupName) {
+        var checkboxes = document.getElementsByName(groupName);
+        checkboxes.forEach((item) => {
+        if (item !== checkbox) item.checked = false;
+    });
+    }
+
+        $("form[name=rboardform]").submit(function () {
+
+
+        if ($("input[name='realem']:checked").length == 0) {
+        alert("최소 하나 이상의 분야를 선택하세요");
+        $("input[name='realem']").first().focus();
+        return false;
+    }
+
+        if ($("input[name='RCRIT_GENRE_ID']:checked").length == 0) {
+        alert("분야를 선택하세요");
+        $("input[name='RCRIT_GENRE_ID']").first().focus();
+        return false;
+    }
+
+        if ($("input[name='RCRIT_AREA_ID']:checked").length == 0) {
+        alert("지역를 선택하세요");
+        $("input[name='RCRIT_AREA_ID']").first().focus();
+        return false;
+    }
+
+        if ($("input[name='RCRIT_NOPE']:checked").length == 0) {
+        alert("인원수를 선택하세요");
+        $("input[name='RCRIT_NOPE']").first().focus();
+        return false;
+    }
+
+        // CKEditor 5 내용 유효성 검사
+        if (!validateEditor()) {
+        return false;
+    }
+
+        return true;
+    });
+    });
 </script>
 </body>
 </html>

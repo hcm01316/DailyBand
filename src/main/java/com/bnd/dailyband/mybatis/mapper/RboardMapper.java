@@ -1,16 +1,11 @@
 package com.bnd.dailyband.mybatis.mapper;
 
-import com.bnd.dailyband.domain.Ctgry;
-import com.bnd.dailyband.domain.Bandhr;
-import com.bnd.dailyband.domain.Rboard;
-import com.bnd.dailyband.domain.Reservation;
-import com.bnd.dailyband.domain.Rlist;
+import com.bnd.dailyband.domain.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface RboardMapper  {
@@ -52,13 +47,13 @@ public interface RboardMapper  {
     public int leaderck(String id);
 
     // 밴드 가입 수락
-    public int bandaccept(@Param("id") String id,@Param("num") int num);
+    public int bandaccept(String id,int num);
 
     //밴드 가입 여부 확인
     public int isjoin(String id);
 
     //밴드 가입 신청
-    public void join(@Param("id") String id,@Param("num") int num);
+    public void join(String id, int num);
 
     //가입 수락시 다른 신청 대기중 삭제
     public void joinwatingdel(int num);
@@ -70,22 +65,22 @@ public interface RboardMapper  {
     public int myband (String id);
 
     // 밴드원 강퇴
-    public int resign(@Param("id") String id,@Param("num") int num);
+    public int resign(String id, int num);
 
     // 밴드원 거절
-    public int refuse(@Param("id") String id,@Param("num") int num);
+    public int refuse(String id, int num);
 
     // 밴드 해체
     public int breakup(int num);
 
     // 게시글 작성시 밴드모집 테이블에도 추가
-    public void insertBand(@Param("id") String id,@Param("num") int num);
+    public void insertBand(String id, int num);
 
     // 방금 작성한 게시글 번호
     public int getaddnum();
 
     // 밴드 탈퇴
-    public int leave(@Param("id") String id,@Param("num") int num);
+    public int leave(String id, int num);
 
     // 현재 모집한 인원수
     public int bandacceptcnt(int num);
@@ -95,30 +90,44 @@ public interface RboardMapper  {
     // 모집중 > 모집완료 변경
     public void teamstclose(int num);
 
+    // 모집완료 > 모집중 변경
     public void teamstopen(int num);
 
+    // 밴드원 모집 게시글 수정
     public int updateRboard(Rboard rboard);
 
-    public void BandChatRoomCreate(@Param("chatname") String chatname, @Param("hc")int hc);
+    // 밴드원 모집 게시글 작성시 채팅방 생성
+    public void BandChatRoomCreate(String chatname,int hc);
 
+    // 방금 만든 밴드 채팅방 번호 가져오기
     public int getChatNum();
 
+    // 해당 밴드 팀명 가져오기
     public String BandTeamName(int num);
 
+    // 팀명으로 채팅방 번호 가져오기
     public int MyBandChat(String name);
 
-    public void BandChatJoin(@Param("chat") int chat,@Param("id") String id);
+    // 밴드 가입 수락시 밴드 채팅 초대
+    public void BandChatJoin(int chat,String id);
 
-    public void ChatLeave(@Param("chat") int chat, @Param("id") String id);
+    // 밴드 가입 확인
+    public int JoinCk(int num, String id);
 
-    public int JoinCk(@Param("num") int num,@Param("id") String id);
+    // 밴드 가입 거절
+    public int JoinCancel(int num, String id);
 
-    public int JoinCancel(@Param("num") int num, @Param("id") String id);
-
+    // 리더 확인
     public String getleader(int num);
 
+    // 밴드 리스트 가져오기
     public List<String> bandlist(int num);
 
-    //합주실 예약 현황
+    // 팀명 중복 검사
+    public int isTeamName(String BAND_TEAM_NM);
+
     List<Reservation> getRoomResList(int num);
+
+    // 가입대기, 가입상태 화긴
+    public int writeck(String id);
 }
