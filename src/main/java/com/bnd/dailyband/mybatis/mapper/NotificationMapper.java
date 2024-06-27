@@ -14,4 +14,6 @@ public interface NotificationMapper {
     public String update(Notification notification);
 
     void delete(int num);
+
+    void allDelete(String name);
 }

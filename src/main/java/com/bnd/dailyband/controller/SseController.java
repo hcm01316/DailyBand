@@ -21,9 +21,16 @@ public class SseController {
     }
 
     @DeleteMapping("/delete")
-    public String MessageDelete(int num ){
+    public String MessageDelete(int num){
         sseService.delete(num);
         return "삭제 성공";
+    }
+
+    //전체를 한번에 지우기
+    @DeleteMapping("/deleteAll")
+    public String MessageDelete(Principal userPrincipal){
+        sseService.allDelete(userPrincipal.getName());
+        return "전부 삭제 성공";
     }
 
 

@@ -22,6 +22,7 @@
         FROM NOTIFICATION
         WHERE TARGET_MBR_ID = #{userId}
           AND CHECK_READ = 0
+        order by NOTIFY_ID DESC
     </select>
 
     <!-- 알림 읽는 유무 -->
@@ -32,11 +33,17 @@
         AND CHECK_READ != 1
     </update>
 
+    <!-- 누르면 그 알림만 지우는 delete문 -->
     <delete id ="delete">
     delete from NOTIFICATION
     where NOTIFY_ID = #{num}
     </delete>
 
+    <!-- 해당 유저의 알림만 전부 지워버리는 delete문-->
+    <delete id = "allDelete">
+    delete from NOTIFICATION
+    where TARGET_MBR_ID = #{userId}
+    </delete>
 
 
 </mapper>
