@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비밀번호 찾기</title>
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:src="@{'https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js'}"></script>
+    <link th:href="@{'https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css'}" rel="stylesheet">
+    <style>
+        @import url('https://rsms.me/inter/inter.css');
+
+        :root {
+            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+        }
+
+        body {
+            font-feature-settings: "cv03", "cv04", "cv11";
+        }
+
+        .card{
+            padding-top: 35%;
+            padding-left: 20%;
+        }
+        .form-control{
+            text-align: center;
+            background-color: #7C87FF;
+            opacity: 0.8;
+        }
+
+        .form-control::placeholder{
+            color: white;
+        }
+
+
+
+    </style>
+
+</head>
+<body>
+<script th:inline="javascript">
+
+
+
+
+    $(document).ready(function (){
+        $("#pwUpdate").on("click", function(){
+            var newPassword = $("#newPassword").val().trim(); // 비밀번호 입력 값 가져오기
+            if(newPassword === ""){
+                alert("변경 비밀번호를 입력해주세요");
+                $("#newPassword").focus(); // 입력 필드에 포커스 주기
+                return false; // 폼 제출 막기
+            }
+        });
+
+        $("input[id=password2]").on('keyup', function () {
+            var p1 = $("#newPassword");
+            var p2 = $("#confirmPassword");
+            if (p1.val() == "") {
+                alert("비밀번호를 입력하세요.")
+                $("#password_message").text("")
+                p1.focus()
+                p2.text("")
+                checkpassword = false;
+                return;
+            }
+        })
+    });
+</script>
+
+<div class="page">
+    <!-- Navbar -->
+    <div class="page-wrapper">
+        <!-- Page header -->
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <h2 class="page-title">
+
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Page body -->
+        <div class="page-body">
+            <div class="container-xl">
+                <div class="row row-cards" style="display: flex; justify-content: center">
+                    <div class="col-sm-4" style="padding: 0px; width: 276.66px;">
+                        <img th:src="@{/image/login_drum.jpg}" height="700px"
+                             width="276.66px">
+                    </div>
+
+                    <div class="col-md-6" style="padding: 0px;">
+                        <div class="card" style="height: 700px;">
+
+                                <div class="col-sm-8 col-sm-offset-2">
+                                    <div class="panel panel-default panel-margin-10">
+                                        <div class="panel-body panel-body-content text-center">
+                                            <h2>변경하실 비밀번호를 입력해 주세요.</h2>
+
+                                            <form th:action="@{/member/infoPassUpdate}" method="post" >
+                                                <div>
+                                                    <input  type="password" id="currentPassword" class="form-control" name="currentPassword" placeholder="현재 비밀번호를 입력해주세요" required>
+                                                </div>
+                                                <br>
+                                                <div>
+                                                    <input  type="password" id="newPassword" class="form-control" name="newPassword" placeholder="새 비밀번호를 입력해주세요" required>
+                                                </div>
+                                                <br>
+                                                <div>
+                                                    <input  type="password" id="confirmPassword" class="form-control" name="confirmPassword" placeholder="다시 한번 더 입력해주세요" required>
+                                                </div>
+                                                <br>
+                                                <div>
+                                                    <button class="btn">확인</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

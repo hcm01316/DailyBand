@@ -158,4 +158,11 @@ public class MemberServiceImpl implements MemberService{
 	public List<Map<String, Object>> getMyBoardList(String id) {
 		return dao.getMyBoardList(id);
 	}
+
+	@Override
+	public int infoPassUpdate(String encPassword, String memberId) {
+		return dao.infoPassUpdate(encPassword, memberId);
+	}
+
+
 }

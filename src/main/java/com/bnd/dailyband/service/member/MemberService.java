@@ -46,4 +46,7 @@ public interface MemberService {
 
 	List<Map<String, Object>> getMyBoardList(String id);
 
+	//비밀번호 변경하기
+	public int infoPassUpdate(String encPassword, String memberId);
+
 }
