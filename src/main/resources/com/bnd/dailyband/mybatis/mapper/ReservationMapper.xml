@@ -3,8 +3,8 @@
 <mapper namespace="com.bnd.dailyband.mybatis.mapper.ReservationMapper">
 
     <insert id="insertCalendar">
-        INSERT INTO RESERVATION (bbs_sn, title, start, end, color, textColor, room_number)
-        VALUES (#{bbs_sn}, #{title}, #{start}, #{end}, #{color}, #{textColor}, #{room_number})
+        INSERT INTO RESERVATION (bbs_sn, start, end, color, textColor, room_number)
+        VALUES (#{bbs_sn}, #{start}, #{end}, #{color}, #{textColor}, #{room_number})
     </insert>
 
     <select id="getAllCalendars" resultType="com.bnd.dailyband.domain.Reservation">
