@@ -11,6 +11,19 @@
   .badge.bg-red{
     display: none;
   }
+
+  .card .allread{
+    display: none;
+  }
+
+  .allread {
+    margin-left:auto;
+    display: block;
+    font-size: 1rem;
+    color: inherit;
+    line-height: 1.5rem;
+    margin-bottom: 0px;
+  }
 </style>
 
 
@@ -27,6 +40,7 @@
         window.location.href = contextpath + '/member/login';
       });
 
+  function sseinit(){
 
     let eventSource = new EventSource(contextpath + "/sse"); //http://localhost:9000/dailyband/sse
     let output = "";
@@ -42,8 +56,13 @@
          const content = datas[0]
          const url = datas[1].substring(4)
          const cat = datas[2].substring(4)
-         const category = ['공지사항', '커뮤니티', '밴드모집', '밴드일정', '합주실', '관리자']
+         const category = ['공지사항', '커뮤니티', '밴드모집', '밴드일정', '합주실', '전자결재']
+         const dot = ['bg-red', 'bg-blue', 'bg-purple', 'bg-green', 'bg-yellow', 'bg-indigo' ]
          const num = datas[3].substring(4)
+
+         const dotClass = dot[cat]
+
+         console.log(dot)
          console.log(datas)
          console.log(content)
          console.log(num)
@@ -52,12 +71,12 @@
 
          count++;
          output += `
-      <div class="list-group-item" style="width: 487px" data-url = ${url}
-      data-num = ${num}>
+      <div class="list-group-item" style="width: 487px">
                     <div class="row align-items-center">
                       <div class="col-auto"><span
-                          class="status-dot status-dot-animated bg-red d-block"></span></div>
-                      <div class="col text-truncate">
+                          class="status-dot status-dot-animated ${dotClass} d-block"></span></div>
+                      <div class="col text-truncate" data-url = ${url}
+      data-num = ${num}>
                         <a href="#" class="text-body d-block" >${category[cat]}</a>
                         <div class="d-block text-muted text-truncate mt-n1">
                           ${content}
@@ -66,14 +85,13 @@
                       <div class="col-auto">
                         <a href="#" class="list-group-item-actions" >
 
-                          <svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24"
-                               height="24" viewBox="0 0 24 24" stroke-width="2"
-                               stroke="currentColor" fill="none" stroke-linecap="round"
-                               stroke-linejoin="round">
+                          <svg  xmlns="http://www.w3.org/2000/svg" id="trash" width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path
-                                d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
-                          </svg>
+                            <path d="M4 7l16 0" />
+                            <path d="M10 11l0 6" />
+                            <path d="M14 11l0 6" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                         </a>
                       </div>
                     </div>
@@ -82,12 +100,22 @@
 
          // 알림 클릭 이벤트 처리
          $(".badge.bg-red").html(count).css("display", 'block')
+         $(".card .allread").css("display", 'block')
 
 
        }// if(event.data != "") {
     });//    eventSource.addEventListener('notification',  function(event) {
+  }
+      sseinit()
+
+      // eventSource.addEventListener('notificationBefore',  function(event) {
+      //     console.log("알림지우기");
+      //     $(".list-group-item").remove();
+      //
+      // });//    eventSource.addEventListener('notification',  function(event) {
+
       // 알림 클릭 이벤트 처리
-      $(".list-group").on('click', '.list-group-item', function (event){
+      $(".list-group").on('click', '.text-truncate', function (event){
         event.preventDefault();
         let num = $(this).data("num");
         let url = $(this).data("url");
@@ -96,12 +124,12 @@
         passingUrl(num, url);
 
       });
-
-
       let token = $("meta[name='_csrf']").attr("content");
       let header = $("meta[name='_csrf_header']").attr("content");
 
+
       function passingUrl(num, url){
+        console.log("num" + num)
         $.ajax({
           url: contextpath + "/delete",
           method : "Delete",
@@ -109,10 +137,10 @@
           beforeSend: function(xhr) {
             xhr.setRequestHeader(header, token);
           },
-          data : {num: num },
+          data : {num: num, status: "go"},
           success : function (response){
+            console.log("URL 지나감")
             console.log("check", response);
-            //window.location.href = contextpath + '/calendar/bandcal'
             window.location.href = contextpath + '/' + url
           },
           error: function (error){
@@ -120,6 +148,66 @@
           }
         });
       }
+
+      // 쓰레기통 누르면 지워지기
+      $(".list-group").on('click', '.list-group-item-actions', function (event){
+        event.preventDefault();
+        $(".card .list-group-item").remove();
+        let num = $(this).parent().parent().find(".col.text-truncate").data("num");
+        $(this).remove()
+        console.log("remove");
+        trash(num);
+      })
+
+      function trash(num){
+        $.ajax({
+          url: contextpath + "/delete",
+          method : "Delete",
+          async : false,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader(header, token);
+          },
+          data : {num: num, status: "refresh"},
+          success : function (response){
+            console.log("삭제했음")
+            console.log("check", response);
+            sseinit()
+          },
+          error: function (error){
+            console.error("error", error);
+          }
+        });
+      }
+
+      // 전체삭제 글자를 누르면 모두 지워지기
+      $(".card-header").on('click', '.allread', function (event){
+        event.preventDefault();
+        console.log("remove");
+        allDelete();
+      });
+
+      function allDelete(){
+        $.ajax({
+          url: contextpath + "/deleteAll",
+          method : "Delete",
+          async : false,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader(header, token);
+          },
+          success : function (response){
+            console.log("삭제했음")
+            console.log("check", response);
+            sseinit()
+            $(".bg-red").css("display", "none")
+            $(".allread").text("")
+          },
+          error: function (error){
+            console.error("error", error);
+          }
+        });
+      }
+
+
 
     });
   </script>
@@ -159,12 +247,13 @@
                     d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/>
                 <path d="M9 17v1a3 3 0 0 0 6 0v-1"/>
               </svg>
-              <span class="badge bg-red"></span>
+              <span class="badge bg-red text-red-fg"></span>
             </a>
             <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card dropdown-menu-scrollable" style="scrollbar-width: none">
               <div class="card">
                 <div class="card-header">
                   <h3 class="card-title">알림</h3>
+                  <h4 class="allread">전체 삭제</h4>
                 </div>
                 <div class="list-group list-group-flush list-group-hoverable">
 
@@ -172,7 +261,7 @@
                   <div class="list-group-item">
                     <div class="row align-items-center">
                       <div class="col-auto"><span
-                              class="status-dot status-dot-animated bg-red d-block"></span></div>
+                              class="status-dot status-dot-animated bg-green d-block"></span></div>
                       <div class="col text-truncate">
                         <a href="#" class="text-body d-block"></a>
                         <div class="d-block text-muted text-truncate mt-n1">
@@ -182,14 +271,13 @@
                       <div class="col-auto">
                         <a href="#" class="list-group-item-actions">
 
-                          <svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24"
-                               height="24" viewBox="0 0 24 24" stroke-width="2"
-                               stroke="currentColor" fill="none" stroke-linecap="round"
-                               stroke-linejoin="round">
+                          <svg  xmlns="http://www.w3.org/2000/svg" id="trash" width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path
-                                    d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>
-                          </svg>
+                            <path d="M4 7l16 0" />
+                            <path d="M10 11l0 6" />
+                            <path d="M14 11l0 6" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                         </a>
                       </div>
                     </div>
@@ -212,8 +300,8 @@
              aria-label="Open user menu">
               <span class="avatar avatar-sm" th:style="|background-image: url('${profilePhoto}');|"></span>
             <div class="d-none d-xl-block ps-2">
-              <div sec:authentication="name"></div>
-              <div class="mt-1 small text-muted"></div> <!-- 밴드팀명 들어갈 예정 -->
+              <div sec:authentication="principal.MBR_NCNM"></div>
+              <div class="mt-1 small text-muted"></div>
             </div>
           </a>
           <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -227,25 +315,7 @@
           </div>
         </div>
       </div>
-      <div class="collapse navbar-collapse" id="navbar-menu">
-        <div>
-          <form action="./" method="get" autocomplete="off" novalidate>
-            <div class="input-icon">
-                  <span class="input-icon-addon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                         stroke-linecap="round" stroke-linejoin="round"><path stroke="none"
-                                                                              d="M0 0h24v24H0z"
-                                                                              fill="none"/><path
-                        d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path
-                        d="M21 21l-6 -6"/></svg>
-                  </span>
-              <input type="text" value="" class="form-control" placeholder="검색어를 입력하세요."
-                     aria-label="Search in website">
-            </div>
-          </form>
-        </div>
-      </div>
+      <div class="collapse navbar-collapse" id="navbar-menu"></div>
     </div>
   </header>
 </th:block>

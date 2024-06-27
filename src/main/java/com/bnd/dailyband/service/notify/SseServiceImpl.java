@@ -100,4 +100,12 @@ public class SseServiceImpl implements SseService {
     public void delete(int num) {
         dao.delete(num);
     }
+
+
+    //전체 한번에 지우기
+    @Override
+    public void allDelete(String name) {
+        dao.allDelete(name);
+    }
+
 }
