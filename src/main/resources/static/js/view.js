@@ -129,7 +129,7 @@ function generateCommentHTML(comment) {
         + '     <div class="comment-box">'
         + '         <div class="comment-nick-box">'
         + '             <div class="comment-nick-info">'
-        + '                 <div class="comment-nickname">' + comment.mbr_NCNM + '</div>'
+        + '                 <div class="comment-nickname"><a href="../../../member/info?id=' + comment.mbr_ID + '">' + comment.mbr_NCNM + '</a></div>'
         + '             </div>'
         + '         </div>'
         + '     </div>'
