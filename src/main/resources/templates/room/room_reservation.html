@@ -115,7 +115,7 @@
             <div class="container-xl">
                 <div id="yrModal" style="display:none;">
                     <div id="modalContent">
-                        <h1>일정 추가 모달</h1>
+                        <h1>합주실 예약</h1>
                         <label>방 선택:</label>
                         <label for="room1">white:</label>
                         <input type="radio" id="room1" name="roomNumber" value="1" onchange="setDefaultColors()">
@@ -133,8 +133,6 @@
                         <input type="text" id="schEnd" th:value="${schEnd}"><br>
                         <label for="schEndTime">종료시간:</label>
                         <input type="time" id="schEndTime" th:value="${schEndTime}"><br>
-                        <label for="schTitle">제목:</label>
-                        <input type="text" id="schTitle" th:value="${schTitle}"><br>
                         <input type="checkbox" id="allDay" th:checked="${allDay}" style="display: none;">
                         <label for="allDay" style="display: none;">하루종일</label><br>
                         <label for="schBColor" style="display: none;">배경색:</label>
@@ -167,7 +165,6 @@
         const mySchStartTime = document.querySelector("#schStartTime");
         const mySchEnd = document.querySelector("#schEnd");
         const mySchEndTime = document.querySelector("#schEndTime");
-        const mySchTitle = document.querySelector("#schTitle");
         const mySchAllday = document.querySelector("#allDay");
         const mySchBColor = document.querySelector("#schBColor");
         const mySchFColor = document.querySelector("#schFColor");
@@ -176,36 +173,66 @@
         let respondata = [];
         const bbsSn = [[${bbsSn}]]
 
-        function getlist(){
-
-            $.ajax({
-                url:"select",
-                method : "GET",
-                async : false,
-                data : {bbsSn : bbsSn},
-                success : function (rdata){
-
-                    respondata = rdata;
-
-                    const calendarOption = {
-                        height: '700px',
-                        expandRows: true,
-                        headerToolbar: {
-                            left: 'prevYear,prev,next,nextYear today',
-                            center: 'title',
-                            right: 'dayGridMonth,dayGridWeek,timeGridDay'
-                        },
-                        initialView: 'timeGridDay',
-                        locale: 'kr',
-                        selectable: true,
-                        selectMirror: true,
-                        navLinks: true,
-                        editable: true,
-                        eventResizableFromStart: true,
-                        dayMaxEventRows: true,
-                        nowIndicator: true,
-                        events:rdata
+    function getlist() {
+        $.ajax({
+            url: "select",
+            method: "GET",
+            async: false,
+            data: {bbsSn: bbsSn},
+            success: function (rdata) {
+                respondata = rdata;
+                const calendarOption = {
+                    height: '700px',
+                    expandRows: true,
+                    headerToolbar: {
+                        left: 'prevYear,prev,next,nextYear today',
+                        center: 'title',
+                        right: 'dayGridMonth,dayGridWeek,timeGridDay'
+                    },
+                    initialView: 'timeGridDay',
+                    locale: 'kr',
+                    selectable: true,
+                    selectMirror: true,
+                    navLinks: true,
+                    editable: true,
+                    eventResizableFromStart: true,
+                    dayMaxEventRows: true,
+                    nowIndicator: true,
+                    events: rdata,
+                    eventContent: function (arg) {
+                        let content = '<div class="fc-content">';
+                        content += '<span class="room">' + getRoomName(arg.event.extendedProps.room_number) + '</span>'; // 방 이름 표시
+                        switch (arg.event.extendedProps.status) {
+                            case '대기':
+                                content += '<span class="status status-blue">' + arg.event.extendedProps.status + '</span>'; // 대기 상태 (파란색)
+                                break;
+                            case '수락':
+                                content += '<span class="status status-green">' + arg.event.extendedProps.status + '</span>'; // 수락 상태 (초록색)
+                                break;
+                            case '거절':
+                                content += '<span class="status status-red">' + arg.event.extendedProps.status + '</span>'; // 거절 상태 (빨간색)
+                                break;
+                            default:
+                                content += '<span class="status">' + arg.event.extendedProps.status + '</span>'; // 다른 상태일 경우 일반 텍스트 표시
+                        }
+                        content += '</div>';
+                        return {html: content};
                     }
+                };
+                function getRoomName(roomNumber) {
+                    switch (roomNumber) {
+                        case 1:
+                            return "<span class=\"badge bg-dark-lt\">WHITE</span>";
+                        case 2:
+                            return "<span class=\"badge bg-purple-lt\">PURPLE</span>";
+                        case 3:
+                            return "<span class=\"badge bg-red-lt\">RED</span>";
+                        case 4:
+                            return "<span class=\"badge bg-blue-lt\">BLUE</span>";
+                        default:
+                            return "<span class=\"badge bg-secondary-lt\">알 수 없는 방</span>";
+                    }
+                }
 
                     calendar = new FullCalendar.Calendar(calendarEl, calendarOption);
 
@@ -290,12 +317,6 @@
             return;
         }
 
-        if (!mySchTitle.value) {
-            alert("제목을 입력하세요.");
-            mySchTitle.focus();
-            return;
-        }
-
         if (!mySchAllday.checked && (!mySchStartTime.value || !mySchEndTime.value)) {
             alert("시작시간과 종료시간을 선택하세요.");
             return;
@@ -327,12 +348,15 @@
         calendar.getEvents().forEach(function(existingEvent) {
             const existingStart = existingEvent.start;
             const existingEnd = existingEvent.end;
+            const existingRoomNumber = existingEvent.extendedProps.room_number;
 
-            // 시간이 겹치는지 확인
-            if (
-                (startDate >= existingStart && startDate < existingEnd) ||
-                (endDate > existingStart && endDate <= existingEnd) ||
-                (startDate <= existingStart && endDate >= existingEnd)
+            // 방 번호가 동일한 경우에만 시간이 겹치는지 확인
+            if (selectedroomnumber == existingRoomNumber &&
+                (
+                    (startDate >= existingStart && startDate < existingEnd) ||
+                    (endDate > existingStart && endDate <= existingEnd) ||
+                    (startDate <= existingStart && endDate >= existingEnd)
+                )
             ) {
                 isOverlap = true;
                 return false; // 중복이 발생하면 순회 중지
@@ -352,10 +376,12 @@
         }
 
         let event = {
-            title: mySchTitle.value,
             allDay: mySchAllday.checked,
             backgroundColor: bColor,
-            textColor: fColor
+            textColor: fColor,
+            extendedProps: {
+                room_number: selectedroomnumber
+            }
         };
 
         if (mySchAllday.checked) {
@@ -386,7 +412,6 @@
 
         const sendData = {
             bbs_sn: bbsSn,
-            title: event.title,
             start: event.start,
             end: event.end,
             color: bColor,
@@ -412,7 +437,8 @@
 
 
 
-        function fMClose() {
+
+    function fMClose() {
             YrModal.style.display = "none";
         }
 
