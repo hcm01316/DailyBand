@@ -17,7 +17,7 @@ function createMessageHtml(message) {
     return `
         <div class="chat-item">
             <div class="${messageClass}">
-                ${!isCurrentUser ? `<div class="col-auto"><span class="avatar avatar-sm" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span></div>` : ''}
+                ${!isCurrentUser ? `<div class="col-auto"><span class="avatar" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span></div>` : ''}
                 <div class="col col-lg-6">
                     <div class="chat-bubble ${bubbleClass}">
                         <div class="chat-bubble-title">
@@ -31,7 +31,7 @@ function createMessageHtml(message) {
                         </div>
                     </div>
                 </div>
-                ${isCurrentUser ? `<div class="col-auto"><span class="avatar avatar-sm" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span></div>` : ''}
+                ${isCurrentUser ? `<div class="col-auto"><span class="avatar" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span></div>` : ''}
             </div>
         </div>
     `;
@@ -259,7 +259,7 @@ $(document).ready(function() {
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <span class="avatar avatar-sm" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span>
+                                <span class="avatar" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span>
                             </div>
                         </div>
                     </div>
@@ -269,7 +269,7 @@ $(document).ready(function() {
                     <div class="chat-item">
                         <div class="row align-items-end">
                             <div class="col-auto">
-                                <span class="avatar avatar-sm" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span>
+                                <span class="avatar" style="background-image: url('${message.mbr_PROFL_PHOTO}');"></span>
                             </div>
                             <div class="col col-lg-6">
                                 <div class="chat-bubble">

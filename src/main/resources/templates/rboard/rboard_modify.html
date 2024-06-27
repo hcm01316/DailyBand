@@ -30,7 +30,6 @@
         }
 
         let editor;
-        let checkeTM = false;
 
         // CKEditor 5 인스턴스 생성 및 초기화
         function initializeEditor() {
@@ -196,7 +195,7 @@
     }
 
         if ($("input[name='RCRIT_GENRE_ID']:checked").length == 0) {
-        alert("분야를 선택하세요");
+        alert("장르를 선택하세요");
         $("input[name='RCRIT_GENRE_ID']").first().focus();
         return false;
     }

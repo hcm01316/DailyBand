@@ -69,6 +69,7 @@ public class ChatController {
         String myname = chatService.MyName(id);
         List<ChatRoom> Chatroom = chatService.ChatRoomList(id);
         mv.addObject("Chatroom",Chatroom);
+        logger.info(Chatroom.toString());
         mv.addObject("myname",myname);
         mv.setViewName("chat/chat_room");
         return mv;
