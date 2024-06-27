@@ -85,7 +85,7 @@ public class MemberController {
 		}
 
 		if(session.getAttribute("loginfail") != null) {
-			// 세션에 저장된 값ㅇ르 한 번만 실행될 수 있도록 model에 저장
+			// 세션에 저장된 값으르 한 번만 실행될 수 있도록 model에 저장
 			mv.addObject("loginfail", session.getAttribute("loginfail"));
 
 			session.removeAttribute("loginfail"); // 세션의 값은 제거합니다.
