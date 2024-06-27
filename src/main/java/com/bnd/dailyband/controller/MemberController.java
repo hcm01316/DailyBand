@@ -12,13 +12,10 @@ import com.bnd.dailyband.task.SendMail;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
@@ -34,6 +31,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/member")
@@ -243,6 +242,34 @@ public class MemberController {
 	}
 
 
+	//비밀번호 변경하기
+	@RequestMapping(value = "/info_pass", method = RequestMethod.GET)
+	public String info_pass(Model model)
+	{
+		return "member/info_pass";
+	}
+
+	@RequestMapping(value = "/infoPassUpdate", method = RequestMethod.POST)
+	public String info_pass(Model model,
+						   String memberPass,
+						   String newPassword,
+							Principal principal
+	) {
+		//비밀번호 암호화
+		String encPassword = passwordEncoder.encode(newPassword);
+		logger.info(encPassword);
+
+		int result = memberService.infoPassUpdate(encPassword, principal.getName());
+
+
+		return "redirect:update";
+	}
+
+
+
+
+
+
 
 
 
@@ -371,6 +398,12 @@ public class MemberController {
 	public ModelAndView Modifyaction(Principal userPrincipal,
 									 HttpServletRequest request, ModelAndView mv, RedirectAttributes redirect, Member member, Social social) {
 
+		if(member.getMBR_PWD() == null){
+			member.getMBR_PWD();
+		}
+
+
+
 		String id = userPrincipal.getName();
 		String area[] = request.getParameterValues("MBR_PREFER_AREA");
 		String genre[] = request.getParameterValues("MBR_PREFER_GENRE");
@@ -399,10 +432,6 @@ public class MemberController {
 		}
 
 		//비밀번호 암호화
-		String encPassword = passwordEncoder.encode(member.getMBR_PWD());
-		logger.info(encPassword);
-		member.setMBR_PWD(encPassword);
-
 		member.setMBR_ID(id);
 		member.setMBR_ACT_REALM(trealm);
 		member.setMBR_PREFER_AREA(tarea);

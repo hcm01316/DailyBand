@@ -41,4 +41,7 @@ public interface MemberMapper {
 	public int pwd_update(String memberEmail, String encPassword);
 
 	List<Map<String,Object>> getMyBoardList(String id);
+
+
+	int infoPassUpdate(String encPassword, String memberId);
 }
