@@ -120,9 +120,9 @@
                   <td colspan="6" id="ref-list" class="indent">
                     <th:block th:each="ref, stat : ${refList}">
                       [[${ref.MBR_NCNM}]]
-                      <span th:if="${ref.MBR_TY == 'ROLE_ADMIN'}">관리자</span>
-                      <span th:if="${ref.MBR_TY == 'ROLE_MANAGER'}">매니저</span>
-                      <span th:unless="${stat.last}">,</span>
+                      <small th:if="${ref.MBR_TY == 'ROLE_ADMIN'}">관리자</small>
+                      <small  th:if="${ref.MBR_TY == 'ROLE_MANAGER'}">매니저</small>
+                      <small th:unless="${stat.last}">,</small>
                     </th:block>
                   </td>
                 </tr>
@@ -200,14 +200,24 @@
     $("#btn-cancel").css("display", "none");
   }
 
-  $("#btn-cancel").click(function() { 
-    var result = confirm("상신을 취소하시겠습니까?");
-    if(result == true) {
-      location.href = './docDelete?type=' + type + '&docSn=' + docSn;
-    }
+  $("#btn-cancel").click(function() {
+    Swal.fire({
+      title: '상신을 취소하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '예',
+      cancelButtonText: '아니오'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        location.href = './docDelete?type=' + type + '&docSn=' + docSn;
+      }
+    });
   });
 
-  $("#btn-apv").click(function() { // 승인 확인 창
+
+  $("#btn-apv").click(function() {
     var result = confirm("승인하시겠습니까?");
     if(result == true) {
       location.href = 'apvStatus?docSn=' + docSn + '&type=' + type;

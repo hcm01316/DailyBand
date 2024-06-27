@@ -7,6 +7,13 @@
   <!-- DataTables CSS -->
   <link href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <script th:src="@{/js/alert.js}"></script>
+  <style>
+    #comment_table td:nth-child(1) { width: 7%; }
+    #comment_table td:nth-child(2) { width: 45%; }
+    #comment_table td:nth-child(3) { width: 20%; }
+    #comment_table td:nth-child(4) { width: 15%; }
+    #comment_table td:nth-child(5) { width: 5%; }
+  </style>
 </head>
 <body>
 <div class="page">
@@ -60,22 +67,22 @@
                     <td>
                     <th:block th:if="${g['BBS_TY_NM'] == '음악'}">
                       <a th:href="@{'/gboard/music/detail/' + ${g.BBS_SN}}">
-                        <span th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></span>
+                        <span th:text="${g.BBS_SJ}"></span>
                       </a>
                     </th:block>
                     <th:block th:if="${g['BBS_TY_NM'] == '자유'}">
                       <a th:href="@{'/gboard/free/detail/' + ${g.BBS_SN}}">
-                        <span th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></span>
+                        <span th:text="${g.BBS_SJ}"></span>
                       </a>
                     </th:block>
                     <th:block th:if="${g['BBS_TY_NM'] == 'Q&A'}">
                       <a th:href="@{'/gboard/qna/detail/' + ${g.BBS_SN}}">
-                        <span th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></span>
+                        <span th:text="${g.BBS_SJ}"></span>
                       </a>
                     </th:block>
                     <th:block th:if="${g['BBS_TY_NM'] == '영상'}">
                       <a th:href="@{'/gboard/video/detail/' + ${g.BBS_SN}}">
-                        <span th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></span>
+                        <span th:text="${g.BBS_SJ}"></span>
                       </a>
                     </th:block>
                     </td>
@@ -130,25 +137,25 @@
                     <th:block th:if="${g.BBS_TY_NM == '음악'}">
                       <a th:href="@{'/gboard/music/detail/' + ${g.BBS_SN}}">
                         [[${g.CMNT_CN}]]<br>
-                        [<small th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></small>]
+                        [<small th:text="${g.BBS_SJ}"></small>]
                       </a>
                     </th:block>
                       <th:block th:if="${g.BBS_TY_NM == '자유'}">
                         <a th:href="@{'/gboard/free/detail/' + ${g.BBS_SN}}">
                           [[${g.CMNT_CN}]]<br>
-                          [<small th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></small>]
+                          [<small th:text="${g.BBS_SJ}"></small>]
                         </a>
                       </th:block>
                       <th:block th:if="${g.BBS_TY_NM == 'Q&A'}">
                         <a th:href="@{'/gboard/qna/detail/' + ${g.BBS_SN}}">
                           [[${g.CMNT_CN}]]<br>
-                          [<small th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></small>]
+                          [<small th:text="${g.BBS_SJ}"></small>]
                         </a>
                       </th:block>
                       <th:block th:if="${g.BBS_TY_NM == '영상'}">
                         <a th:href="@{'/gboard/video/detail/' + ${g.BBS_SN}}">
                           [[${g.CMNT_CN}]]<br>
-                          [<small th:text="${#strings.length(g.BBS_SJ) >= 20 ? #strings.substring(g.BBS_SJ,0,20) + '...' : g.BBS_SJ}"></small>]
+                          [<small th:text="${g.BBS_SJ}"></small>]
                         </a>
                       </th:block>
                     </td>
@@ -199,18 +206,19 @@
       icon: [[${status}]] === 'success' ? 'success' : 'error',
       title: [[${status}]] === 'success' ? '성공' : '실패',
       text: [[${message}]],
-      confirmButtonText: '확인',
-      heightAuto: false
+      showConfirmButton: false,
+      heightAuto: false,
+      timer: 1500
     });
   </script>
 </div>
 <script th:inline="javascript">
-  var dtLanguage = {
+  const dtLanguage = {
     "decimal": "",
     "emptyTable": "데이터가 없습니다",
-    "info": "_START_ - _END_ (총 _TOTAL_개)",
+    "info": "_START_ - _END_ (총 _TOTAL_명)",
     "infoEmpty": "0명",
-    "infoFiltered": "(전체 _MAX_ 개 중 검색결과)",
+    "infoFiltered": "(전체 _MAX_ 명 중 검색결과)",
     "infoPostFix": "",
     "thousands": ",",
     "lengthMenu": "_MENU_ 개씩 보기",
@@ -224,22 +232,30 @@
     }
   };
 
-  $('#bbs_table').DataTable({
-    responsive: true,
-    order: false,
-    language: dtLanguage,
-    lengthMenu: [10, 20, 35, 50, { label: '전체', value: -1 }]
-  })
+  function initializeDataTable(selector, columnDefs) {
+    $(selector).DataTable({
+      responsive: true,
+      order: false,
+      columnDefs: columnDefs,
+      language: dtLanguage,
+      lengthMenu: [10, 20, 35, 50, { label: '전체', value: -1 }]
+    });
+  }
 
-  $('#comment_table').DataTable({
-    autoWidth: true,
-    responsive: true,
-    order: false,
-    language: dtLanguage,
-    lengthMenu: [10, 20, 35, 50, { label: '전체', value: -1 }]
-  })
+  $(document).ready(function() {
+    initializeDataTable('#bbs_table', [
+      {width: '5%', targets: 0}
+    ]);
 
-  document.addEventListener('DOMContentLoaded', function () {
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var target = $(e.target).attr("href");
+      if (target === "#tabs-comments-ex1" && !$.fn.dataTable.isDataTable('#comment_table')) {
+        initializeDataTable('#comment_table', [
+          {width: '20%', targets: 1}
+        ]);
+      }
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     const tab = urlParams.get('tab');
     if (tab) {
@@ -249,7 +265,6 @@
       }
     }
   });
-
 </script>
 </body>
 </html>

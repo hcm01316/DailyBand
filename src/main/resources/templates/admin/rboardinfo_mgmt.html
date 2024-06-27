@@ -187,8 +187,9 @@
       icon: [[${status}]] === 'success' ? 'success' : 'error',
       title: [[${status}]] === 'success' ? '성공' : '실패',
       text: [[${message}]],
-      confirmButtonText: '확인',
-      heightAuto: false
+      showConfirmButton: false,
+      heightAuto: false,
+      timer: 1500
     });
   </script>
 </div>

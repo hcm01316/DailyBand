@@ -60,7 +60,7 @@
                     <th>작성일자</th>
                     <th>진행상태
                       <span class="form-help" data-bs-toggle="popover" data-bs-placement="right"
-                            data-bs-title="결재 진행 상태"
+                            data-bs-title="결재 진행 상태" data-bs-trigger="hover focus"
                             data-bs-html="true"
                             data-bs-content="<p class='status status-green'>대기</p> : 결재 차례인 경우<br>
                             <p class='status status-blue'>진행</p> : 다음 결재자가 있는 경우<br>
@@ -109,69 +109,61 @@
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.min.js"></script>
 <script>
-  $('#ref_table').DataTable({
-    responsive: true,
-    order: false, // 초기 정렬 비활성화
-    language: {
-      "decimal": "",
-      "emptyTable": "데이터가 없습니다",
-      "info": "_START_ - _END_ (총 _TOTAL_건)",
-      "infoEmpty": "0건",
-      "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
-      "infoPostFix": "",
-      "thousands": ",",
-      "lengthMenu": "_MENU_ 개씩 보기",
-      "loadingRecords": "로딩 중...",
-      "processing": "처리 중...",
-      "search": "검색:",
-      "zeroRecords": "검색된 문서가 없습니다",
-      "aria": {
-        "sortAscending": ": 오름차순 정렬",
-        "sortDescending": ": 내림차순 정렬"
-      }
-    },
-    lengthMenu: [10, 20, 30, 50, {label: '전체', value: -1}]
-  });
-
-  // 라디오 버튼 클릭 이벤트 설정
-  $('input[name="btn-radio-basic"]').change(function () {
-    var status = $(this).data('status');
-    filterTable(status);
-  });
-
-  // 초기 필터링 적용
-  filterTable('all'); // 초기에 '전체' 상태로 필터링을 적용
-
-  function filterTable(status) {
-    var rows = document.querySelectorAll('#ref_table tbody tr');
-    rows.forEach(function (row) {
-      var statusCell = row.querySelector('td:nth-child(5) span');
-      if (status === 'all' || statusCell.textContent.trim() === status) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  }
-
   $(document).ready(function () {
-    // 라디오 버튼 이벤트 리스너 추가
-    var radioButtons = document.querySelectorAll('input[name="btn-radio-basic"]');
-    radioButtons.forEach(function (radio) {
-      radio.addEventListener('change', function () {
-        var status = this.getAttribute('data-status');
-        filterTable(status);
-      });
+    var table = $('#ref_table').DataTable({
+      responsive: true,
+      order: false, // 초기 정렬 비활성화
+      language: {
+        "decimal": "",
+        "emptyTable": "데이터가 없습니다",
+        "info": "_START_ - _END_ (총 _TOTAL_건)",
+        "infoEmpty": "0건",
+        "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "_MENU_ 개씩 보기",
+        "loadingRecords": "로딩 중...",
+        "processing": "처리 중...",
+        "search": "검색:",
+        "zeroRecords": "검색된 문서가 없습니다",
+        "aria": {
+          "sortAscending": ": 오름차순 정렬",
+          "sortDescending": ": 내림차순 정렬"
+        }
+      },
+      lengthMenu: [10, 20, 30, 50, {label: '전체', value: -1}]
+    });
+
+    // 필터링 함수 정의
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+          var status = $('input[name="btn-radio-basic"]:checked').data('status');
+          var statusCell = $(table.cell(dataIndex, 4).node()).text().trim(); // '진행상태' 열 값 가져오기
+
+          console.log('Selected status:', status);
+          console.log('Status in row:', statusCell);
+
+          if (status === 'all' || statusCell === status) {
+            return true;
+          }
+          return false;
+        }
+    );
+
+    // 라디오 버튼 클릭 이벤트 설정
+    $('input[name="btn-radio-basic"]').change(function () {
+      table.draw(); // 테이블 필터링 적용
     });
 
     // Popover 초기화
     var popoverTriggerList = [].slice.call(
         document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl, {
-        trigger: 'hover focus'
-      });
+      return new bootstrap.Popover(popoverTriggerEl);
     });
+
+    // 초기 필터링 적용
+    table.draw();
 
   });
 </script>

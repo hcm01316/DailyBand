@@ -71,17 +71,16 @@
                     </td>
                     <td th:if="${res.status == '수락'}"><span class="status status-green">수락</span>
                     </td>
-                    <td th:if="${res.status == '거절'}"><span class="status status-red">거절</span></td>
                     <td th:text="${#strings.substring(res.reg_dt, 0, 19)}"></td>
                     <td class="btn-list flex-nowrap">
                       <a class="btn btn-pill btn-outline-success btn-sm" href="#"
                          th:data-cal-id="${res.cal_id}" th:data-bbs-sn="${res.bbs_sn}"
-                         th:classappend="${res.status == '수락' || res.status == '거절'} ? 'disabled' : ''"
+                         th:style="${res.status == '수락' || res.status == '거절'} ? 'visibility: hidden;' : ''"
                          onclick="confirmRoomResAccept(this); return false;">수락
                       </a>
                       <a class="btn btn-pill btn-outline-danger btn-sm" href="#"
                          th:data-cal-id="${res.cal_id}" th:data-bbs-sn="${res.bbs_sn}"
-                         th:classappend="${res.status == '수락' || res.status == '거절'} ? 'disabled' : ''"
+                         th:style="${res.status == '수락' || res.status == '거절'} ? 'visibility: hidden;' : ''"
                          onclick="confirmRoomResRefuse(this); return false;">거절
                       </a>
                     </td>
