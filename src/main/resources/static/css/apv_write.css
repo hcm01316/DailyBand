@@ -32,6 +32,7 @@
 }
 .td-3 {
   text-align: center;
+  background-color: #f0f0f0;
   letter-spacing: 15px;
   width: 50px;
   font-weight: bold;
@@ -117,6 +118,8 @@ img { /* 승인/반려 이미지 */
 }
 .indent {
   text-indent: 15px;
+  padding-left: 10px;
+  width: 730px;
 }
 .div-rej {
   display: flex;

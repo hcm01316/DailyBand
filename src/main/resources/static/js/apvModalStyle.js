@@ -83,6 +83,16 @@ function appList(mList, type) {
         + '</td><td>' + mbrType + '</td></tr>';
   });
   $("#m-list-table tbody").append(tr);
+  // 선택된 항목 표시
+  if (type === "app") {
+    appArr.forEach(function (selected) {
+      $("#m-list-table tbody tr[data-id='" + selected.mbr_ID + "']").addClass('selected-row');
+    });
+  } else if (type === "ref") {
+    refArr.forEach(function (selected) {
+      $("#m-list-table tbody tr[data-id='" + selected.mbr_ID + "']").addClass('selected-row');
+    });
+  }
   appSelect(type); // 결재자/참조자 선택
 }
 
@@ -112,11 +122,13 @@ function appSelect(type) {
       appArrText = []; // 배열 비우기
       if (checkedArrIdx > -1) {
         _.remove(appArr, {mbr_ID: trArr.mbr_ID}); // 동일한 값 지우기
+        tr.removeClass('selected-row');
       } else {
         if (appArr.length < 3) { // 선택한 결재자 수가 3보다 작으면
           appArr.push(trArr); // 객체를 배열에 담기
+          tr.addClass('selected-row');
         } else {
-          alert("결재자는 3명까지만 선택 가능합니다.");
+          Swal.fire("결재자는 3명까지만 선택 가능합니다.");
         }
       }
       appArrText = appArr.map(function (el) {
@@ -136,8 +148,10 @@ function appSelect(type) {
       refArrText = []; // 배열 비우기
       if (checkedArrIdx > -1) {
         _.remove(refArr, {mbr_ID: trArr.mbr_ID}); // 동일한 값 지우기
+        tr.removeClass('selected-row');
       } else {
         refArr.push(trArr);
+        tr.addClass('selected-row');
       }
       refArrText = refArr.map(function (el) {
         return `${el.mbr_NCNM} ${el.mbr_TY}`;

@@ -184,6 +184,7 @@ public class AdminController {
     mv.addObject("current_drop", "adminRboardMgmt");
 
     List<Map<String, Object>> rList = adminService.getRboardList();
+    logger.info("밴드원 모집 리스트 : "+rList.toString());
 
     Map<Integer, List<Bandhr>> participantsMap = new HashMap<>();
     Map<Integer, List<Bandhr>> joinListMap = new HashMap<>();

@@ -75,7 +75,7 @@
                     <td rowspan="4" class="text-center">
                       <button type="button" data-bs-toggle="modal"
                               data-bs-target="#modal-scrollable"
-                              class="btn-select-app" onclick="appBtn('app');">선택
+                              class="btn btn-pill btn-outline-primary btn-select-app" onclick="appBtn('app');">선택
                       </button>
                     </td>
                     <td rowspan="4"></td>
@@ -113,7 +113,7 @@
                     </td>
                     <td class="td-btn" style="border-left: none;">
                       <button type="button"
-                              class="btn-select-ref" data-bs-toggle="modal"
+                              class="btn btn-outline-primary btn-icon btn-select-ref" data-bs-toggle="modal"
                               data-bs-target="#modal-scrollable" onclick="appBtn('ref');">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -128,7 +128,7 @@
                   </tr>
                   <tr id="tr-title" class="tr-m">
                     <td class="td-1">제목</td>
-                    <td colspan="7"><input type="text" name="DOC_SJ" id="td-title" class="i-title">
+                    <td colspan="7"><input type="text" name="DOC_SJ" id="td-title" placeholder="제목을 입력하세요."  class="i-title">
                     </td>
                   </tr>
                   <tr class="tr-m">
@@ -136,7 +136,7 @@
                   </tr>
                   <tr>
                     <td colspan="8">
-                      <textarea id="editor" name="DOC_CN"></textarea>
+                      <textarea id="editor" name="DOC_CN" placeholder="내용을 입력하세요."></textarea>
                     </td>
                   </tr>
                 </table>
@@ -170,25 +170,35 @@
             console.error(error);
           });
 
-          // 결재 요청 확인창
-          function docSave() {
-            var result = confirm("결재 요청하시겠습니까?");
-            if (result === true) {
-              $("#form").submit();
-            }
-          }
-
           // 유효성 체크
           function nullChk() {
             if ($("#td-title").val() == "") {
-              alert("제목을 입력해주세요.");
+              Swal.fire("제목을 입력해주세요.");
               $("#tr-title").focus();
               return false;
             } else if ($("#num-app").val() == "") {
-              alert("결재자를 선택해주세요.");
+              Swal.fire("결재자를 선택해주세요.");
               return false;
             }
           }
+
+          // 결재 요청 확인창
+          function docSave() {
+            Swal.fire({
+              title: '결재 요청 하시겠습니까?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: '요청',
+              cancelButtonText: '취소'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                $("#form").submit();
+              }
+            });
+          }
+
 
           // 임시 저장
           function temSave() {
@@ -207,9 +217,10 @@
     Swal.fire({
       icon: [[${status}]] === 'success' ? 'success' : 'error',
       title: [[${status}]] === 'success' ? '성공' : '실패',
-      text: [[${message}]],
-      confirmButtonText: '확인',
-      heightAuto: false
+      //text: [[${message}]],
+      showConfirmButton: false,
+      heightAuto: false,
+      timer: 1500
     });
   </script>
 </div>
