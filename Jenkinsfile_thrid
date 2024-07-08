@@ -2,7 +2,7 @@ pipeline {
     environment { 
        // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름      
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
-        TARGET_HOST = "ubuntu@3.34.197.211"
+        TARGET_HOST = "ubuntu@15.164.233.166"
     }
     agent any
 
