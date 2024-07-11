@@ -10,30 +10,26 @@
 
 ##  🖥️ 프로젝트 소개
 
----
 >음악 밴드 관련 툴을 이용하고 싶은 사람들을 위해 **모집**부터 **밴드 관리**를 하여 원활한 밴드 활동에 도움을 주고, <br>
 > 팀원 간 **밴드 일정** 공유 및 실시간 **채팅**, **알림**, **합주실 예약**, 
 > **전자결재**까지 가능한 실시간 음악 밴드 업무 공유 협업 플랫폼입니다.
 
 ## 🗓️ 개발 기간 
 
----
-#### 24.06.21 ~ 24.07.01
+24.06.21 ~ 24.07.01
 
 ## 🧑‍🤝‍🧑팀원 구성
 
----
 | 이름  |  역할   | 담당 기능                                                                                |                                        
 |:---:|:-----:|:-------------------------------------------------------------------------------------|
-| 김도연 |  팀장   | 내 프로필 정보, 내 게시글, 상대 프로필 정보, <br>관리(대시보드, 회원 관리, 밴드원 모집 관리, 커뮤니티 관리, 합주실 예약 관리, 전자결재) |
+| 김도연 |  팀장   | 내 프로필 정보, 내 게시글, 상대 프로필 정보, 관리(대시보드, 회원 관리,<br> 밴드원 모집 관리, 커뮤니티 관리, 합주실 예약 관리, 전자결재) |
 | 변만수 |  팀원   | 로그인, 회원가입, 아이디/비밀번호 찾기, 비밀번호 변경, 합주실 정보, 알림                                          |
 | 윤찬영 |  팀원   | 커뮤니티(음악/자유/Q&A/영상 게시판), 밴드 일정,  합주실 예약                                               |
-| 홍창민 |  팀원   | 밴드원 모집 게시판, 밴드 관리, 회원 정보 수정, 채팅, Jasypt 암호화, AWS배포, AWS S3, CK editor 연동         |
+| 홍창민 |  팀원   | 밴드원 모집 게시판, 밴드 관리, 회원 정보 수정, 채팅, <br>Jasypt 암호화, AWS배포, AWS S3, CK editor 연동         |
 
 
 ## ⚙️ 개발 환경
 
----
 ### OS
 ![Windows 10](https://img.shields.io/badge/Windows%2010-0078D6?logo=windows10&logoColor=fff&style=for-the-badge)
 ![Windows 11](https://img.shields.io/badge/Windows%2011-0078D4?logo=windows11&logoColor=fff&style=for-the-badge)
@@ -46,7 +42,6 @@
 
 ## 🔨사용 기술
 
----
 ### Frontend
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
@@ -86,5 +81,4 @@
 
 ## ERD 
 
----
 <img alt="dailyband_erd" src="src/main/resources/static/image/dailyband_erdCloud.png">
